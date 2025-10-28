@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-demo-app
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: nginx-demo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-demo-app
+  template:
+    metadata:
+      name: nginx-demo-app
+      labels:
+        app: nginx-demo-app
+    spec:
+      containers:
+        - name: nginx-demo-app
+          image: nginx
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP

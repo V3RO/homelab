@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: argo-install
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      serviceAccountName: argo-install
+      containers:
+      - name: argocd-install
+        image: alpine/kubectl:latest
+        volumeMounts:
+          - name: bootstrap
+            mountPath: /tmp/bootstrap/argo-applicationset.yaml
+            subPath: argo-applicationset.yaml
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Applying Argo CD core manifests...";
+          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml;
+          echo "Waiting for Argo CD CRDs to be established...";
+          kubectl wait --for=condition=Established crd applications.argoproj.io --timeout=180s || true;
+          kubectl wait --for=condition=Established crd applicationsets.argoproj.io --timeout=180s || true;
+          echo "Applying bootstrap ApplicationSet...";
+          kubectl apply -f /tmp/bootstrap/argo-applicationset.yaml;
+          echo "Done.";
+      volumes:
+        - name: bootstrap
+          configMap:
+            name: argo-applicationset
+      restartPolicy: OnFailure
+  backoffLimit: 3
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argo-install
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argo-install
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: argo-install
+  namespace: kube-system

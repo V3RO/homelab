@@ -1,0 +1,15 @@
+machine:
+  kubelet:
+    ${indent(4, kubelet)}
+  nodeLabels:
+    topology.kubernetes.io/region: ${cluster_name}
+    topology.kubernetes.io/zone: ${node_name}
+  network:
+    hostname: ${hostname}
+  sysctls:
+    fs.inotify.max_user_watches: 1048576
+    fs.inotify.max_user_instances: 8192
+    net.core.default_qdisc: fq
+    net.ipv4.tcp_congestion_control: bbr
+    net.ipv4.tcp_fastopen: 3
+    net.ipv4.tcp_mtu_probing: 1   # optional
