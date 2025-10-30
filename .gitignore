@@ -38,6 +38,9 @@ terraform.rc
 
 
 ### Helm template
+# Chart lock file
+Chart.lock
+
 # Chart dependencies
 **/charts/*.tgz
 
