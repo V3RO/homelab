@@ -24,6 +24,8 @@ spec:
         - /bin/sh
         - -c
         - |
+          echo "Waiting for cilium to be ready...";
+          kubectl -n kube-system rollout status daemonset cilium --timeout=300s;
           echo "Applying Argo CD core manifests...";
           kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml;
           echo "Waiting for Argo CD CRDs to be established...";

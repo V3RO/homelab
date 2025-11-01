@@ -1,13 +1,16 @@
 ipam:
   mode: kubernetes
 
-kubeProxyReplacement: false
+kubeProxyReplacement: true
 
 socketLB:
   hostNamespaceOnly: true
 
 cni:
   exclusive: false
+
+envoy:
+  enabled: false
 
 securityContext:
   capabilities:
