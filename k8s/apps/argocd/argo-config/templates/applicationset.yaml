@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: apps
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/V3RO/homelab.git
+        revision: main
+        directories:
+          - path: k8s/apps/*/*
+  template:
+    metadata:
+      name: '{{`{{path[2]}}-{{path.basename}}`}}'
+      labels:
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/V3RO/homelab.git
+        targetRevision: main
+        path: '{{`{{path}}`}}'
+        helm:
+          releaseName: '{{`{{path.basename}}`}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{`{{path[2]}}`}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+      ignoreDifferences:
+        - group: admissionregistration.k8s.io
+          kind: ValidatingWebhookConfiguration
+          name: istio-validator-istio-system
+          jsonPointers:
+            - /webhooks/0/failurePolicy
+        - group: admissionregistration.k8s.io
+          kind: ValidatingWebhookConfiguration
+          name: istiod-default-validator
+          jsonPointers:
+            - /webhooks/0/failurePolicy

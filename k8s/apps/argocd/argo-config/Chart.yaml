@@ -1,0 +1,5 @@
+apiVersion: v2
+name: argo-config
+version: 0.1.0
+description: "Config objects for ArgoCD"
+type: application
