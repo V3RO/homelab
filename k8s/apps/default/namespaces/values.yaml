@@ -6,3 +6,6 @@ namespaces:
     labels:
       istio-injection: "enabled"
       pod-security.kubernetes.io/enforce: privileged
+  - name: argocd
+    labels:
+      istio.io/dataplane-mode: ambient
