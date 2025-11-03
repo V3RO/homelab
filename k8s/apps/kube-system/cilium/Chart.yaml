@@ -1,0 +1,5 @@
+apiVersion: v2
+name: cilium
+description: A Helm chart for Cilium
+type: application
+version: 1.0.0

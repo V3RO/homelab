@@ -3,6 +3,9 @@ ipam:
 
 kubeProxyReplacement: true
 
+l2announcements:
+  enabled=true:
+
 socketLB:
   hostNamespaceOnly: true
 

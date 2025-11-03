@@ -1,0 +1,8 @@
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: "lb-pool-01"
+  namespace: {{ .Release.Namespace }}
+spec:
+  blocks:
+    - cidr: "10.1.40.64/26"
