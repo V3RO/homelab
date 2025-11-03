@@ -6,6 +6,9 @@ kubeProxyReplacement: true
 l2announcements:
   enabled=true:
 
+bgpControlPlane:
+  enabled=true:
+
 socketLB:
   hostNamespaceOnly: true
 
