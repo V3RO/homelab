@@ -3,11 +3,8 @@ ipam:
 
 kubeProxyReplacement: true
 
-l2announcements:
-  enabled=true:
-
 bgpControlPlane:
-  enabled=true:
+  enabled: true
 
 socketLB:
   hostNamespaceOnly: true

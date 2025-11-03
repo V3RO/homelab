@@ -1,0 +1,48 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPClusterConfig
+metadata:
+  name: cilium-bgp
+  namespace: {{ .Release.Namespace }}
+spec:
+  nodeSelector:
+    matchLabels:
+      topology.kubernetes.io/region: "homelab"
+  bgpInstances:
+    - name: "65020"
+      localASN: 65020
+      peers:
+        - name: "ucg-fibre-65000"
+          peerASN: 65000
+          peerAddress: 192.168.1.1
+          peerConfigRef:
+            name: "cilium-peer"
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPPeerConfig
+metadata:
+  name: cilium-peer
+  namespace: {{ .Release.Namespace }}
+spec:
+  gracefulRestart:
+    enabled: true
+    restartTimeSeconds: 15
+  families:
+    - afi: ipv4
+      safi: unicast
+      advertisements:
+        matchLabels:
+          advertise: "bgp"
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPAdvertisement
+metadata:
+  name: bgp-advertisements
+  namespace: {{ .Release.Namespace }}
+  labels:
+    advertise: bgp
+spec:
+  advertisements:
+    - advertisementType: "Service"
+      service:
+        addresses:
+          - LoadBalancerIP
