@@ -2,7 +2,7 @@ apiVersion: cilium.io/v2alpha1
 kind: CiliumBGPClusterConfig
 metadata:
   name: cilium-bgp
-  namespace: {{ .Release.Namespace }}
+  namespace: kube-system
 spec:
   nodeSelector:
     matchLabels:
@@ -21,7 +21,7 @@ apiVersion: cilium.io/v2alpha1
 kind: CiliumBGPPeerConfig
 metadata:
   name: cilium-peer
-  namespace: {{ .Release.Namespace }}
+  namespace: kube-system
 spec:
   gracefulRestart:
     enabled: true
@@ -37,12 +37,22 @@ apiVersion: cilium.io/v2alpha1
 kind: CiliumBGPAdvertisement
 metadata:
   name: bgp-advertisements
-  namespace: {{ .Release.Namespace }}
+  namespace: kube-system
   labels:
     advertise: bgp
 spec:
+  nodeSelector:
+    matchLabels:
+      topology.kubernetes.io/region: "homelab"
   advertisements:
-    - advertisementType: "Service"
+    - advertisementType: PodCIDR
+    - advertisementType: Service
+      selector:
+        matchExpressions:
+          - key: somekey
+            operator: NotIn
+            values:
+              - not-used
       service:
         addresses:
           - LoadBalancerIP
