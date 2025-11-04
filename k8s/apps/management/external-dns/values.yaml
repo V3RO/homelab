@@ -1,6 +1,7 @@
 external-dns:
   fullnameOverride: external-dns-unifi
   logLevel: &logLevel debug
+  gatewayNamespace: default
   provider:
     name: webhook
     webhook:
@@ -33,6 +34,10 @@ external-dns:
         timeoutSeconds: 5
   extraArgs:
     - --ignore-ingress-tls-spec
+    - --source=gateway-httproute
+    - --source=gateway-tlsroute
+    - --source=gateway-tcproute
+    - --source=gateway-udproute
   policy: sync
   sources: [ "ingress", "service" ]
   txtOwnerId: default

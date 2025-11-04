@@ -4,6 +4,8 @@ metadata:
   name: httproute-demo-app
   namespace: {{ .Release.Namespace }}
 spec:
+  hostnames:
+  - demo.homelab
   parentRefs:
     - kind: Gateway
       name: demo-gateway
