@@ -1,0 +1,14 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: httproute-demo-app
+  namespace: {{ .Release.Namespace }}
+spec:
+  parentRefs:
+    - kind: Gateway
+      name: demo-gateway
+      namespace: {{ .Release.Namespace }}
+  rules:
+    - backendRefs:
+        - name: demo-app
+          port: 80
