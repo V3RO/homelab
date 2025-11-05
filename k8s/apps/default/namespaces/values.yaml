@@ -1,4 +1,7 @@
 namespaces:
+  - name: default
+    labels:
+      istio.io/dataplane-mode: ambient
   - name: istio-system
     labels:
       pod-security.kubernetes.io/enforce: privileged
