@@ -35,9 +35,6 @@ external-dns:
   extraArgs:
     - --ignore-ingress-tls-spec
     - --source=gateway-httproute
-    - --source=gateway-tlsroute
-    - --source=gateway-tcproute
-    - --source=gateway-udproute
   policy: sync
   sources: [ "ingress", "service" ]
   txtOwnerId: default
