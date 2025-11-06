@@ -5,10 +5,9 @@ namespaces:
   - name: istio-system
     labels:
       pod-security.kubernetes.io/enforce: privileged
-  - name: istio-ingress
+  - name: istio-ingress-internal
     labels:
-      istio-injection: "enabled"
-      pod-security.kubernetes.io/enforce: privileged
+      istio.io/dataplane-mode: ambient
   - name: argocd
   - name: management
     labels:

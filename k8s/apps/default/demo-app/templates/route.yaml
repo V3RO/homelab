@@ -8,8 +8,8 @@ spec:
   - demo.homelab
   parentRefs:
     - kind: Gateway
-      name: demo-gateway
-      namespace: {{ .Release.Namespace }}
+      name: internal-gateway
+      namespace: istio-ingress-internal
   rules:
     - backendRefs:
         - name: demo-app

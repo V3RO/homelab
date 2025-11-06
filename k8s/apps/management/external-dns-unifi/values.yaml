@@ -1,7 +1,6 @@
 external-dns:
-  fullnameOverride: external-dns-unifi
   logLevel: &logLevel debug
-  gatewayNamespace: default
+  gatewayNamespace: istio-ingress-internal
   provider:
     name: webhook
     webhook:
@@ -20,18 +19,6 @@ external-dns:
               key: api-key
         - name: LOG_LEVEL
           value: *logLevel
-      livenessProbe:
-        httpGet:
-          path: /healthz
-          port: http-webhook
-        initialDelaySeconds: 10
-        timeoutSeconds: 5
-      readinessProbe:
-        httpGet:
-          path: /readyz
-          port: http-webhook
-        initialDelaySeconds: 10
-        timeoutSeconds: 5
   extraArgs:
     - --ignore-ingress-tls-spec
     - --source=gateway-httproute
