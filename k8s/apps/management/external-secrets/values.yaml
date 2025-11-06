@@ -1,3 +1,6 @@
 external-secrets:
+  crds:
+    createClusterGenerator: false
+    createClusterPushSecret: false
   bitwarden-sdk-server:
     enabled: true
