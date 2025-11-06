@@ -4,3 +4,20 @@ external-secrets:
     createClusterPushSecret: false
   bitwarden-sdk-server:
     enabled: true
+  image:
+    tls:
+      enabled: true
+      volumeMounts:
+        - mountPath: "/certs"
+          name: "bitwarden-tls-certs"
+      volumes:
+        - name: "bitwarden-tls-certs"
+          secret:
+            secretName: "bitwarden-tls-certs"
+            items:
+              - key: "tls.crt"
+                path: "cert.pem"
+              - key: "tls.key"
+                path: "key.pem"
+              - key: "ca.crt"
+                path: "ca.pem"
