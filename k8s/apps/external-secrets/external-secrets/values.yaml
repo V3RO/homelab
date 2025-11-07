@@ -2,6 +2,8 @@ external-secrets:
   crds:
     createClusterGenerator: false
     createClusterPushSecret: false
+    annotations:
+      argocd.argoproj.io/sync-options: ServerSideApply=true
   bitwarden-sdk-server:
     enabled: true
   namespaceOverride: "external-secrets"
