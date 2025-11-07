@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hostnames:
-  - demo.homelab
+  - demo.schober.dev
   parentRefs:
     - kind: Gateway
       name: internal-gateway
