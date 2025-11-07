@@ -9,5 +9,5 @@ spec:
     kind: ClusterIssuer
     group: cert-manager.io
   dnsNames:
-    - demo.schober.dev
+    - "*.schober.dev"
   secretName: schober-dev-tls

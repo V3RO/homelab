@@ -8,7 +8,7 @@ metadata:
 spec:
   gatewayClassName: istio
   listeners:
-    - hostname: "demo.schober.dev"
+    - hostname: "*.schober.dev"
       name: https
       protocol: HTTPS
       port: 443
