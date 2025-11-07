@@ -2,5 +2,3 @@ cert-manager:
   crds:
     enabled: true
   featureGates: "ExperimentalGatewayAPISupport=true"
-  namespace: management
-  clusterResourceNamespace: management

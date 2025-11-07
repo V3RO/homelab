@@ -9,7 +9,10 @@ namespaces:
     labels:
       istio.io/dataplane-mode: ambient
   - name: argocd
-  - name: management
+  - name: external-dns
+    labels:
+      istio.io/dataplane-mode: ambient
+  - name: cert-manager
     labels:
       istio.io/dataplane-mode: ambient
   - name: external-secrets
