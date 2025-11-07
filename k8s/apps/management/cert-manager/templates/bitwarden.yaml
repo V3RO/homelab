@@ -30,6 +30,7 @@ spec:
     algorithm: RSA
     encoding: PKCS8
     size: 2048
+    rotationPolicy: Always
   issuerRef:
     name: bitwarden-bootstrap-issuer
     kind: ClusterIssuer

@@ -20,3 +20,24 @@ spec:
     name: bitwarden-certificate-issuer
     kind: ClusterIssuer
     group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: bitwarden-css-certs
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: bitwarden-css-certs
+  dnsNames:
+    - bitwarden-secrets-manager.external-secrets.svc.cluster.local
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+    rotationPolicy: Always
+  usages:
+    - client auth
+  issuerRef:
+    name: bitwarden-certificate-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
