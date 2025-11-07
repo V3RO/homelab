@@ -4,7 +4,7 @@ external-secrets:
     createClusterPushSecret: false
   bitwarden-sdk-server:
     enabled: true
-  namespaceOverride: "management"
+  namespaceOverride: "external-secrets"
   image:
     tls:
       enabled: true
