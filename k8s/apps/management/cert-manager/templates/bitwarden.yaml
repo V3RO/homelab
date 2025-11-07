@@ -9,23 +9,17 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: bitwarden-bootstrap-certificate
+  # renamed to avoid collision with server cert secret
+  name: bitwarden-ca
   namespace: {{ .Release.Namespace }}
 spec:
-  # this is discouraged but required by ios
-  commonName: cert-manager-bitwarden-tls
+  # Root CA certificate used to sign Bitwarden server and client certs
+  commonName: bitwarden-ca
   isCA: true
-  secretName: bitwarden-tls-certs
+  secretName: bitwarden-ca-secret
   subject:
     organizations:
       - external-secrets.io
-  dnsNames:
-    - external-secrets-bitwarden-sdk-server.external-secrets.svc.cluster.local
-    - bitwarden-sdk-server.external-secrets.svc.cluster.local
-    - localhost
-  ipAddresses:
-    - 127.0.0.1
-    - ::1
   privateKey:
     algorithm: RSA
     encoding: PKCS8
@@ -43,4 +37,5 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ca:
-    secretName: bitwarden-tls-certs
+    # Updated to use the dedicated CA secret instead of sharing the server cert secret
+    secretName: bitwarden-ca-secret
