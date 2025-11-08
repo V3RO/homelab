@@ -12,7 +12,7 @@ spec:
           - path: k8s/apps/*/*
   template:
     metadata:
-      name: '{{`{{path[2]}}-{{path.basename}}`}}'
+      name: '{{`{{path.basename}}`}}'
       labels:
         app.kubernetes.io/managed-by: argocd
     spec:
