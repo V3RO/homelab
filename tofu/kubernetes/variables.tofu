@@ -69,3 +69,9 @@ variable "talos_nodes" {
     // @formatter:on
   }
 }
+
+variable "enable_argocd" {
+  description = "Whether to deploy Argo CD via Helm after cluster becomes healthy"
+  type        = bool
+  default     = true
+}

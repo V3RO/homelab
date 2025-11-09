@@ -9,6 +9,8 @@ argo-cd:
   server:
     httproute:
       enabled: true
+      hostnames:
+        - argo.schober.dev
       parentRefs:
         - name: internal-gateway
           namespace: istio-ingress-internal

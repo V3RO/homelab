@@ -42,29 +42,6 @@ resource "terraform_data" "cilium_bootstrap_inline_manifests" {
   ]
 }
 
-resource "terraform_data" "argo_bootstrap_inline_manifests" {
-  input = [
-    {
-      name     = "argocd-install"
-      contents = file("${path.root}/talos/bootstrap/argo/install.yaml")
-    },
-    {
-      name = "argo-applicationset"
-      contents = yamlencode({
-        apiVersion = "v1"
-        kind       = "ConfigMap"
-        metadata = {
-          name      = "argo-applicationset"
-          namespace = "kube-system"
-        }
-        data = {
-          "argo-applicationset.yaml" = file("${path.root}/talos/bootstrap/argo/applicationset.yaml")
-        }
-      })
-    }
-  ]
-}
-
 data "talos_machine_configuration" "this" {
   for_each     = var.nodes
   cluster_name = var.cluster.name
@@ -92,10 +69,7 @@ data "talos_machine_configuration" "this" {
       vip              = var.cluster.vip
       extra_manifests  = jsonencode(local.extra_manifests)
       api_server       = var.cluster.api_server
-      inline_manifests = jsonencode(concat(
-        terraform_data.cilium_bootstrap_inline_manifests.output,
-        terraform_data.argo_bootstrap_inline_manifests.output
-      ))
+      inline_manifests = jsonencode(terraform_data.cilium_bootstrap_inline_manifests.output)
     }) :
     templatefile("${path.module}/machine-config/worker.yaml.tftpl", {
       ip          = each.value.ip

@@ -1,7 +1,7 @@
 apiVersion: v2
-name: argo-config
+name: argo
 version: 0.1.0
-description: "Config objects for ArgoCD"
+description: "Upstream Argo CD deployment"
 type: application
 dependencies:
   - name: argo-cd

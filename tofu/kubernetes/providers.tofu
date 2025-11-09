@@ -16,6 +16,10 @@ terraform {
       source  = "Mastercard/restapi"
       version = "2.0.1"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "2.13.2"
+    }
   }
 }
 
@@ -47,4 +51,13 @@ provider "kubernetes" {
   client_certificate     = base64decode(module.talos.kube_config.kubernetes_client_configuration.client_certificate)
   client_key             = base64decode(module.talos.kube_config.kubernetes_client_configuration.client_key)
   cluster_ca_certificate = base64decode(module.talos.kube_config.kubernetes_client_configuration.ca_certificate)
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = module.talos.kube_config.kubernetes_client_configuration.host
+    client_certificate     = base64decode(module.talos.kube_config.kubernetes_client_configuration.client_certificate)
+    client_key             = base64decode(module.talos.kube_config.kubernetes_client_configuration.client_key)
+    cluster_ca_certificate = base64decode(module.talos.kube_config.kubernetes_client_configuration.ca_certificate)
+  }
 }
