@@ -75,3 +75,14 @@ variable "enable_argocd" {
   type        = bool
   default     = true
 }
+
+variable "bitwarden_access_token" {
+  description = "Bitwarden access token used to authenticate external-secrets Bitwarden provider"
+  type        = string
+  sensitive   = true
+  default     = ""
+  validation {
+    condition     = length(var.bitwarden_access_token) > 0
+    error_message = "bitwarden_access_token must be provided"
+  }
+}
