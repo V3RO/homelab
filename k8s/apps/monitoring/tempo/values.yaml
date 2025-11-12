@@ -1,0 +1,19 @@
+tempo:
+  # Use single binary deployment mode (non-HA)
+  replicas: 1
+  
+  # Disable persistence for homelab
+  persistence:
+    enabled: false
+  
+  # Simple configuration for single node
+  tempo:
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /var/tempo/traces
+    
+    # Single replica config
+    server:
+      http_listen_port: 3100

@@ -1,0 +1,22 @@
+prometheus:
+  # Disable high availability mode for homelab
+  server:
+    replicaCount: 1
+    statefulSet:
+      enabled: false
+  
+  # Disable alertmanager HA
+  alertmanager:
+    enabled: true
+    replicaCount: 1
+    statefulSet:
+      enabled: false
+  
+  # Disable pushgateway
+  pushgateway:
+    enabled: false
+  
+  # Disable kube-state-metrics HA
+  kube-state-metrics:
+    enabled: true
+    replicas: 1

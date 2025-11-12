@@ -1,0 +1,55 @@
+mimir-distributed:
+  # Disable HA mode - use minimal replicas for homelab
+  mimir:
+    structuredConfig:
+      common:
+        storage:
+          backend: filesystem
+          filesystem:
+            dir: /data/mimir
+      
+      # Single replica configuration
+      ingester:
+        ring:
+          replication_factor: 1
+      
+      store_gateway:
+        sharding_ring:
+          replication_factor: 1
+  
+  # Set all components to single replica
+  ingester:
+    replicas: 1
+    zoneAwareReplication:
+      enabled: false
+  
+  querier:
+    replicas: 1
+  
+  query_frontend:
+    replicas: 1
+  
+  store_gateway:
+    replicas: 1
+    zoneAwareReplication:
+      enabled: false
+  
+  compactor:
+    replicas: 1
+  
+  distributor:
+    replicas: 1
+  
+  ruler:
+    replicas: 1
+  
+  alertmanager:
+    replicas: 1
+  
+  # Disable nginx for simplicity
+  nginx:
+    replicas: 1
+  
+  # Disable minio (using filesystem)
+  minio:
+    enabled: false
