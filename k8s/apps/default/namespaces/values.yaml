@@ -16,3 +16,6 @@ namespaces:
     labels:
       istio.io/dataplane-mode: ambient
   - name: external-secrets
+  - name: monitoring
+    labels:
+      istio.io/dataplane-mode: ambient
