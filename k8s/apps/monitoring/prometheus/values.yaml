@@ -4,18 +4,22 @@ prometheus:
     replicaCount: 1
     statefulSet:
       enabled: false
-  
+    persistentVolume:
+      enabled: false
+
   # Disable alertmanager HA
   alertmanager:
     enabled: true
     replicaCount: 1
     statefulSet:
       enabled: false
+    persistentVolume:
+      enabled: false
   
   # Disable pushgateway
   pushgateway:
     enabled: false
-  
+
   # Disable kube-state-metrics HA
   kube-state-metrics:
     enabled: true
