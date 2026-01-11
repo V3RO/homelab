@@ -1,2 +1,18 @@
 istiod:
   profile: ambient
+  meshConfig:
+    enablePrometheusMerge: true
+    defaultConfig:
+      tracing:
+        sampling: 100.0
+        zipkin:
+          address: tempo.monitoring.svc.cluster.local:9411
+  telemetry:
+    enabled: true
+    v2:
+      enabled: true
+      prometheus:
+        enabled: true
+  pilot:
+    env:
+      PILOT_ENABLE_TELEMETRY: "true"
