@@ -8,6 +8,10 @@ mimir-distributed:
           filesystem:
             dir: /data/mimir
       
+      # Disable usage stats (requires S3)
+      usage_stats:
+        enabled: false
+      
       # Single replica configuration
       ingester:
         ring:

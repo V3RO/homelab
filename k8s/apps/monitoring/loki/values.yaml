@@ -16,11 +16,18 @@ loki:
     
     storage:
       type: filesystem
+
+    # Ruler storage configuration
+    rulerConfig:
+      storage:
+        type: local
+        local:
+          directory: /var/loki/rules
     
     # Single replica
     commonConfig:
       replication_factor: 1
-  
+
   # Single replica for gateway
   gateway:
     replicas: 1
@@ -40,3 +47,9 @@ loki:
     replicas: 1
     persistence:
       enabled: false
+    extraVolumes:
+      - name: loki-data
+        emptyDir: {}
+    extraVolumeMounts:
+      - name: loki-data
+        mountPath: /var/loki
