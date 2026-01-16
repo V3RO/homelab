@@ -22,9 +22,14 @@ mimir-distributed:
     replicas: 1
     zoneAwareReplication:
       enabled: false
+    persistentVolume:
+      enabled: false
   
   querier:
     replicas: 1
+    persistence:
+      enabled: false
+
   
   query_frontend:
     replicas: 1
@@ -33,9 +38,13 @@ mimir-distributed:
     replicas: 1
     zoneAwareReplication:
       enabled: false
+    persistentVolume:
+      enabled: false
   
   compactor:
     replicas: 1
+    persistentVolume:
+      enabled: false
   
   distributor:
     replicas: 1
@@ -45,6 +54,8 @@ mimir-distributed:
   
   alertmanager:
     replicas: 1
+    persistentVolume:
+      enabled: false
   
   # Disable nginx for simplicity
   nginx:

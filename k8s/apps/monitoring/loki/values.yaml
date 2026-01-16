@@ -38,3 +38,5 @@ loki:
   # Single binary mode
   singleBinary:
     replicas: 1
+    persistence:
+      enabled: false
