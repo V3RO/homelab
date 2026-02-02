@@ -5,10 +5,6 @@ mimir-distributed:
         enabled: false
       blocks_storage:
         backend: filesystem
-        filesystem:
-          dir: /data/blocks
-        tsdb:
-          dir: /data/tsdb
 
       # Ruler storage - use local filesystem (separate path)
       ruler_storage:
