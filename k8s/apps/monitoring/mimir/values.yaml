@@ -54,8 +54,7 @@ mimir-distributed:
     zoneAwareReplication:
       enabled: false
     persistentVolume:
-      enabled: true
-      size: 5Gi
+      enabled: false
 
   querier:
     replicas: 1
@@ -71,14 +70,12 @@ mimir-distributed:
     zoneAwareReplication:
       enabled: false
     persistentVolume:
-      enabled: true
-      size: 5Gi
+      enabled: false
 
   compactor:
     replicas: 1
     persistentVolume:
-      enabled: true
-      size: 5Gi
+      enabled: false
 
   distributor:
     replicas: 1
@@ -89,17 +86,4 @@ mimir-distributed:
 
   # Disable minio (using filesystem)
   minio:
-    enabled: false
-
-  # Disable all caches (not needed for homelab)
-  chunks-cache:
-    enabled: false
-
-  index-cache:
-    enabled: false
-
-  metadata-cache:
-    enabled: false
-
-  results-cache:
     enabled: false
