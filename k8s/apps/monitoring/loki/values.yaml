@@ -3,6 +3,9 @@ loki:
   deploymentMode: SingleBinary
   
   loki:
+    # Disable auth for homelab simplicity
+    auth_enabled: false
+
     # Simple schema config for homelab
     schemaConfig:
       configs:
@@ -28,10 +31,6 @@ loki:
     commonConfig:
       replication_factor: 1
 
-  # Single replica for gateway
-  gateway:
-    replicas: 1
-  
   # Disable write and read deployments (using singleBinary)
   write:
     replicas: 0
@@ -42,7 +41,7 @@ loki:
   backend:
     replicas: 0
   
-  # Single binary mode
+  # Single binary mode with persistence
   singleBinary:
     replicas: 1
     persistence:
@@ -53,3 +52,17 @@ loki:
     extraVolumeMounts:
       - name: loki-data
         mountPath: /var/loki
+
+  # Disable all caches to save memory
+  chunksCache:
+    enabled: false
+
+  resultsCache:
+    enabled: false
+
+  # Disable test components
+  lokiCanary:
+    enabled: false
+
+  test:
+    enabled: false

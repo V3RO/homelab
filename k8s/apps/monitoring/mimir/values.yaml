@@ -2,16 +2,37 @@ mimir-distributed:
   # Disable HA mode - use minimal replicas for homelab
   mimir:
     structuredConfig:
+      # Disable usage stats reporting
+      usage_stats:
+        enabled: false
+
+      # Configure all storage to use filesystem
       common:
         storage:
           backend: filesystem
           filesystem:
             dir: /data/mimir
       
-      # Disable usage stats (requires S3)
-      usage_stats:
-        enabled: false
-      
+      # Block storage configuration - use filesystem instead of S3
+      blocks_storage:
+        backend: filesystem
+        filesystem:
+          dir: /data/mimir/blocks
+        tsdb:
+          dir: /data/mimir/tsdb
+
+      # Ruler storage - use local filesystem
+      ruler_storage:
+        backend: filesystem
+        filesystem:
+          dir: /data/mimir/ruler
+
+      # Alertmanager storage - use local filesystem
+      alertmanager_storage:
+        backend: filesystem
+        filesystem:
+          dir: /data/mimir/alertmanager
+
       # Single replica configuration
       ingester:
         ring:
@@ -20,7 +41,11 @@ mimir-distributed:
       store_gateway:
         sharding_ring:
           replication_factor: 1
-  
+
+      compactor:
+        sharding_ring:
+          replication_factor: 1
+
   # Set all components to single replica
   ingester:
     replicas: 1
@@ -28,28 +53,29 @@ mimir-distributed:
       enabled: false
     persistentVolume:
       enabled: false
-  
+
   querier:
     replicas: 1
-    persistence:
-      enabled: false
 
-  
+
   query_frontend:
     replicas: 1
-  
+
+  query_scheduler:
+    replicas: 1
+
   store_gateway:
     replicas: 1
     zoneAwareReplication:
       enabled: false
     persistentVolume:
       enabled: false
-  
+
   compactor:
     replicas: 1
     persistentVolume:
       enabled: false
-  
+
   distributor:
     replicas: 1
   
@@ -60,11 +86,24 @@ mimir-distributed:
     replicas: 1
     persistentVolume:
       enabled: false
-  
-  # Disable nginx for simplicity
+
+  # Disable nginx for simplicity (use gateway instead)
   nginx:
-    replicas: 1
-  
+    enabled: false
+
   # Disable minio (using filesystem)
   minio:
+    enabled: false
+
+  # Disable all caches (not needed for homelab)
+  chunks-cache:
+    enabled: false
+
+  index-cache:
+    enabled: false
+
+  metadata-cache:
+    enabled: false
+
+  results-cache:
     enabled: false
