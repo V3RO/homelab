@@ -11,27 +11,21 @@ mimir-distributed:
         storage:
           backend: filesystem
           filesystem:
-            dir: /data/mimir
-      
+            dir: /data
+
       # Block storage configuration - use filesystem instead of S3
       blocks_storage:
         backend: filesystem
         filesystem:
-          dir: /data/mimir/blocks
+          dir: /data/blocks
         tsdb:
-          dir: /data/mimir/tsdb
+          dir: /data/tsdb
 
-      # Ruler storage - use local filesystem
+      # Ruler storage - use local filesystem (separate path)
       ruler_storage:
         backend: filesystem
         filesystem:
-          dir: /data/mimir/ruler
-
-      # Alertmanager storage - use local filesystem
-      alertmanager_storage:
-        backend: filesystem
-        filesystem:
-          dir: /data/mimir/alertmanager
+          dir: /data/ruler
 
       # Single replica configuration
       ingester:
@@ -42,6 +36,17 @@ mimir-distributed:
         sharding_ring:
           replication_factor: 1
 
+      # Disable ruler to avoid path conflicts
+      ruler:
+        enable_api: false
+
+  # Disable alertmanager
+  alertmanager:
+    enabled: false
+
+  # Disable ruler (not needed for homelab)
+  ruler:
+    enabled: false
 
   # Set all components to single replica
   ingester:
@@ -49,11 +54,11 @@ mimir-distributed:
     zoneAwareReplication:
       enabled: false
     persistentVolume:
-      enabled: false
+      enabled: true
+      size: 5Gi
 
   querier:
     replicas: 1
-
 
   query_frontend:
     replicas: 1
@@ -66,23 +71,17 @@ mimir-distributed:
     zoneAwareReplication:
       enabled: false
     persistentVolume:
-      enabled: false
+      enabled: true
+      size: 5Gi
 
   compactor:
     replicas: 1
     persistentVolume:
-      enabled: false
+      enabled: true
+      size: 5Gi
 
   distributor:
     replicas: 1
-  
-  ruler:
-    replicas: 1
-  
-  alertmanager:
-    replicas: 1
-    persistentVolume:
-      enabled: false
 
   # Disable nginx for simplicity (use gateway instead)
   nginx:
