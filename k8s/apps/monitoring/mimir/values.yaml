@@ -1,44 +1,13 @@
 mimir-distributed:
-  # Disable HA mode - use minimal replicas for homelab
   mimir:
     structuredConfig:
-      # Disable usage stats reporting
       usage_stats:
         enabled: false
-
-      # Configure all storage to use filesystem
       common:
         storage:
           backend: filesystem
           filesystem:
             dir: /data
-
-      # Block storage configuration - use filesystem instead of S3
-      blocks_storage:
-        backend: filesystem
-        filesystem:
-          dir: /data/blocks
-        tsdb:
-          dir: /data/tsdb
-
-      # Ruler storage - use local filesystem (separate path)
-      ruler_storage:
-        backend: filesystem
-        filesystem:
-          dir: /data/ruler
-
-      # Single replica configuration
-      ingester:
-        ring:
-          replication_factor: 1
-      
-      store_gateway:
-        sharding_ring:
-          replication_factor: 1
-
-      # Disable ruler to avoid path conflicts
-      ruler:
-        enable_api: false
 
   # Disable alertmanager
   alertmanager:
