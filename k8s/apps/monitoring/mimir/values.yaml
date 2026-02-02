@@ -21,6 +21,11 @@ mimir-distributed:
         ring:
           replication_factor: 1
 
+      ingest_storage:
+        backend: filesystem
+        filesystem:
+          dir: /data/ingest
+
       store_gateway:
         sharding_ring:
           replication_factor: 1
