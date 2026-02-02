@@ -42,9 +42,6 @@ mimir-distributed:
         sharding_ring:
           replication_factor: 1
 
-      compactor:
-        sharding_ring:
-          replication_factor: 1
 
   # Set all components to single replica
   ingester:
