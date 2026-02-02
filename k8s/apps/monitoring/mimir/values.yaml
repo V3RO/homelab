@@ -3,11 +3,31 @@ mimir-distributed:
     structuredConfig:
       usage_stats:
         enabled: false
-      common:
-        storage:
-          backend: filesystem
-          filesystem:
-            dir: /data
+      blocks_storage:
+        backend: filesystem
+        filesystem:
+          dir: /data/blocks
+        tsdb:
+          dir: /data/tsdb
+
+      # Ruler storage - use local filesystem (separate path)
+      ruler_storage:
+        backend: filesystem
+        filesystem:
+          dir: /data/ruler
+
+      # Single replica configuration
+      ingester:
+        ring:
+          replication_factor: 1
+
+      store_gateway:
+        sharding_ring:
+          replication_factor: 1
+
+      # Disable ruler to avoid path conflicts
+      ruler:
+        enable_api: false
 
   # Disable alertmanager
   alertmanager:
