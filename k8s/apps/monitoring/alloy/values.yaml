@@ -72,6 +72,6 @@ alloy:
 
       // Collect logs from all pods (using Kubernetes API)
       loki.source.kubernetes "pods" {
-        targets    = discovery.kubernetes.pods_logs.targets
+        targets    = discovery.kubernetes.pods_logs.output
         forward_to = [loki.write.default.receiver]
       }
