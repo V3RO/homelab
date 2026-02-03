@@ -2,10 +2,9 @@ istiod:
   profile: ambient
   meshConfig:
     enablePrometheusMerge: true
-    defaultConfig:
-      tracing:
-        sampling: 100.0
-        openTelemetry:
+    extensionProviders:
+      - name: alloy-otlp
+        opentelemetry:
           service: alloy.monitoring.svc.cluster.local
           port: 4317
   telemetry:
