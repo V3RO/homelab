@@ -26,7 +26,7 @@ alloy:
         }
       }
 
-      // Kubernetes service discovery for scraping
+      // Kubernetes service discovery for scraping metrics
       discovery.kubernetes "pods" {
         role = "pod"
       }
@@ -63,4 +63,15 @@ alloy:
       prometheus.scrape "pods" {
         targets    = discovery.relabel.pods.output
         forward_to = [prometheus.remote_write.default.receiver]
+      }
+
+      // Kubernetes log collection
+      discovery.kubernetes "pods_logs" {
+        role = "pod"
+      }
+
+      // Collect logs from all pods (using Kubernetes API)
+      loki.source.kubernetes "pods" {
+        targets    = discovery.kubernetes.pods_logs.targets
+        forward_to = [loki.write.default.receiver]
       }
