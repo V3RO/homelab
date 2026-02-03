@@ -16,7 +16,7 @@ alloy:
         }
       }
 
-      // Tempo traces forwarding
+      // Tempo traces forwarding (insecure TLS for homelab simplicity)
       otelcol.exporter.otlp "default" {
         client {
           endpoint = "tempo.monitoring.svc.cluster.local:4317"
@@ -31,8 +31,36 @@ alloy:
         role = "pod"
       }
 
-      // Scrape metrics from discovered pods
+      // Scrape metrics from discovered pods with prometheus.io/scrape annotation
+      discovery.relabel "pods" {
+        targets = discovery.kubernetes.pods.targets
+
+        // Keep only pods with prometheus.io/scrape annotation set to true
+        rule {
+          source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+          action        = "keep"
+          regex         = "true"
+        }
+
+        // Use custom scrape path if specified
+        rule {
+          source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+          action        = "replace"
+          target_label  = "__metrics_path__"
+          regex         = "(.+)"
+        }
+
+        // Use custom port if specified
+        rule {
+          source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+          action        = "replace"
+          regex         = "([^:]+)(?::\\d+)?;(\\d+)"
+          replacement   = "$1:$2"
+          target_label  = "__address__"
+        }
+      }
+
       prometheus.scrape "pods" {
-        targets    = discovery.kubernetes.pods.targets
+        targets    = discovery.relabel.pods.output
         forward_to = [prometheus.remote_write.default.receiver]
       }
