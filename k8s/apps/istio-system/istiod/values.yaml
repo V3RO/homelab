@@ -5,8 +5,9 @@ istiod:
     defaultConfig:
       tracing:
         sampling: 100.0
-        zipkin:
-          address: tempo.monitoring.svc.cluster.local:9411
+        openTelemetry:
+          service: alloy.monitoring.svc.cluster.local
+          port: 4317
   telemetry:
     enabled: true
     v2:
