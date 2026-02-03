@@ -50,7 +50,7 @@ alloy:
           regex         = "(.+)"
         }
 
-        // Use custom port if specified
+        // Use custom port if specified (captures IP:port from __address__ and replaces port with annotation value)
         rule {
           source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
           action        = "replace"
