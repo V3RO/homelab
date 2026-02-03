@@ -26,6 +26,22 @@ alloy:
         }
       }
 
+      // OTEL receiver for incoming traces from Istio and other services
+      otelcol.receiver.otlp "default" {
+        grpc {
+          endpoint = "0.0.0.0:4317"
+        }
+        http {
+          endpoint = "0.0.0.0:4318"
+        }
+
+        output {
+          traces  = [otelcol.exporter.otlp.default.input]
+          logs    = [otelcol.exporter.otlp.default.input]
+          metrics = [otelcol.exporter.otlp.default.input]
+        }
+      }
+
       // Kubernetes service discovery for scraping metrics
       discovery.kubernetes "pods" {
         role = "pod"
