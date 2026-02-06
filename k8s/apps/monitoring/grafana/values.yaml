@@ -14,11 +14,11 @@ grafana:
           isDefault: true
         - name: Loki
           type: loki
-          url: http://loki-gateway.monitoring.svc.cluster.local:3100
+          url: http://loki.monitoring.svc.cluster.local:3100
           access: proxy
         - name: Tempo
           type: tempo
-          url: http://tempo.monitoring.svc.cluster.local:4318
+          url: http://tempo.monitoring.svc.cluster.local:3200
           access: proxy
   
   # Configure Istio dashboards
