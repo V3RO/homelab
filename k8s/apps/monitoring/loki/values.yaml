@@ -40,7 +40,10 @@ loki:
   
   backend:
     replicas: 0
-  
+
+  gateway:
+    enabled: false
+
   # Single binary mode with persistence
   singleBinary:
     replicas: 1
