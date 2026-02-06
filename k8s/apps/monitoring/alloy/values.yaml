@@ -39,9 +39,21 @@ alloy:
 
         output {
           traces  = [otelcol.exporter.otlp.default.input]
-          logs    = [otelcol.exporter.otlp.default.input]
+          logs    = [otelcol.processor.batch.default.input]
           metrics = [otelcol.exporter.otlp.default.input]
         }
+      }
+
+      // Batch processor for logs before sending to Loki
+      otelcol.processor.batch "default" {
+        output {
+          logs = [otelcol.exporter.loki.default.input]
+        }
+      }
+
+      // Loki exporter for OTLP logs
+      otelcol.exporter.loki "default" {
+        forward_to = [loki.write.default.receiver]
       }
 
       // Kubernetes service discovery for scraping metrics

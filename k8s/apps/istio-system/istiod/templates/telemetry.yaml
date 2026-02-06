@@ -8,3 +8,6 @@ spec:
     - providers:
         - name: alloy-otlp
       randomSamplingPercentage: 100.0
+  accessLogging:
+    - providers:
+        - name: alloy-otlp
