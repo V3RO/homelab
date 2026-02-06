@@ -18,5 +18,4 @@ namespaces:
   - name: external-secrets
   - name: monitoring
     labels:
-      istio.io/dataplane-mode: ambient
       pod-security.kubernetes.io/enforce: privileged
