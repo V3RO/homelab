@@ -6,7 +6,7 @@ istiod:
       - name: alloy-otlp
         opentelemetry:
           service: alloy.monitoring.svc.cluster.local
-          port: 12345
+          port: 4317
   telemetry:
     enabled: true
     v2:
