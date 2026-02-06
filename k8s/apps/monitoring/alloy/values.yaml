@@ -1,10 +1,8 @@
 alloy:
   controller:
     type: "deployment"
-  service:
-    enabled: true
-    type: ClusterIP
-    ports:
+  alloy:
+    extraPorts:
       - name: otlp-grpc
         port: 4317
         targetPort: 4317
