@@ -11,107 +11,106 @@ alloy:
         port: 4318
         targetPort: 4318
         protocol: TCP
-  configMap:
-    # Basic Alloy configuration for homelab monitoring
-    content: |
-      // Prometheus remote write to local Prometheus
-      prometheus.remote_write "default" {
-        endpoint {
-          url = "http://prometheus-server.monitoring.svc.cluster.local/api/v1/write"
-        }
-      }
-
-      // Loki log forwarding
-      loki.write "default" {
-        endpoint {
-          url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
-        }
-      }
-
-      // Tempo traces forwarding (insecure TLS for homelab simplicity)
-      otelcol.exporter.otlp "default" {
-        client {
-          endpoint = "tempo.monitoring.svc.cluster.local:4317"
-          tls {
-            insecure = true
+    configMap:
+      content: |
+        // Prometheus remote write to local Prometheus
+        prometheus.remote_write "default" {
+          endpoint {
+            url = "http://prometheus-server.monitoring.svc.cluster.local/api/v1/write"
           }
         }
-      }
-
-      // OTEL receiver for incoming traces from Istio and other services
-      otelcol.receiver.otlp "default" {
-        grpc {
-          endpoint = "0.0.0.0:4317"
+  
+        // Loki log forwarding
+        loki.write "default" {
+          endpoint {
+            url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+          }
         }
-        http {
-          endpoint = "0.0.0.0:4318"
+  
+        // Tempo traces forwarding (insecure TLS for homelab simplicity)
+        otelcol.exporter.otlp "default" {
+          client {
+            endpoint = "tempo.monitoring.svc.cluster.local:4317"
+            tls {
+              insecure = true
+            }
+          }
         }
-
-        output {
-          traces  = [otelcol.exporter.otlp.default.input]
-          logs    = [otelcol.processor.batch.default.input]
-          metrics = [otelcol.exporter.otlp.default.input]
+  
+        // OTEL receiver for incoming traces from Istio and other services
+        otelcol.receiver.otlp "default" {
+          grpc {
+            endpoint = "0.0.0.0:4317"
+          }
+          http {
+            endpoint = "0.0.0.0:4318"
+          }
+  
+          output {
+            traces  = [otelcol.exporter.otlp.default.input]
+            logs    = [otelcol.processor.batch.default.input]
+            metrics = [otelcol.exporter.otlp.default.input]
+          }
         }
-      }
-
-      // Batch processor for logs before sending to Loki
-      otelcol.processor.batch "default" {
-        output {
-          logs = [otelcol.exporter.loki.default.input]
+  
+        // Batch processor for logs before sending to Loki
+        otelcol.processor.batch "default" {
+          output {
+            logs = [otelcol.exporter.loki.default.input]
+          }
         }
-      }
-
-      // Loki exporter for OTLP logs
-      otelcol.exporter.loki "default" {
-        forward_to = [loki.write.default.receiver]
-      }
-
-      // Kubernetes service discovery for scraping metrics
-      discovery.kubernetes "pods" {
-        role = "pod"
-      }
-
-      // Scrape metrics from discovered pods with prometheus.io/scrape annotation
-      discovery.relabel "pods" {
-        targets = discovery.kubernetes.pods.targets
-
-        // Keep only pods with prometheus.io/scrape annotation set to true
-        rule {
-          source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
-          action        = "keep"
-          regex         = "true"
+  
+        // Loki exporter for OTLP logs
+        otelcol.exporter.loki "default" {
+          forward_to = [loki.write.default.receiver]
         }
-
-        // Use custom scrape path if specified
-        rule {
-          source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
-          action        = "replace"
-          target_label  = "__metrics_path__"
-          regex         = "(.+)"
+  
+        // Kubernetes service discovery for scraping metrics
+        discovery.kubernetes "pods" {
+          role = "pod"
         }
-
-        // Use custom port if specified (captures IP:port from __address__ and replaces port with annotation value)
-        rule {
-          source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
-          action        = "replace"
-          regex         = "([^:]+)(?::\\d+)?;(\\d+)"
-          replacement   = "$1:$2"
-          target_label  = "__address__"
+  
+        // Scrape metrics from discovered pods with prometheus.io/scrape annotation
+        discovery.relabel "pods" {
+          targets = discovery.kubernetes.pods.targets
+  
+          // Keep only pods with prometheus.io/scrape annotation set to true
+          rule {
+            source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+            action        = "keep"
+            regex         = "true"
+          }
+  
+          // Use custom scrape path if specified
+          rule {
+            source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+            action        = "replace"
+            target_label  = "__metrics_path__"
+            regex         = "(.+)"
+          }
+  
+          // Use custom port if specified (captures IP:port from __address__ and replaces port with annotation value)
+          rule {
+            source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+            action        = "replace"
+            regex         = "([^:]+)(?::\\d+)?;(\\d+)"
+            replacement   = "$1:$2"
+            target_label  = "__address__"
+          }
         }
-      }
-
-      prometheus.scrape "pods" {
-        targets    = discovery.relabel.pods.output
-        forward_to = [prometheus.remote_write.default.receiver]
-      }
-
-      // Kubernetes log collection
-      discovery.kubernetes "pods_logs" {
-        role = "pod"
-      }
-
-      // Collect logs from all pods (using Kubernetes API)
-      loki.source.kubernetes "pod_logs" {
-        targets    = discovery.kubernetes.pods_logs.output
-        forward_to = [loki.write.default.receiver]
-      }
+  
+        prometheus.scrape "pods" {
+          targets    = discovery.relabel.pods.output
+          forward_to = [prometheus.remote_write.default.receiver]
+        }
+  
+        // Kubernetes log collection
+        discovery.kubernetes "pods_logs" {
+          role = "pod"
+        }
+  
+        // Collect logs from all pods (using Kubernetes API)
+        loki.source.kubernetes "pod_logs" {
+          targets    = discovery.kubernetes.pods_logs.output
+          forward_to = [loki.write.default.receiver]
+        }
