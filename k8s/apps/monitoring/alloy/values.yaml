@@ -104,7 +104,13 @@ alloy:
           forward_to = [prometheus.remote_write.default.receiver]
         }
   
+        // Kubernetes service discovery for pod logs
+        discovery.kubernetes "pod_logs" {
+          role = "pod"
+        }
+  
         // Collect logs from all pods (using Kubernetes API)
         loki.source.kubernetes "pod_logs" {
+          targets    = discovery.kubernetes.pod_logs.targets
           forward_to = [loki.write.default.receiver]
         }
