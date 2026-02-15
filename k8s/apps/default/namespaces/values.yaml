@@ -16,6 +16,9 @@ namespaces:
     labels:
       istio.io/dataplane-mode: ambient
   - name: external-secrets
+  - name: cnpg
+    labels:
+      istio.io/dataplane-mode: ambient
   - name: monitoring
     labels:
       istio.io/dataplane-mode: ambient

@@ -1,0 +1,11 @@
+apiVersion: v2
+name: cnpg-operator
+description: A Helm chart for CloudNativePG Operator
+type: application
+version: 1.0.0
+annotations:
+  argocd.argoproj.io/sync-options: ServerSideApply=true
+dependencies:
+  - name: cloudnative-pg
+    version: 0.27.1
+    repository: https://cloudnative-pg.github.io/charts
