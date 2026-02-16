@@ -42,23 +42,3 @@ cilium:
 
   k8sServiceHost: localhost
   k8sServicePort: 7445
-
-  annotations:
-    argocd.argoproj.io/sync-options: ServerSideApply=false
-  operator:
-    annotations:
-      argocd.argoproj.io/sync-options: ServerSideApply=false
-    podAnnotations:
-      argocd.argoproj.io/sync-options: ServerSideApply=false
-  nodeinit:
-    annotations:
-      argocd.argoproj.io/sync-options: ServerSideApply=false
-    podAnnotations:
-      argocd.argoproj.io/sync-options: ServerSideApply=false
-  preflight:
-    annotations:
-      argocd.argoproj.io/sync-options: ServerSideApply=false
-    podAnnotations:
-      argocd.argoproj.io/sync-options: ServerSideApply=false
-  secretsNamespaceAnnotations:
-    argocd.argoproj.io/sync-options: ServerSideApply=false

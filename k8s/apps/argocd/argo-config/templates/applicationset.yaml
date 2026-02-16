@@ -49,3 +49,8 @@ spec:
           name: istiod-default-validator
           jsonPointers:
             - /webhooks/0/failurePolicy
+  templatePatch: |
+    spec:
+      syncPolicy:
+        syncOptions:
+          - ServerSideApply={{`{{ if eq .path.basename "cilium" }}`}}false{{`{{ else }}`}}true{{`{{ end }}`}}
