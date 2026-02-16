@@ -15,8 +15,6 @@ spec:
       name: '{{`{{path.basename}}`}}'
       labels:
         app.kubernetes.io/managed-by: argocd
-      annotations:
-        argocd.argoproj.io/sync-options: '{{`{{- if eq path.basename "cnpg-operator"}}ServerSideApply=true{{- end }}`}}'
     spec:
       project: default
       source:
