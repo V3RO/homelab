@@ -3,6 +3,7 @@ kind: CiliumBGPClusterConfig
 metadata:
   name: cilium-bgp
   namespace: kube-system
+  annotations: {{ .Values.cilium.annotations | toYaml | nindent 4 }}
 spec:
   nodeSelector:
     matchLabels:
@@ -22,6 +23,7 @@ kind: CiliumBGPPeerConfig
 metadata:
   name: cilium-peer
   namespace: kube-system
+  annotations: {{ .Values.cilium.annotations | toYaml | nindent 4 }}
 spec:
   gracefulRestart:
     enabled: true
@@ -40,6 +42,7 @@ metadata:
   namespace: kube-system
   labels:
     advertise: bgp
+  annotations: {{ .Values.cilium.annotations | toYaml | nindent 4 }}
 spec:
   nodeSelector:
     matchLabels:
