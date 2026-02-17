@@ -48,7 +48,7 @@ spec:
           jsonPointers:
             - /webhooks/0/failurePolicy
   templatePatch: |
-    {{`{{ if eq path.basename "cilium" }}`}}
+    {{`{{ if eq path.basename "cnpg-operator" }}`}}
     spec:
       syncPolicy:
         syncOptions:
