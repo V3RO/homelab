@@ -30,8 +30,6 @@ spec:
         automated:
           prune: true
           selfHeal: true
-        syncOptions:
-          - ServerSideApply=false
         retry:
           limit: 5
           backoff:
@@ -53,4 +51,4 @@ spec:
     spec:
       syncPolicy:
         syncOptions:
-          - ServerSideApply={{`{{ eq .path.basename "cnpg-operator" }}`}}
+          - ServerSideApply={{`{{ if eq .path.basename "cnpg-operator" }}`}}true{{`{{ else }}`}}false{{`{{ end }}`}}
