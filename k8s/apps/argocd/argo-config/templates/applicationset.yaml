@@ -31,7 +31,7 @@ spec:
           prune: true
           selfHeal: true
         syncOptions:
-          - ServerSideApply=true
+          - ServerSideApply=false
         retry:
           limit: 5
           backoff:
@@ -53,4 +53,4 @@ spec:
     spec:
       syncPolicy:
         syncOptions:
-          - ServerSideApply={{`{{ if eq .path.basename "cilium" }}`}}false{{`{{ else }}`}}true{{`{{ end }}`}}
+          - ServerSideApply={{`{{ eq .path.basename "cnpg-operator" }}`}}
