@@ -1,11 +1,4 @@
 proxmox-csi-plugin:
-  config:
-    clusters:
-      - url: https://cluster-api-1.exmple.com:8006/api2/json
-        insecure: false
-        token_id: "kubernetes-csi@pve!csi"
-        token_secret: "key"
-        region: cluster-1
 
   node:
     nodeSelector:
@@ -26,3 +19,5 @@ proxmox-csi-plugin:
       fstype: ext4
       cache: writethrough
       ssd: "true"
+      mountOptions:
+        - noatime
