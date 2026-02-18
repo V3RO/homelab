@@ -7,8 +7,14 @@ spec:
   instances: 1
 
   storage:
-    size: 1Gi
-    storageClass: proxmox-csi
+    pvcTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: proxmox-csi
+      volumeName: pv-authentik
 
   bootstrap:
     initdb:
