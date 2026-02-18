@@ -1,0 +1,57 @@
+authentik:
+  global:
+    env:
+      - name: AUTHENTIK_POSTGRESQL__HOST
+        valueFrom:
+          secretKeyRef:
+            name: authentik-postgres-app
+            key: host
+      - name: AUTHENTIK_POSTGRESQL__NAME
+        valueFrom:
+          secretKeyRef:
+            name: authentik-postgres-app
+            key: dbname
+      - name: AUTHENTIK_POSTGRESQL__USER
+        valueFrom:
+          secretKeyRef:
+            name: authentik-postgres-app
+            key: username
+      - name: AUTHENTIK_POSTGRESQL__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: authentik-postgres-app
+            key: password
+      - name: AUTHENTIK_POSTGRESQL__PORT
+        valueFrom:
+          secretKeyRef:
+            name: authentik-postgres-app
+            key: port
+  authentik:
+    existingSecret:
+      secretName: authentik-secret
+
+  postgresql:
+    enabled: false
+
+  redis:
+    enabled: false
+
+externalSecret:
+  enabled: true
+  secretStoreRef:
+    name: bitwarden
+    kind: ClusterSecretStore
+  data:
+    secretKey: authentik-secret-key
+    bootstrapPassword: authentik-bootstrap-password
+    bootstrapEmail: authentik-bootstrap-email
+    bootstrapToken: authentik-bootstrap-token
+
+route:
+  enabled: true
+  hostname: authentik.schober.dev
+  gatewayName: internal-gateway
+  gatewayNamespace: istio-ingress-internal
+  gatewaySectionName: https
+  serviceName: authentik-server
+  servicePort: 80

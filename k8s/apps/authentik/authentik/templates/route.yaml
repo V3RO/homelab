@@ -1,0 +1,19 @@
+{{- if .Values.route.enabled }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: httproute-authentik
+  namespace: {{ .Release.Namespace }}
+spec:
+  hostnames:
+    - {{ .Values.route.hostname }}
+  parentRefs:
+    - kind: Gateway
+      name: {{ .Values.route.gatewayName }}
+      namespace: {{ .Values.route.gatewayNamespace }}
+      sectionName: {{ .Values.route.gatewaySectionName }}
+  rules:
+    - backendRefs:
+        - name: {{ .Values.route.serviceName }}
+          port: {{ .Values.route.servicePort }}
+{{- end }}
