@@ -20,8 +20,6 @@ namespaces:
     labels:
       istio.io/dataplane-mode: ambient
   - name: cnpg
-    labels:
-      istio.io/dataplane-mode: ambient
   - name: monitoring
     labels:
       istio.io/dataplane-mode: ambient
