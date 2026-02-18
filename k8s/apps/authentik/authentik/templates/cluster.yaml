@@ -14,9 +14,3 @@ spec:
     initdb:
       database: authentik
       owner: authentik
-    recovery:
-      volumeSnapshots:
-        storage:
-          kind: PersistentVolumeClaim
-          name: authentik-postgres
-
