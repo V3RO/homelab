@@ -21,7 +21,7 @@ spec:
       source:
         repoURL: https://github.com/V3RO/homelab.git
         targetRevision: main
-        path: '{{`{{ .path }}`}}'
+        path: '{{`{{ .path.path }}`}}'
         helm:
           releaseName: '{{`{{ .path.basename }}`}}'
       destination:
