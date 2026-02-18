@@ -2,8 +2,6 @@ proxmox-csi-plugin:
   existingConfigSecret: proxmox-csi-plugin
 
   node:
-    nodeSelector:
-      node.cloudprovider.kubernetes.io/platform: nocloud
     tolerations:
       - operator: Exists
 
