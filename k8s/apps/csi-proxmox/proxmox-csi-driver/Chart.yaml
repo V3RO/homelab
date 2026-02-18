@@ -1,0 +1,9 @@
+apiVersion: v2
+name: namespaces
+version: 0.1.0
+description: "CSI driver for Proxmox"
+type: application
+dependencies:
+  - name: proxmox-csi-plugin
+    version: "0.5.5"
+    repository: oci://ghcr.io/sergelogvinov/charts
