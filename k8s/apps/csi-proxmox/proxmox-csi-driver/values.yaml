@@ -1,6 +1,6 @@
 proxmox-csi-plugin:
   existingConfigSecret:
-    name: proxmox-csi-config
+    name: proxmox-csi-plugin
 
   node:
     nodeSelector:
