@@ -13,7 +13,7 @@ spec:
           - path: k8s/apps/*/*
   template:
     metadata:
-      name: '{{`{{path.basename}}`}}'
+      name: '{{`{{ .path.basename }}`}}'
       labels:
         app.kubernetes.io/managed-by: argocd
     spec:
@@ -21,12 +21,12 @@ spec:
       source:
         repoURL: https://github.com/V3RO/homelab.git
         targetRevision: main
-        path: '{{`{{path}}`}}'
+        path: '{{`{{ .path }}`}}'
         helm:
-          releaseName: '{{`{{path.basename}}`}}'
+          releaseName: '{{`{{ .path.basename }}`}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{`{{path[2]}}`}}'
+        namespace: '{{`{{ index .path.segments 2 }}`}}'
       syncPolicy:
         automated:
           prune: true
