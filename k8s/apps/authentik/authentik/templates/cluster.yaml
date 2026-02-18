@@ -5,10 +5,18 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   instances: 1
+
   storage:
     size: 1Gi
     storageClass: proxmox-csi
+
   bootstrap:
     initdb:
       database: authentik
       owner: authentik
+    recovery:
+      volumeSnapshots:
+        storage:
+          kind: PersistentVolumeClaim
+          name: authentik-postgres
+
