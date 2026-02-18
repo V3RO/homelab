@@ -7,6 +7,18 @@ istiod:
         opentelemetry:
           service: alloy.monitoring.svc.cluster.local
           port: 4317
+      - name: authentik
+        envoyExtAuthzHttp:
+          service: authentik-server.authentik.svc.cluster.local
+          port: 80
+          pathPrefix: /outpost.goauthentik.io/auth/envoy
+          headersToDownstreamOnAllow:
+            - cookie
+          headersToUpstreamOnAllow:
+            - set-cookie
+            - x-authentik-*
+          includeRequestHeadersInCheck:
+            - cookie
   telemetry:
     enabled: true
     v2:

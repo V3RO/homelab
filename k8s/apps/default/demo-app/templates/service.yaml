@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: demo-app
   namespace: {{ .Release.Namespace }}
+  labels:
+    istio.io/use-waypoint: demo-app-waypoint
 spec:
   selector:
     app: nginx-demo-app
