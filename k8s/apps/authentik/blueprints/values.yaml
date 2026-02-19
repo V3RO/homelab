@@ -17,7 +17,7 @@ blueprints:
       redirectUris:
         - url: https://argo.schober.dev/api/dex/callback
           matchingMode: strict
-        - url: https://localhost:8085/auth/callback
+        - url: http://localhost:8085/auth/callback
           matchingMode: strict
     application:
       name: ArgoCD
