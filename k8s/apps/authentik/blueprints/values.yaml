@@ -8,3 +8,21 @@ blueprints:
       name: Demo App
       slug: demo-app
       metaLaunchUrl: https://demo.schober.dev
+  - name: argocd
+    provider:
+      kind: oauth2
+      name: ArgoCD
+      clientId: argocd
+      clientSecretEnv: AUTHENTIK_ARGOCD_CLIENT_SECRET
+      redirectUris:
+        - url: https://argo.schober.dev/api/dex/callback
+          matchingMode: strict
+        - url: https://localhost:8085/auth/callback
+          matchingMode: strict
+    application:
+      name: ArgoCD
+      slug: argocd
+      metaLaunchUrl: https://argo.schober.dev
+    groups:
+      - name: ArgoCD Admins
+      - name: ArgoCD Viewers

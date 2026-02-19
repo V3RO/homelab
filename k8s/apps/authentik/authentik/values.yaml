@@ -26,6 +26,11 @@ authentik:
           secretKeyRef:
             name: authentik-postgres-app
             key: port
+      - name: AUTHENTIK_ARGOCD_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: argocdClientSecret
   authentik:
     existingSecret:
       secretName: authentik-secret
@@ -50,6 +55,7 @@ externalSecret:
     bootstrapPassword: authentik-bootstrap-password
     bootstrapEmail: authentik-bootstrap-email
     bootstrapToken: authentik-bootstrap-token
+    argocdClientSecret: authentik-argocd-client-secret
 
 route:
   enabled: true

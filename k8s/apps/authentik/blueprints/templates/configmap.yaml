@@ -14,6 +14,16 @@ data:
       labels:
         blueprints.goauthentik.io/description: "Blueprint for {{ .application.name }}"
     entries:
+      {{- if .groups }}
+      {{- $blueprint := . }}
+      {{- range .groups }}
+      - model: authentik_core.group
+        id: {{ $blueprint.name }}-group-{{ .name | lower | replace " " "-" }}
+        identifiers:
+          name: {{ .name }}
+      {{- end }}
+      {{- end }}
+      {{- if eq (default "proxy" .provider.kind) "proxy" }}
       - model: authentik_providers_proxy.proxyprovider
         id: {{ .name }}-provider
         identifiers:
@@ -37,4 +47,41 @@ data:
           provider: !KeyOf {{ .name }}-provider
           meta_launch_url: {{ .application.metaLaunchUrl }}
           policy_engine_mode: any
+      {{- else if eq .provider.kind "oauth2" }}
+      - model: authentik_providers_oauth2.oauth2provider
+        id: {{ .name }}-provider
+        identifiers:
+          name: {{ .provider.name }}
+        attrs:
+          name: {{ .provider.name }}
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-explicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+          client_type: confidential
+          client_id: {{ .provider.clientId }}
+          client_secret: !Env {{ .provider.clientSecretEnv }}
+          redirect_uris:
+            {{- range .provider.redirectUris }}
+            - url: {{ .url }}
+              matching_mode: {{ .matchingMode }}
+            {{- end }}
+          signing_key:
+            !Find [authentik_crypto.certificatekeypair, [name, default]]
+          property_mappings:
+            - !Find [authentik_providers_oauth2.scopemapping, [scope_name, openid]]
+            - !Find [authentik_providers_oauth2.scopemapping, [scope_name, email]]
+            - !Find [authentik_providers_oauth2.scopemapping, [scope_name, profile]]
+            - !Find [authentik_providers_oauth2.scopemapping, [scope_name, offline_access]]
+      - model: authentik_core.application
+        id: {{ .name }}-application
+        identifiers:
+          slug: {{ .application.slug }}
+        attrs:
+          name: {{ .application.name }}
+          slug: {{ .application.slug }}
+          provider: !KeyOf {{ .name }}-provider
+          meta_launch_url: {{ .application.metaLaunchUrl }}
+          policy_engine_mode: any
+      {{- end }}
 {{- end }}

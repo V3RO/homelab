@@ -5,6 +5,26 @@ argo-cd:
   configs:
     params:
       server.insecure: true
+    cm:
+      url: https://argo.schober.dev
+      dex.config: |
+        connectors:
+          - type: oidc
+            id: authentik
+            name: authentik
+            config:
+              issuer: https://auth.schober.dev/application/o/argocd/
+              clientID: argocd
+              clientSecret: $argocd-authentik-oidc:dex.authentik.clientSecret
+              insecureEnableGroups: true
+              scopes:
+                - openid
+                - profile
+                - email
+    rbac:
+      policy.csv: |
+        g, ArgoCD Admins, role:admin
+        g, ArgoCD Viewers, role:readonly
 
   server:
     httproute:
