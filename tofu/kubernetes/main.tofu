@@ -9,3 +9,28 @@ module "talos" {
   cluster = var.talos_cluster_config
   nodes   = var.talos_nodes
 }
+
+module "proxmox_csi_plugin" {
+  depends_on = [module.talos]
+  source     = "./bootstrap/proxmox-csi-plugin"
+
+  providers = {
+    proxmox    = proxmox
+    kubernetes = kubernetes
+  }
+
+  proxmox = var.proxmox
+}
+
+module "volumes" {
+  depends_on = [module.proxmox_csi_plugin]
+  source     = "./bootstrap/volumes"
+
+  providers = {
+    restapi    = restapi
+    kubernetes = kubernetes
+  }
+
+  proxmox_api = var.proxmox
+  volumes     = var.kubernetes_volumes
+}

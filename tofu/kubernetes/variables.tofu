@@ -86,3 +86,15 @@ variable "bitwarden_access_token" {
     error_message = "bitwarden_access_token must be provided"
   }
 }
+
+variable "kubernetes_volumes" {
+  type = map(
+    object({
+      node    = string
+      size    = string
+      storage = optional(string, "local-lvm")
+      vmid    = optional(number, 9999)
+      format  = optional(string, "raw")
+    })
+  )
+}
