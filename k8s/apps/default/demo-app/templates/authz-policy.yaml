@@ -2,13 +2,12 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: demo-app-authentik
-  namespace: {{ .Release.Namespace }}
+  namespace: istio-ingress-internal
 spec:
   targetRef:
     kind: Gateway
     group: gateway.networking.k8s.io
     name: internal-gateway
-    namespace: istio-ingress-internal
   action: CUSTOM
   provider:
     name: authentik
