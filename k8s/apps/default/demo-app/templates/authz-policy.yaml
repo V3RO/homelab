@@ -4,9 +4,10 @@ metadata:
   name: demo-app-authentik
   namespace: {{ .Release.Namespace }}
 spec:
-  selector:
-    matchLabels:
-      app: nginx-demo-app
+  targetRef:
+    kind: Service
+    group: ""
+    name: demo-app
   action: CUSTOM
   provider:
     name: authentik
