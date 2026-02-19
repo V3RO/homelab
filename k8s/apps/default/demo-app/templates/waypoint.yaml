@@ -4,7 +4,7 @@ metadata:
   name: demo-app-waypoint
   namespace: {{ .Release.Namespace }}
   labels:
-    istio.io/waypoint-for: service
+    istio.io/waypoint-for: demo-app
 spec:
   gatewayClassName: istio-waypoint
   listeners:
