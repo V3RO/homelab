@@ -5,9 +5,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   targetRef:
-    kind: Service
-    group: ""
-    name: demo-app
+    kind: Gateway
+    group: gateway.networking.k8s.io
+    name: internal-gateway
+    namespace: istio-ingress-internal
   action: CUSTOM
   provider:
     name: authentik
