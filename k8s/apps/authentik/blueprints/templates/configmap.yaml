@@ -1,0 +1,70 @@
+{{- range .Values.blueprints }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blueprint-{{ .name }}
+  namespace: {{ $.Release.Namespace }}
+data:
+  {{ .name }}.yaml: |
+    # yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+    version: 1
+    metadata:
+      name: {{ .application.name }}
+      labels:
+        blueprints.goauthentik.io/description: "Blueprint for {{ .application.name }}"
+    entries:
+      - model: authentik_providers_proxy.proxyprovider
+        id: {{ .name }}-provider
+        identifiers:
+          name: {{ .provider.name }}
+        attrs:
+          mode: {{ .provider.mode }}
+          external_host: {{ .provider.externalHost }}
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-explicit-consent]]
+          authentication_flow:
+            !Find [authentik_flows.flow, [slug, default-authentication-flow]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-invalidation-flow]]
+      - model: authentik_core.application
+        id: {{ .name }}-application
+        identifiers:
+          slug: {{ .application.slug }}
+        attrs:
+          name: {{ .application.name }}
+          slug: {{ .application.slug }}
+          provider: !KeyOf {{ .name }}-provider
+          meta_launch_url: {{ .application.metaLaunchUrl }}
+          policy_engine_mode: any
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blueprint-embedded-outpost
+  namespace: {{ .Release.Namespace }}
+data:
+  embedded-outpost.yaml: |
+    # yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+    version: 1
+    metadata:
+      name: Embedded Outpost Provider Bindings
+      labels:
+        blueprints.goauthentik.io/description: "Assigns all providers to the embedded outpost"
+    entries:
+      {{- range .Values.blueprints }}
+      - model: authentik_providers_proxy.proxyprovider
+        id: {{ .name }}-provider
+        identifiers:
+          name: {{ .provider.name }}
+        state: created
+      {{- end }}
+      - model: authentik_outposts.outpost
+        identifiers:
+          name: "authentik Embedded Outpost"
+        attrs:
+          providers:
+            {{- range .Values.blueprints }}
+            - !KeyOf {{ .name }}-provider
+            {{- end }}

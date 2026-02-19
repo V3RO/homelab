@@ -30,6 +30,11 @@ authentik:
     existingSecret:
       secretName: authentik-secret
 
+  blueprints:
+    configMaps:
+      - blueprint-demo-app
+      - blueprint-embedded-outpost
+
   postgresql:
     enabled: false
 
