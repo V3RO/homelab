@@ -38,6 +38,7 @@ authentik:
   blueprints:
     configMaps:
       - blueprint-demo-app
+      - blueprint-argocd
 
   postgresql:
     enabled: false
