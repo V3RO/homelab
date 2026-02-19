@@ -66,8 +66,9 @@ data:
             - url: {{ .url }}
               matching_mode: {{ .matchingMode }}
             {{- end }}
+          {{- $signingKeyName := default "authentik Internal JWT Certificate" .provider.signingKeyName }}
           signing_key:
-            !Find [authentik_crypto.certificatekeypair, [name, default]]
+            !Find [authentik_crypto.certificatekeypair, [name, {{ $signingKeyName | quote }}]]
           property_mappings:
             - !Find [authentik_providers_oauth2.scopemapping, [scope_name, openid]]
             - !Find [authentik_providers_oauth2.scopemapping, [scope_name, email]]
