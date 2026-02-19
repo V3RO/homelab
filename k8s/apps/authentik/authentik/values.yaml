@@ -53,7 +53,7 @@ externalSecret:
 
 route:
   enabled: true
-  hostname: authentik.schober.dev
+  hostname: auth.schober.dev
   gatewayName: internal-gateway
   gatewayNamespace: istio-ingress-internal
   gatewaySectionName: https
