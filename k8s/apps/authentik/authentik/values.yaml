@@ -31,6 +31,11 @@ authentik:
           secretKeyRef:
             name: authentik-secret
             key: argocdClientSecret
+      - name: AUTHENTIK_GRAFANA_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: grafanaClientSecret
   authentik:
     existingSecret:
       secretName: authentik-secret
@@ -39,6 +44,7 @@ authentik:
     configMaps:
       - blueprint-demo-app
       - blueprint-argocd
+      - blueprint-grafana
 
   postgresql:
     enabled: false
@@ -57,6 +63,7 @@ externalSecret:
     bootstrapEmail: authentik-bootstrap-email
     bootstrapToken: authentik-bootstrap-token
     argocdClientSecret: authentik-argocd-client-secret
+    grafanaClientSecret: authentik-grafana-client-secret
 
 route:
   enabled: true

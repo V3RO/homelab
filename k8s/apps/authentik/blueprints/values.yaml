@@ -26,3 +26,21 @@ blueprints:
     groups:
       - name: ArgoCD Admins
       - name: ArgoCD Viewers
+  - name: grafana
+    provider:
+      kind: oauth2
+      name: Grafana
+      clientId: grafana
+      clientSecretEnv: AUTHENTIK_GRAFANA_CLIENT_SECRET
+      includeGroups: true
+      redirectUris:
+        - url: https://grafana.schober.dev/login/generic_oauth
+          matchingMode: strict
+    application:
+      name: Grafana
+      slug: grafana
+      metaLaunchUrl: https://grafana.schober.dev
+    groups:
+      - name: Grafana Admins
+      - name: Grafana Editors
+      - name: Grafana Viewers

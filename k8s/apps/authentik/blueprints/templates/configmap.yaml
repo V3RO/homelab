@@ -73,6 +73,9 @@ data:
             - !Find [authentik_providers_oauth2.scopemapping, [scope_name, openid]]
             - !Find [authentik_providers_oauth2.scopemapping, [scope_name, email]]
             - !Find [authentik_providers_oauth2.scopemapping, [scope_name, profile]]
+            {{- if (default false .provider.includeGroups) }}
+            - !Find [authentik_providers_oauth2.scopemapping, [scope_name, groups]]
+            {{- end }}
             - !Find [authentik_providers_oauth2.scopemapping, [scope_name, offline_access]]
       - model: authentik_core.application
         id: {{ .name }}-application
