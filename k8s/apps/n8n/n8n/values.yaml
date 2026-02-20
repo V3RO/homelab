@@ -24,12 +24,7 @@ n8n:
           port: 5432
           database: n8n
           user: n8n
-      queue:
-        bull:
-          redis:
-            host: valkey-primary.valkey.svc.cluster.local
-            port: 6379
-            db: 0
+
     extraEnv:
       DB_POSTGRESDB_PASSWORD:
         valueFrom:
