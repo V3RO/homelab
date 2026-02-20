@@ -1,0 +1,9 @@
+apiVersion: v2
+name: valkey
+description: "Valkey deployment for homelab"
+type: application
+version: 0.1.0
+dependencies:
+  - name: valkey
+    version: 5.3.0
+    repository: https://charts.bitnami.com/bitnami

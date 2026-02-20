@@ -1,0 +1,31 @@
+valkey:
+  architecture: standalone
+
+  auth:
+    enabled: true
+    existingSecret: valkey-auth
+    existingSecretPasswordKey: valkey-password
+
+  commonConfiguration: |-
+    # Enable AOF persistence for better durability
+    appendonly yes
+    # Disable snapshots since AOF is enabled
+    save ""
+    # Cap memory usage to keep the cache lightweight
+    maxmemory 256mb
+    maxmemory-policy allkeys-lru
+
+  primary:
+    persistence:
+      enabled: true
+      storageClass: proxmox-csi
+      size: 8Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+
+
