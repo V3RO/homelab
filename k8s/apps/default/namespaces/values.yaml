@@ -30,3 +30,6 @@ namespaces:
   - name: n8n
     labels:
       istio.io/dataplane-mode: ambient
+  - name: mealie
+    labels:
+      istio.io/dataplane-mode: ambient

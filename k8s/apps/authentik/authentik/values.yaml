@@ -36,6 +36,11 @@ authentik:
           secretKeyRef:
             name: authentik-secret
             key: grafanaClientSecret
+      - name: AUTHENTIK_MEALIE_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: mealieClientSecret
   authentik:
     existingSecret:
       secretName: authentik-secret
@@ -49,6 +54,7 @@ authentik:
       - blueprint-argocd
       - blueprint-grafana
       - blueprint-n8n
+      - blueprint-mealie
 
     data:
       - name: demo-app
@@ -105,6 +111,25 @@ authentik:
           name: n8n
           slug: n8n
           metaLaunchUrl: https://n8n.schober.dev
+      - name: mealie
+        provider:
+          kind: oauth2
+          name: Mealie
+          clientId: mealie
+          clientSecretEnv: AUTHENTIK_MEALIE_CLIENT_SECRET
+          includeGroups: true
+          redirectUris:
+            - url: https://mealy.schober.dev/auth/oauth/authorized
+              matchingMode: strict
+            - url: https://mealy.schober.dev/auth/login
+              matchingMode: prefix
+        application:
+          name: Mealie
+          slug: mealie
+          metaLaunchUrl: https://mealy.schober.dev
+        groups:
+          - name: mealie-admins
+          - name: mealie-users
 
 externalSecret:
   enabled: true
@@ -118,6 +143,7 @@ externalSecret:
     bootstrapToken: authentik-bootstrap-token
     argocdClientSecret: authentik-argocd-client-secret
     grafanaClientSecret: authentik-grafana-client-secret
+    mealieClientSecret: authentik-mealie-client-secret
 
 route:
   enabled: true

@@ -1,0 +1,24 @@
+{{- $postgres := default dict .Values.postgres -}}
+{{- if (default false (get $postgres "enabled")) }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ default "mealie-postgres" (get $postgres "clusterName") }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  instances: {{ default 1 (get $postgres "instances") }}
+  storage:
+    pvcTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ default "10Gi" (get (default dict (get $postgres "storage")) "size") }}
+      {{- with (get (default dict (get $postgres "storage")) "class") }}
+      storageClassName: {{ . }}
+      {{- end }}
+  bootstrap:
+    initdb:
+      database: {{ default "mealie" (get $postgres "database") }}
+      owner: {{ default "mealie" (get $postgres "owner") }}
+{{- end }}
