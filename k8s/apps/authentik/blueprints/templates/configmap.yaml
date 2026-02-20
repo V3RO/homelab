@@ -48,6 +48,17 @@ data:
           meta_launch_url: {{ .application.metaLaunchUrl }}
           policy_engine_mode: any
       {{- else if eq .provider.kind "oauth2" }}
+      {{- if (default false .provider.includeGroups) }}
+      - model: authentik_providers_oauth2.scopemapping
+        id: {{ .name }}-scope-groups
+        identifiers:
+          name: {{ .provider.name }} Groups
+        attrs:
+          name: {{ .provider.name }} Groups
+          scope_name: groups
+          expression: |
+            return {"groups": [group.name for group in user.ak_groups.all()]}
+      {{- end }}
       - model: authentik_providers_oauth2.oauth2provider
         id: {{ .name }}-provider
         identifiers:
@@ -77,17 +88,6 @@ data:
             - !KeyOf {{ .name }}-scope-groups
             {{- end }}
             - !Find [authentik_providers_oauth2.scopemapping, [scope_name, offline_access]]
-      {{- if (default false .provider.includeGroups) }}
-      - model: authentik_providers_oauth2.scopemapping
-        id: {{ .name }}-scope-groups
-        identifiers:
-          name: {{ .provider.name }} Groups
-        attrs:
-          name: {{ .provider.name }} Groups
-          scope_name: groups
-          expression: |
-            return {"groups": [group.name for group in user.ak_groups.all()]}
-      {{- end }}
       - model: authentik_core.application
         id: {{ .name }}-application
         identifiers:
