@@ -1,4 +1,4 @@
-{{- range .Values.blueprints }}
+{{- range .Values.authentik.blueprints.data }}
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -1,5 +1,0 @@
-apiVersion: v2
-name: authentik-blueprints
-description: "Authentik Blueprints for application configuration"
-type: application
-version: 0.1.0
