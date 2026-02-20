@@ -48,6 +48,7 @@ authentik:
       - blueprint-demo-app
       - blueprint-argocd
       - blueprint-grafana
+      - blueprint-n8n
 
     data:
       - name: demo-app
