@@ -95,6 +95,15 @@ authentik:
           - name: Grafana Admins
           - name: Grafana Editors
           - name: Grafana Viewers
+      - name: n8n
+        provider:
+          name: n8n
+          externalHost: https://n8n.schober.dev
+          mode: forward_single
+        application:
+          name: n8n
+          slug: n8n
+          metaLaunchUrl: https://n8n.schober.dev
 
 externalSecret:
   enabled: true

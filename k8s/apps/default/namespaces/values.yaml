@@ -27,3 +27,6 @@ namespaces:
   - name: valkey
     labels:
       istio.io/dataplane-mode: ambient
+  - name: n8n
+    labels:
+      istio.io/dataplane-mode: ambient

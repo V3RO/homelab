@@ -1,0 +1,23 @@
+{{- if .Values.postgres.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Values.postgres.clusterName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  instances: {{ .Values.postgres.instances }}
+  storage:
+    pvcTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ .Values.postgres.storage.size }}
+      {{- with .Values.postgres.storage.class }}
+      storageClassName: {{ . }}
+      {{- end }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.postgres.database }}
+      owner: {{ .Values.postgres.owner }}
+{{- end }}
