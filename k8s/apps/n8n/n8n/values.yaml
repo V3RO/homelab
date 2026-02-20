@@ -16,7 +16,7 @@ n8n:
         secure_cookie: true
         diagnostics_enabled: false
       executions:
-        mode: app
+        mode: regular
       db:
         type: postgresdb
         postgresdb:
