@@ -16,7 +16,7 @@ n8n:
         secure_cookie: true
         diagnostics_enabled: false
       executions:
-        mode: queue
+        mode: app
       db:
         type: postgresdb
         postgresdb:
@@ -24,7 +24,6 @@ n8n:
           port: 5432
           database: n8n
           user: n8n
-
     extraEnv:
       DB_POSTGRESDB_PASSWORD:
         valueFrom:
