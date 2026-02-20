@@ -52,9 +52,9 @@ data:
       - model: authentik_providers_oauth2.scopemapping
         id: {{ .name }}-scope-groups
         identifiers:
-          name: {{ .provider.name }} Groups
+          scope_name: groups
         attrs:
-          name: {{ .provider.name }} Groups
+          name: Groups
           scope_name: groups
           expression: |
             return {"groups": [group.name for group in user.ak_groups.all()]}
