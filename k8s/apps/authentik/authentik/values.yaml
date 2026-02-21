@@ -140,7 +140,7 @@ authentik:
         provider:
           kind: oauth2
           name: Zot
-          clientId: mealie
+          clientId: zot
           clientSecretEnv: AUTHENTIK_ZOT_CLIENT_SECRET
           includeGroups: true
           redirectUris:
