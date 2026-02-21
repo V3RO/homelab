@@ -2,7 +2,7 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: zot-auth
-  namespace: {{ .Release.Namespace }}
+  namespace: istio-ingress-internal
 spec:
   targetRef:
     kind: Gateway
