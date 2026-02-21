@@ -10,7 +10,7 @@ service:
   targetPort: 9000
 
 app:
-  host: mealy.schober.dev
+  host: mealie.schober.dev
   gateway:
     name: internal-gateway
     namespace: istio-ingress-internal
@@ -26,6 +26,7 @@ mealie:
     TZ: Europe/Vienna
     BASE_URL: https://mealy.schober.dev
     DB_ENGINE: postgres
+    ALLOW_PASSWORD_LOGIN: "false"
   extraEnv: []
   secretKey:
     enabled: true
