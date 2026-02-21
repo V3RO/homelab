@@ -1,17 +1,18 @@
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
 metadata:
-  name: httproute-zot
+  name: zot-auth
   namespace: {{ .Release.Namespace }}
 spec:
-  hostnames:
-    - zot.schober.dev
-  parentRefs:
-    - kind: Gateway
-      name: internal-gateway
-      namespace: istio-ingress-internal
-      sectionName: https
+  targetRef:
+    kind: Gateway
+    group: gateway.networking.k8s.io
+    name: internal-gateway
+  action: CUSTOM
+  provider:
+    name: authentik
   rules:
-    - backendRefs:
-        - name: zot
-          port: 5000
+    - to:
+        - operation:
+            hosts:
+              - zot.schober.dev
