@@ -20,7 +20,7 @@ zot:
                   "openid": {
                       "providers": {
                           "oidc": {
-                              "credentialsFile": "/secrets/oidc/zot-oidc-credentials.json",
+                              "credentialsFile": "/secrets/oidc/zot-oidc-credentials",
                               "issuer": "https://authentik.company/application/o/<application_slug>/",
                               "keypath": "",
                               "scopes": ["openid", "profile", "email"]
