@@ -27,6 +27,23 @@ zot:
                       }
                   }
               }
+              "accessControl": {
+                  "repositories": {
+                      "**": {
+                          "policies": [
+                              {
+                                  "users": ["zot-users"],
+                                  "actions": ["read", "create"]
+                              },
+                          ],
+                        "defaultPolicy": ["read"]
+                    }
+                  },
+                  "adminPolicy": {
+                      "users": ["zot-admins"],
+                      "actions": ["read", "create", "update", "delete"]
+                  }
+              }
           }
       }
   externalSecrets:
