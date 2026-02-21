@@ -60,6 +60,7 @@ authentik:
       - blueprint-grafana
       - blueprint-n8n
       - blueprint-mealie
+      - blueprint-zot
 
     data:
       - name: demo-app
