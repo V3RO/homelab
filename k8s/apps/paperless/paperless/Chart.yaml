@@ -1,5 +1,0 @@
-apiVersion: v2
-name: paperless
-description: "Paperless-ngx deployment for homelab"
-type: application
-version: 0.1.0
