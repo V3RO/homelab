@@ -1,0 +1,86 @@
+paperless:
+  image:
+    repository: ghcr.io/paperless-ngx/paperless-ngx
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  secretName: paperless-secret
+
+  web:
+    replicas: 1
+    args:
+      - granian
+      - --interface
+      - asginl
+      - --ws
+      - paperless.asgi:application
+
+  worker:
+    replicas: 1
+
+  env:
+    PAPERLESS_PORT: "8000"
+    PAPERLESS_TIME_ZONE: Europe/Vienna
+    PAPERLESS_REDIS_PREFIX: paperless
+    PAPERLESS_DBHOST: paperless-postgres-rw.paperless.svc.cluster.local
+    PAPERLESS_DBNAME: paperless
+    PAPERLESS_DBUSER: paperless
+    PAPERLESS_REDIS: redis://valkey-primary.valkey.svc.cluster.local:6379/0
+    PAPERLESS_TIKA_ENABLED: "1"
+    PAPERLESS_TIKA_ENDPOINT: http://paperless-tika.paperless.svc.cluster.local:9998
+    PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg.paperless.svc.cluster.local:3000
+    PAPERLESS_URL: https://paperless.schober.dev
+
+initContainers:
+  image: docker.io/library/busybox:1.37
+
+persistence:
+  enabled: true
+  size: 20Gi
+  storageClass: proxmox-csi
+  accessModes:
+    - ReadWriteMany
+
+tika:
+  enabled: true
+  image:
+    repository: docker.io/apache/tika
+    tag: latest
+    pullPolicy: IfNotPresent
+
+gotenberg:
+  enabled: true
+  image:
+    repository: docker.io/gotenberg/gotenberg
+    tag: "8.25"
+    pullPolicy: IfNotPresent
+  args:
+    - gotenberg
+    - --chromium-disable-javascript=true
+    - --chromium-allow-list=file:///tmp/.*
+
+externalSecret:
+  enabled: true
+  refreshInterval: 1h
+  secretStoreRef:
+    name: bitwarden
+    kind: ClusterSecretStore
+  keys:
+    secretKey: paperless-secret-key
+    dbPassword: paperless-db-password
+    redisUrl: paperless-redis-url
+    adminUser:
+    adminPassword:
+    adminMail:
+
+app:
+  host: paperless.schober.dev
+  gateway:
+    name: internal-gateway
+    namespace: istio-ingress-internal
+    sectionName: https
+  backendServiceName: paperless
+  servicePort: 80
+  authentik:
+    enabled: true
+    provider: authentik
