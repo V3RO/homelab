@@ -20,7 +20,7 @@ zot:
                   "openid": {
                       "providers": {
                           "oidc": {
-                              "credentialsFile": "/secrets/oidc/zot-oidc-credentials",
+                              "credentialsFile": "/secrets/zot/oidc-credentials.json",
                               "issuer": "https://authentik.company/application/o/<application_slug>/",
                               "keypath": "",
                               "scopes": ["openid", "profile", "email"]
@@ -49,5 +49,5 @@ zot:
       }
   externalSecrets:
     - secretName: zot-oidc-credentials
-      mountPath: /secrets/oidc
+      mountPath: /secrets/zot
   mountSecret: true
