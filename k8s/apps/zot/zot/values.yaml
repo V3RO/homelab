@@ -6,6 +6,7 @@ zot:
     create: true
     storage: 10Gi
     storageClassName: proxmox-csi
+  mountConfig: true
   configFiles:
     config.json: |-
       {
