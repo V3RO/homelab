@@ -1,0 +1,33 @@
+zot:
+  persistence: true
+  pvc:
+    create: true
+    storage: 10Gi
+    storageClassName: proxmox-csi
+  configFiles:
+    config.json: |-
+      {
+          "storage": { "rootDirectory": "/var/lib/registry" },
+          "http": { "address": "0.0.0.0", "port": "5000" },
+          "log": { "level": "debug" }
+          "http": {
+              "externalUrl": "https://zot.schober.dev",
+              "port": "8080",
+              "auth": {
+                  "openid": {
+                      "providers": {
+                          "oidc": {
+                              "credentialsFile": "/secrets/zot/oidc-credentials.json",
+                              "issuer": "https://authentik.company/application/o/<application_slug>/",
+                              "keypath": "",
+                              "scopes": ["openid", "profile", "email"]
+                          }
+                      }
+                  }
+              }
+          }
+      }
+  externalSecrets:
+    - secretName: zot-oidc-credentials
+      mountPath: /secrets/zot/oidc-credentials.json
+  mountSecret: true
