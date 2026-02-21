@@ -1,0 +1,15 @@
+{{- if .Values.gotenberg.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: paperless-gotenberg
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: paperless
+    component: gotenberg
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+{{- end }}

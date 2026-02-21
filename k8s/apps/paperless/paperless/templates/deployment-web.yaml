@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-web
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: paperless
+    component: web
+spec:
+  replicas: {{ .Values.paperless.web.replicas }}
+  selector:
+    matchLabels:
+      app: paperless
+      component: web
+  template:
+    metadata:
+      labels:
+        app: paperless
+        component: web
+    spec:
+      initContainers:
+        - name: init-dirs
+          image: {{ .Values.initContainers.image | quote }}
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - mkdir -p /mnt/data /mnt/media /mnt/export /mnt/consume
+          volumeMounts:
+            - name: paperless
+              mountPath: /mnt
+      containers:
+        - name: paperless-web
+          image: "{{ .Values.paperless.image.repository }}:{{ .Values.paperless.image.tag }}"
+          imagePullPolicy: {{ .Values.paperless.image.pullPolicy }}
+          workingDir: /usr/src/paperless/src
+          command:
+            - /sbin/docker-entrypoint.sh
+          args:
+            {{- toYaml .Values.paperless.web.args | nindent 12 }}
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          env:
+            {{- range $k, $v := .Values.paperless.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          {{- if .Values.externalSecret.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.paperless.secretName }}
+          {{- end }}
+          volumeMounts:
+            - name: paperless
+              mountPath: /usr/src/paperless/data
+              subPath: data
+            - name: paperless
+              mountPath: /usr/src/paperless/media
+              subPath: media
+            - name: paperless
+              mountPath: /usr/src/paperless/export
+              subPath: export
+            - name: paperless
+              mountPath: /usr/src/paperless/consume
+              subPath: consume
+      volumes:
+        - name: paperless
+          persistentVolumeClaim:
+            claimName: paperless
