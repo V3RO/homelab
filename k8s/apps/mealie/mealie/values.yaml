@@ -24,7 +24,7 @@ mealie:
     PUID: "1000"
     PGID: "1000"
     TZ: Europe/Vienna
-    BASE_URL: https://mealy.schober.dev
+    BASE_URL: https://mealie.schober.dev
     DB_ENGINE: postgres
     ALLOW_PASSWORD_LOGIN: "false"
   extraEnv: []

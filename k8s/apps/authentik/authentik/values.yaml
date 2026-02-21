@@ -119,14 +119,14 @@ authentik:
           clientSecretEnv: AUTHENTIK_MEALIE_CLIENT_SECRET
           includeGroups: true
           redirectUris:
-            - url: https://mealy.schober.dev/login
+            - url: https://mealie.schober.dev/login
               matchingMode: strict
-            - url: https://mealy.schober.dev/login?direct=1
+            - url: https://mealie.schober.dev/login?direct=1
               matchingMode: strict
         application:
           name: Mealie
           slug: mealie
-          metaLaunchUrl: https://mealy.schober.dev
+          metaLaunchUrl: https://mealie.schober.dev
         groups:
           - name: mealie-admins
           - name: mealie-users

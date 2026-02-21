@@ -49,7 +49,7 @@ spec:
             - name: TZ
               value: {{ default "Europe/Vienna" (get $env "TZ") | quote }}
             - name: BASE_URL
-              value: {{ default (printf "https://%s" (default "mealy.schober.dev" (get $app "host"))) (get $env "BASE_URL") | quote }}
+              value: {{ default (printf "https://%s" (default "mealie.schober.dev" (get $app "host"))) (get $env "BASE_URL") | quote }}
             - name: DB_ENGINE
               value: {{ default "postgres" (get $env "DB_ENGINE") | quote }}
             {{- if hasKey $env "POSTGRES_SERVER" }}
