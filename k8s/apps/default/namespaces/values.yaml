@@ -33,3 +33,9 @@ namespaces:
   - name: mealie
     labels:
       istio.io/dataplane-mode: ambient
+  - name: homepage
+    labels:
+      istio.io/dataplane-mode: ambient
+  - name: paperless
+    labels:
+      istio.io/dataplane-mode: ambient
