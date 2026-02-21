@@ -41,6 +41,11 @@ authentik:
           secretKeyRef:
             name: authentik-secret
             key: mealieClientSecret
+      - name: AUTHENTIK_ZOT_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: zotClientSecret
   authentik:
     existingSecret:
       secretName: authentik-secret
@@ -130,6 +135,23 @@ authentik:
         groups:
           - name: mealie-admins
           - name: mealie-users
+      - name: zot
+        provider:
+          kind: oauth2
+          name: Zot
+          clientId: mealie
+          clientSecretEnv: AUTHENTIK_ZOT_CLIENT_SECRET
+          includeGroups: true
+          redirectUris:
+            - url: https://zot.schober.dev/zot/auth/callback/oidc
+              matchingMode: strict
+        application:
+          name: Zot
+          slug: zot
+          metaLaunchUrl: https://zot.schober.dev
+        groups:
+          - name: Zot Admins
+          - name: Zot Users
 
 externalSecret:
   enabled: true
@@ -144,6 +166,7 @@ externalSecret:
     argocdClientSecret: authentik-argocd-client-secret
     grafanaClientSecret: authentik-grafana-client-secret
     mealieClientSecret: authentik-mealie-client-secret
+    zotClientSecret: zot-oidc-client-secret
 
 route:
   enabled: true
@@ -152,6 +175,10 @@ route:
   gatewayNamespace: istio-ingress-internal
   gatewaySectionName: https
   serviceName: authentik-server
+  servicePort: 80
+
+
+
   servicePort: 80
 
 
