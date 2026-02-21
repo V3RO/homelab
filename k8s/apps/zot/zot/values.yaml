@@ -21,7 +21,7 @@ zot:
                       "providers": {
                           "oidc": {
                               "credentialsFile": "/secrets/zot/oidc-credentials.json",
-                              "issuer": "https://authentik.company/application/o/zot/",
+                              "issuer": "https://auth.schober.dev/application/o/zot/",
                               "keypath": "",
                               "scopes": ["openid", "profile", "email"]
                           }
