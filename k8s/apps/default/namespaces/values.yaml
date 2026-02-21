@@ -39,3 +39,6 @@ namespaces:
   - name: paperless
     labels:
       istio.io/dataplane-mode: ambient
+  - name: zot
+    labels:
+      istio.io/dataplane-mode: ambient
