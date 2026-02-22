@@ -13,6 +13,9 @@ zot:
           "storage": { "rootDirectory": "/var/lib/registry" },
           "log": { "level": "debug" },
           "extensions": {
+              "search": {
+                  "enable": true
+              },
               "ui": {
                   "enable": true
               }
