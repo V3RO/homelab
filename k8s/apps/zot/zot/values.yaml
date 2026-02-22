@@ -15,7 +15,6 @@ zot:
           "http": {
               "address": "0.0.0.0",
               "port": "5000",
-              "externalUrl": "https://zot.schober.dev",
               "auth": {
                   "openid": {
                       "providers": {
