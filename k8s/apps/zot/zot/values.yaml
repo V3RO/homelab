@@ -51,3 +51,4 @@ zot:
     - secretName: zot-oidc-credentials
       mountPath: /secrets/zot
   mountSecret: true
+  secretFiles: {}
