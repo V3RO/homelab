@@ -1,10 +1,15 @@
 istiod:
   profile: ambient
   meshConfig:
+    enableTracing: true
     enablePrometheusMerge: true
     extensionProviders:
       - name: alloy-otlp
         opentelemetry:
+          service: alloy.monitoring.svc.cluster.local
+          port: 4317
+      - name: alloy-otlp-logs
+        envoyOtelAls:
           service: alloy.monitoring.svc.cluster.local
           port: 4317
       - name: authentik
