@@ -6,7 +6,7 @@ metadata:
 spec:
   tracing:
     - providers:
-        - name: alloy-otlp
+        - name: tempo-zipkin
       randomSamplingPercentage: 100.0
   accessLogging:
     - providers:
@@ -24,7 +24,7 @@ spec:
       name: istio-waypoint
   tracing:
     - providers:
-        - name: alloy-otlp
+        - name: tempo-zipkin
       randomSamplingPercentage: 100.0
   accessLogging:
     - providers:
@@ -42,7 +42,7 @@ spec:
       name: istio
   tracing:
     - providers:
-        - name: alloy-otlp
+        - name: tempo-zipkin
       randomSamplingPercentage: 100.0
   accessLogging:
     - providers:

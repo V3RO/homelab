@@ -4,6 +4,10 @@ istiod:
     enableTracing: true
     enablePrometheusMerge: true
     extensionProviders:
+      - name: tempo-zipkin
+        zipkin:
+          service: tempo.monitoring.svc.cluster.local
+          port: 9411
       - name: alloy-otlp
         opentelemetry:
           service: alloy.monitoring.svc.cluster.local
