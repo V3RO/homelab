@@ -16,6 +16,10 @@ home-ops-chart:
     enabled: true
     hostnames:
     - home.schober.dev
+    parentRefs:
+        - name: internal-gateway
+          namespace: istio-ingress-internal
+          sectionName: https
     rules:
       - backendRefs:
           - name: homepage
