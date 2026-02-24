@@ -10,5 +10,5 @@ roleRef:
   name: homepage
 subjects:
   - kind: ServiceAccount
-    name: homepage
-    namespace: default
+    name: {{ .Release.Name }}-home-ops-chart
+    namespace: {{ .Release.Namespace }}
