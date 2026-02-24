@@ -41,7 +41,7 @@ zot:
                       "**": {
                           "policies": [
                               {
-                                  "users": ["zot-users"],
+                                  "groups": ["zot-users"],
                                   "actions": ["read", "create"]
                               }
                           ],
@@ -49,7 +49,7 @@ zot:
                      }
                   },
                   "adminPolicy": {
-                      "users": ["zot-admins"],
+                      "groups": ["zot-admins"],
                       "actions": ["read", "create", "update", "delete"]
                   }
               }
