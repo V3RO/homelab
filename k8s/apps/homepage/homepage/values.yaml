@@ -12,6 +12,13 @@ home-ops-chart:
         targetPort: http
         protocol: TCP
         name: http
+  httpRoute:
+    enabled: true
+    hostnames: home.schober.dev
+    rules:
+      - backendRefs:
+          - name: homepage
+            port: http
 
   extraVolumes:
     - name: homepage-config
