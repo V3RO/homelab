@@ -22,8 +22,8 @@ home-ops-chart:
           sectionName: https
     rules:
       - backendRefs:
-          - name: homepage
-            port: http
+          - name: homepage-home-ops-chart
+            port: 3000
 
   extraVolumes:
     - name: homepage-config
