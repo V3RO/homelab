@@ -2,6 +2,10 @@ home-ops-chart:
   image:
     repository: ghcr.io/gethomepage/homepage
     tag: v1.10.1
+  ports:
+    - name: http
+      containerPort: 3000
+      protocol: TCP
   env:
     - name: HOMEPAGE_ALLOWED_HOSTS
       value: home.schober.dev
