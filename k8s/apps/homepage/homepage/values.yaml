@@ -14,7 +14,8 @@ home-ops-chart:
         name: http
   httpRoute:
     enabled: true
-    hostnames: home.schober.dev
+    hostnames:
+    - home.schober.dev
     rules:
       - backendRefs:
           - name: homepage
