@@ -9,7 +9,7 @@ home-ops-chart:
   env:
     - name: HOMEPAGE_ALLOWED_HOSTS
       value: home.schober.dev
-    - name: HOMEPAGE_CALENDAR_ICAL_URL
+    - name: HOMEPAGE_VAR_PROTON
       valueFrom:
         secretKeyRef:
           name: homepage-home-ops-chart-secrets
