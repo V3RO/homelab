@@ -9,8 +9,9 @@ data:
   kubernetes.yaml: |
     mode: cluster
   settings.yaml: |
+    title: Homepage
     background:
-      image: https://source.unsplash.com/random/?night,dark
+      image: https://unsplash.com/photos/lighted-tokyo-tower-located-at-japan-Km-whjQRN1c
       blur: sm
       brightness: 25
       opacity: 50
