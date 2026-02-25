@@ -21,6 +21,11 @@ home-ops-chart:
         secretKeyRef:
           name: homepage-home-ops-chart-secrets
           key: homepage-authentik-api-token
+    - name: HOMEPAGE_VAR_MEALIE
+      valueFrom:
+        secretKeyRef:
+          name: homepage-home-ops-chart-secrets
+          key: homepage-mealie-api-token
   service:
     ports:
       - port: 3000
@@ -89,4 +94,7 @@ home-ops-chart:
         - secretKey: homepage-authentik-api-token
           remoteRef:
             key: homepage-authentik-api-token
+        - secretKey: homepage-mealie-api-token
+          remoteRef:
+            key: homepage-mealie-api-token
       injectAsEnv: false

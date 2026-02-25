@@ -33,6 +33,12 @@ data:
               - type: ical
                 url: {{`{{HOMEPAGE_VAR_PROTON}}`}}
                 name: Proton Calendar
+      - Mealie:
+          widget:
+            type: mealie
+            url: https://mealie.schober.dev
+            key: {{`{{HOMEPAGE_VAR_MEALIE}}`}}
+            version: 2
     - Dev:
       - Authentik:
           widget:
