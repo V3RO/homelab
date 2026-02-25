@@ -48,6 +48,15 @@ data:
           cpu: true
           memory: true
           showLabel: true
+    - calendar:
+        firstDayInWeek: monday
+        view: monthly
+        maxEvents: 10
+        showTime: true
+        integrations:
+          - type: ical
+            url: ${HOMEPAGE_CALENDAR_ICAL_URL}
+            name: Proton Calendar
     - resources:
         backend: resources
         expanded: true

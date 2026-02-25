@@ -9,6 +9,11 @@ home-ops-chart:
   env:
     - name: HOMEPAGE_ALLOWED_HOSTS
       value: home.schober.dev
+    - name: HOMEPAGE_CALENDAR_ICAL_URL
+      valueFrom:
+        secretKeyRef:
+          name: homepage-home-ops-chart-secrets
+          key: homepage-proton-calendar-url
 
   service:
     ports:
@@ -63,3 +68,16 @@ home-ops-chart:
       subPath: widgets.yaml
     - mountPath: /app/config/logs
       name: logs
+
+  externalSecrets:
+    secrets:
+      enabled: true
+      refreshInterval: 1h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: bitwarden
+      data:
+        - secretKey: homepage-proton-calendar-url
+          remoteRef:
+            key: homepage-proton-calendar
+      injectAsEnv: false
