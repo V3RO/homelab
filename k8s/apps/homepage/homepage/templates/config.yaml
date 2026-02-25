@@ -23,15 +23,16 @@ data:
   services.yaml: |
     - Personal:
         - Calendar:
-          - calendar:
-            firstDayInWeek: monday
-            view: monthly
-            maxEvents: 10
-            showTime: true
-            integrations:
-              - type: ical
-                url: {{`{{HOMEPAGE_VAR_PROTON}}`}}
-                name: Proton Calendar
+            widget:
+              type: calendar
+              firstDayInWeek: monday
+              view: monthly
+              maxEvents: 10
+              showTime: true
+              integrations:
+                - type: ical
+                  url: {{`{{HOMEPAGE_VAR_PROTON}}`}}
+                  name: Proton Calendar
   widgets.yaml: |
     - kubernetes:
         cluster:
