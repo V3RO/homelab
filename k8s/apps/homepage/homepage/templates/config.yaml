@@ -21,20 +21,17 @@ data:
             - abbr: GH
               href: https://github.com/
   services.yaml: |
-    - My First Group:
-        - My First Service:
-            href: http://localhost/
-            description: Homepage is awesome
+    - Personal:
+        - calendar:
+          firstDayInWeek: monday
+          view: monthly
+          maxEvents: 10
+          showTime: true
+          integrations:
+            - type: ical
+              url: {{`{{HOMEPAGE_VAR_PROTON}}`}}
+              name: Proton Calendar
 
-    - My Second Group:
-        - My Second Service:
-            href: http://localhost/
-            description: Homepage is the best
-
-    - My Third Group:
-        - My Third Service:
-            href: http://localhost/
-            description: Homepage is 😎
   widgets.yaml: |
     - kubernetes:
         cluster:
