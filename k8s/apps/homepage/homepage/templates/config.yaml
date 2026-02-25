@@ -34,6 +34,7 @@ data:
                 url: {{`{{HOMEPAGE_VAR_PROTON}}`}}
                 name: Proton Calendar
       - Mealie:
+          href: https://mealie.schober.dev
           widget:
             type: mealie
             url: https://mealie.schober.dev
@@ -41,6 +42,7 @@ data:
             version: 2
     - Dev:
       - Authentik:
+          href: https://auth.schober.dev
           widget:
             type: authentik
             url: https://auth.schober.dev
