@@ -16,7 +16,11 @@ home-ops-chart:
         secretKeyRef:
           name: homepage-home-ops-chart-secrets
           key: homepage-proton-calendar-url
-
+    - name: HOMEPAGE_VAR_AUTHENTIK
+      valueFrom:
+        secretKeyRef:
+          name: homepage-home-ops-chart-secrets
+          key: homepage-authentik-api-token
   service:
     ports:
       - port: 3000
@@ -82,4 +86,7 @@ home-ops-chart:
         - secretKey: homepage-proton-calendar-url
           remoteRef:
             key: homepage-proton-calendar
+        - secretKey: homepage-authentik-api-token
+          remoteRef:
+            key: homepage-authentik-api-token
       injectAsEnv: false

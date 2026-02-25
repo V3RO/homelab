@@ -22,17 +22,25 @@ data:
               href: https://github.com/
   services.yaml: |
     - Personal:
-        - Calendar:
-            widget:
-              type: calendar
-              firstDayInWeek: monday
-              view: monthly
-              maxEvents: 10
-              showTime: true
-              integrations:
-                - type: ical
-                  url: {{`{{HOMEPAGE_VAR_PROTON}}`}}
-                  name: Proton Calendar
+      - Calendar:
+          widget:
+            type: calendar
+            firstDayInWeek: monday
+            view: monthly
+            maxEvents: 10
+            showTime: true
+            integrations:
+              - type: ical
+                url: {{`{{HOMEPAGE_VAR_PROTON}}`}}
+                name: Proton Calendar
+    - Dev:
+      - Authentik:
+          widget:
+            type: authentik
+            url: https://auth.schober.dev
+            key: {{`{{HOMEPAGE_VAR_AUTHENTIK}}`}}
+            version: 2
+
   widgets.yaml: |
     - kubernetes:
         cluster:
