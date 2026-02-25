@@ -8,11 +8,12 @@ metadata:
 data:
   kubernetes.yaml: |
     mode: cluster
-  settings.yaml: ""
-  #settings.yaml: |
-  #  providers:
-  #    longhorn:
-  #      url: https://longhorn.my.network
+  settings.yaml: |
+    background:
+      image: https://source.unsplash.com/random/?night,dark
+      blur: sm
+      brightness: 25
+      opacity: 50
   custom.css: ""
   custom.js: ""
   bookmarks.yaml: |
