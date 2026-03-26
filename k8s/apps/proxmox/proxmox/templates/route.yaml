@@ -1,0 +1,17 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: httproute-proxmox
+  namespace: {{ .Release.Namespace }}
+spec:
+  hostnames:
+    - {{ .Values.proxmox.host }}
+  parentRefs:
+    - kind: Gateway
+      name: {{ .Values.gateway.name }}
+      namespace: {{ .Values.gateway.namespace }}
+      sectionName: {{ .Values.gateway.sectionName }}
+  rules:
+    - backendRefs:
+        - name: proxmox
+          port: {{ .Values.proxmox.port }}
