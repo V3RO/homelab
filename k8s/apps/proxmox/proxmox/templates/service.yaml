@@ -26,3 +26,14 @@ ports:
 endpoints:
   - addresses:
       - {{ .Values.proxmox.ip | quote }}
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: proxmox
+  namespace: {{ .Release.Namespace }}
+spec:
+  host: proxmox.{{ .Release.Namespace }}.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
