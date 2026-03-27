@@ -42,4 +42,7 @@ namespaces:
   - name: zot
     labels:
       istio.io/dataplane-mode: ambient
+  - name: gitea
+    labels:
+      istio.io/dataplane-mode: ambient
   - name: proxmox

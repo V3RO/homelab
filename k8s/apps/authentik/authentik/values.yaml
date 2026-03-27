@@ -46,6 +46,11 @@ authentik:
           secretKeyRef:
             name: authentik-secret
             key: zotClientSecret
+      - name: AUTHENTIK_GITEA_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: giteaClientSecret
   authentik:
     existingSecret:
       secretName: authentik-secret
@@ -61,6 +66,7 @@ authentik:
       - blueprint-n8n
       - blueprint-mealie
       - blueprint-zot
+      - blueprint-gitea
 
     data:
       - name: demo-app
@@ -153,6 +159,22 @@ authentik:
         groups:
           - name: zot-admins
           - name: zot-users
+      - name: gitea
+        provider:
+          kind: oauth2
+          name: Gitea
+          clientId: gitea
+          clientSecretEnv: AUTHENTIK_GITEA_CLIENT_SECRET
+          redirectUris:
+            - url: https://git.schober.dev/user/oauth2/authentik/callback
+              matchingMode: strict
+        application:
+          name: Gitea
+          slug: gitea
+          metaLaunchUrl: https://git.schober.dev
+        groups:
+          - name: gitea-admins
+          - name: gitea-users
 
 externalSecret:
   enabled: true
@@ -168,6 +190,7 @@ externalSecret:
     grafanaClientSecret: authentik-grafana-client-secret
     mealieClientSecret: authentik-mealie-client-secret
     zotClientSecret: zot-oidc-client-secret
+    giteaClientSecret: authentik-gitea-client-secret
 
 route:
   enabled: true
