@@ -127,5 +127,5 @@ externalSecret:
     kind: ClusterSecretStore
   keys:
     secretKey: gitea-secret-key
-    valkeyPassword: gitea-valkey-password
+    valkeyPassword: valkey-password
     oauthClientSecret: authentik-gitea-client-secret
