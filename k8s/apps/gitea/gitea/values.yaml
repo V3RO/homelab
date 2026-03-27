@@ -77,9 +77,11 @@ gitea:
     # Session, cache and queue config sections are templated by ExternalSecret
     # with the Valkey password already embedded in the connection strings.
     # These are mounted as additional ini-style config sources and merged into app.ini.
+    # A separate secret is used to avoid mixing flat key/value entries (SECRET_KEY,
+    # oauth key/secret) with ini-formatted section files, which would cause parse errors.
     additionalConfigSources:
       - secret:
-          secretName: gitea-secret
+          secretName: gitea-ini-config
 
     oauth:
       - name: "authentik"
