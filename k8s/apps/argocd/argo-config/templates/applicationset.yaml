@@ -49,9 +49,32 @@ spec:
           jsonPointers:
             - /webhooks/0/failurePolicy
   templatePatch: |
-    {{`{{ if eq .path.basename "cnpg-operator" }}`}}
+    {{`{{ if has .path.basename (list
+        "namespaces"
+        "cilium"
+        "proxmox-csi-driver"
+        "base"
+        "istiod"
+        "cni"
+        "ztunnel"
+        "gateway"
+        "cert-manager"
+        "bitwarden-issuer"
+        "cloudflare-issuer"
+        "external-secrets"
+        "cnpg-operator"
+      ) }}`}}
     spec:
       syncPolicy:
+        automated:
+          prune: false
+          selfHeal: true
         syncOptions:
           - ServerSideApply=true
+        retry:
+          limit: 10
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 5m
     {{`{{ end }}`}}
