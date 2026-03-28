@@ -4,6 +4,9 @@ cilium:
 
   kubeProxyReplacement: true
 
+  routingMode: native
+  autoDirectNodeRoutes: true
+
   bgpControlPlane:
     enabled: true
 
