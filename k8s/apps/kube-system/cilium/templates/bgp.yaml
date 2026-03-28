@@ -1,4 +1,4 @@
-apiVersion: cilium.io/v2alpha1
+apiVersion: cilium.io/v2
 kind: CiliumBGPClusterConfig
 metadata:
   name: cilium-bgp
@@ -18,7 +18,7 @@ spec:
           peerConfigRef:
             name: "cilium-peer"
 ---
-apiVersion: cilium.io/v2alpha1
+apiVersion: cilium.io/v2
 kind: CiliumBGPPeerConfig
 metadata:
   name: cilium-peer
@@ -35,7 +35,7 @@ spec:
         matchLabels:
           advertise: "bgp"
 ---
-apiVersion: cilium.io/v2alpha1
+apiVersion: cilium.io/v2
 kind: CiliumBGPAdvertisement
 metadata:
   name: bgp-advertisements
@@ -44,9 +44,6 @@ metadata:
     advertise: bgp
   annotations: {{ .Values.cilium.annotations | toYaml | nindent 4 }}
 spec:
-  nodeSelector:
-    matchLabels:
-      topology.kubernetes.io/region: "homelab"
   advertisements:
     - advertisementType: PodCIDR
     - advertisementType: Service
