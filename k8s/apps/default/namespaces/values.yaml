@@ -6,6 +6,8 @@ namespaces:
     labels:
       pod-security.kubernetes.io/enforce: privileged
   - name: istio-ingress-internal
+    labels:
+      istio.io/dataplane-mode: ambient
   - name: argocd
   - name: external-dns
     labels:
