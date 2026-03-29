@@ -51,6 +51,11 @@ authentik:
           secretKeyRef:
             name: authentik-secret
             key: giteaClientSecret
+      - name: AUTHENTIK_USER_PASSWORD_V3RO
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: userPassword-V3RO
   authentik:
     existingSecret:
       secretName: authentik-secret
@@ -67,6 +72,19 @@ authentik:
       - blueprint-mealie
       - blueprint-zot
       - blueprint-gitea
+      - blueprint-users
+
+    users:
+      - username: V3RO
+        name: Mario Schober
+        email: mario@schober.dev
+        passwordEnv: AUTHENTIK_USER_PASSWORD_V3RO
+        groups:
+          - ArgoCD Admins
+          - Grafana Admins
+          - mealie-admins
+          - zot-admins
+          - gitea-admins
 
     data:
       - name: demo-app
@@ -191,6 +209,9 @@ externalSecret:
     mealieClientSecret: authentik-mealie-client-secret
     zotClientSecret: zot-oidc-client-secret
     giteaClientSecret: authentik-gitea-client-secret
+    userPasswords:
+      - username: V3RO
+        bitwardenItem: authentik-user-v3ro-password
 
 route:
   enabled: true
