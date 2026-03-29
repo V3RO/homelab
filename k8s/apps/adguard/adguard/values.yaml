@@ -1,0 +1,34 @@
+replicaCount: 1
+
+image:
+  repository: adguard/adguardhome
+  tag: v0.107.65
+  pullPolicy: IfNotPresent
+
+app:
+  host: adguard.schober.dev
+  backendServiceName: adguard-web
+  servicePort: 80
+  gateway:
+    name: internal-gateway
+    namespace: istio-ingress-internal
+    sectionName: https
+  authentik:
+    enabled: true
+    provider: authentik
+
+service:
+  web:
+    port: 80
+    targetPort: 3000
+  dns:
+    port: 53
+    # Set to a specific IP from the Cilium BGP load-balancer pool
+    loadBalancerIP: ""
+
+pvc:
+  enabled: true
+  claimName: adguard-data
+  volumeName: pv-adguard
+  storageClass: proxmox-csi
+  size: 2Gi

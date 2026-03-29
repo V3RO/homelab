@@ -72,6 +72,7 @@ authentik:
       - blueprint-mealie
       - blueprint-zot
       - blueprint-gitea
+      - blueprint-adguard
       - blueprint-users
 
     users:
@@ -85,6 +86,7 @@ authentik:
           - mealie-admins
           - zot-admins
           - gitea-admins
+          - adguard-admins
 
     data:
       - name: demo-app
@@ -193,6 +195,19 @@ authentik:
         groups:
           - name: gitea-admins
           - name: gitea-users
+      - name: adguard
+        provider:
+          name: AdGuard Home
+          externalHost: https://adguard.schober.dev
+          mode: forward_single
+          unauthenticatedPaths:
+            - ^/control/.*
+        application:
+          name: AdGuard Home
+          slug: adguard
+          metaLaunchUrl: https://adguard.schober.dev
+        groups:
+          - name: adguard-admins
 
 externalSecret:
   enabled: true

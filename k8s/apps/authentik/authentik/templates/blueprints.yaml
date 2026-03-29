@@ -37,6 +37,12 @@ data:
             !Find [authentik_flows.flow, [slug, default-authentication-flow]]
           invalidation_flow:
             !Find [authentik_flows.flow, [slug, default-invalidation-flow]]
+          {{- with .provider.unauthenticatedPaths }}
+          unauthenticated_paths:
+            {{- range . }}
+            - {{ . }}
+            {{- end }}
+          {{- end }}
       - model: authentik_core.application
         id: {{ .name }}-application
         identifiers:

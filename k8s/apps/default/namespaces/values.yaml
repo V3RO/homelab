@@ -42,3 +42,6 @@ namespaces:
     labels:
       istio.io/dataplane-mode: ambient
   - name: proxmox
+  - name: adguard
+    labels:
+      istio.io/dataplane-mode: ambient
