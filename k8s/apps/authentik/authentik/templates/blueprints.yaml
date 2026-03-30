@@ -39,9 +39,9 @@ data:
           invalidation_flow:
             !Find [authentik_flows.flow, [slug, default-invalidation-flow]]
           {{- with .provider.unauthenticatedPaths }}
-          unauthenticated_paths:
+          skip_path_regex: |
             {{- range . }}
-            - {{ . }}
+            {{ . }}
             {{- end }}
           {{- end }}
       - model: authentik_core.application
