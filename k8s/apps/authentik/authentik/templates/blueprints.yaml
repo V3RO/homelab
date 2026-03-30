@@ -39,10 +39,7 @@ data:
           invalidation_flow:
             !Find [authentik_flows.flow, [slug, default-invalidation-flow]]
           {{- with .provider.unauthenticatedPaths }}
-          skip_path_regex: |
-            {{- range . }}
-            {{ . }}
-            {{- end }}
+          skip_path_regex: "{{ join "\\n" . }}"
           {{- end }}
       - model: authentik_core.application
         id: {{ .name }}-application
