@@ -48,14 +48,10 @@ home-ops-chart:
         - |
           CONFIG_DIR=/opt/adguardhome/conf
           CONFIG_FILE=${CONFIG_DIR}/AdGuardHome.yaml
-          if [ ! -f "${CONFIG_FILE}" ]; then
-            echo "No config found, seeding from ConfigMap..."
-            mkdir -p "${CONFIG_DIR}"
-            cp /seed/AdGuardHome.yaml "${CONFIG_FILE}"
-            echo "Config seeded."
-          else
-            echo "Config already exists, skipping seed."
-          fi
+          echo "Syncing config from ConfigMap..."
+          mkdir -p "${CONFIG_DIR}"
+          cp /seed/AdGuardHome.yaml "${CONFIG_FILE}"
+          echo "Config synced."
       volumeMounts:
         - name: conf
           mountPath: /opt/adguardhome/conf
