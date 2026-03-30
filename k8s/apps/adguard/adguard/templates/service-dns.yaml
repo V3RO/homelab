@@ -13,7 +13,7 @@ spec:
   type: LoadBalancer
   {{- with (get $dns "loadBalancerIP") }}
   {{- if . }}
-  loadBalancerIP: {{ . }}
+  clusterIP: {{ . }}
   {{- end }}
   {{- end }}
   selector:
