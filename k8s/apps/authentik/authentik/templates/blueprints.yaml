@@ -26,6 +26,7 @@ data:
       {{- if eq (default "proxy" .provider.kind) "proxy" }}
       - model: authentik_providers_proxy.proxyprovider
         id: {{ .name }}-provider
+        state: present
         identifiers:
           name: {{ .provider.name }}
         attrs:
