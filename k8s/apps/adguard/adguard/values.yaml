@@ -24,7 +24,7 @@ service:
   dns:
     port: 53
     # Set to a specific IP from the Cilium BGP load-balancer pool
-    loadBalancerIP: "10.1.40.126"
+    loadBalancerIP: "10.1.40.100"
 
 pvc:
   enabled: true
