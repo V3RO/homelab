@@ -1,0 +1,3 @@
+intel-device-plugins-gpu:
+  name: igpu
+  sharedDevNum: 5
