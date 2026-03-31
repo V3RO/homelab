@@ -43,6 +43,8 @@ namespaces:
       istio.io/dataplane-mode: ambient
   - name: proxmox
   - name: intel
+    labels:
+      pod-security.kubernetes.io/enforce: privileged
   - name: node-feature-discovery
     labels:
       pod-security.kubernetes.io/enforce: privileged
