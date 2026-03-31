@@ -1,0 +1,82 @@
+home-ops-chart:
+  image:
+    repository: ghcr.io/actualbudget/actual
+    tag: 25.3.1
+    pullPolicy: IfNotPresent
+
+  strategy:
+    type: Recreate
+
+  ports:
+    - name: http
+      containerPort: 5006
+      protocol: TCP
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 30
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 10
+    periodSeconds: 10
+
+  env:
+    - name: ACTUAL_LOGIN_METHOD
+      value: "openid"
+    - name: ACTUAL_OPENID_DISCOVERY_URL
+      value: "https://auth.schober.dev/application/o/actual/.well-known/openid-configuration"
+    - name: ACTUAL_OPENID_CLIENT_ID
+      value: "actual"
+    - name: ACTUAL_OPENID_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: actual-home-ops-chart-secrets
+          key: actual-oidc-client-secret
+    - name: ACTUAL_OPENID_SERVER_HOSTNAME
+      value: "https://actual.schober.dev"
+
+  service:
+    ports:
+      - port: 5006
+        targetPort: http
+        protocol: TCP
+        name: http
+
+  httpRoute:
+    enabled: true
+    hostnames:
+      - actual.schober.dev
+    parentRefs:
+      - name: internal-gateway
+        namespace: istio-ingress-internal
+        sectionName: https
+    rules:
+      - backendRefs:
+          - name: actual-home-ops-chart
+            port: 5006
+
+  persistence:
+    data:
+      enabled: true
+      storageClass: proxmox-csi
+      size: 5Gi
+      mountPath: /data
+
+  externalSecrets:
+    secrets:
+      enabled: true
+      refreshInterval: 1h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: bitwarden
+      data:
+        - secretKey: actual-oidc-client-secret
+          remoteRef:
+            key: authentik-actual-client-secret
+      injectAsEnv: false

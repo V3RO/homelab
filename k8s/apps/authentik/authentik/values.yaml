@@ -51,6 +51,11 @@ authentik:
           secretKeyRef:
             name: authentik-secret
             key: giteaClientSecret
+      - name: AUTHENTIK_ACTUAL_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: actualClientSecret
       - name: AUTHENTIK_USER_PASSWORD_V3RO
         valueFrom:
           secretKeyRef:
@@ -73,6 +78,7 @@ authentik:
       - blueprint-zot
       - blueprint-gitea
       - blueprint-adguard
+      - blueprint-actual
       - blueprint-users
 
     users:
@@ -87,6 +93,7 @@ authentik:
           - mealie-admins
           - zot-admins
           - gitea-admins
+          - actual-users
           - adguard-admins
 
     data:
@@ -209,6 +216,21 @@ authentik:
           metaLaunchUrl: https://adguard.schober.dev
         groups:
           - name: adguard-admins
+      - name: actual
+        provider:
+          kind: oauth2
+          name: Actual Budget
+          clientId: actual
+          clientSecretEnv: AUTHENTIK_ACTUAL_CLIENT_SECRET
+          redirectUris:
+            - url: https://actual.schober.dev/openid/callback
+              matchingMode: strict
+        application:
+          name: Actual Budget
+          slug: actual
+          metaLaunchUrl: https://actual.schober.dev
+        groups:
+          - name: actual-users
 
 externalSecret:
   enabled: true
@@ -225,6 +247,7 @@ externalSecret:
     mealieClientSecret: authentik-mealie-client-secret
     zotClientSecret: zot-oidc-client-secret
     giteaClientSecret: authentik-gitea-client-secret
+    actualClientSecret: authentik-actual-client-secret
     userPasswords:
       - username: V3RO
         bitwardenItem: authentik-user-v3ro-password

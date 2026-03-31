@@ -45,3 +45,6 @@ namespaces:
   - name: adguard
     labels:
       istio.io/dataplane-mode: ambient
+  - name: actual
+    labels:
+      istio.io/dataplane-mode: ambient
