@@ -42,9 +42,16 @@ namespaces:
     labels:
       istio.io/dataplane-mode: ambient
   - name: proxmox
+  - name: intel
+  - name: node-feature-discovery
+    labels:
+      pod-security.kubernetes.io/enforce: privileged
   - name: adguard
     labels:
       istio.io/dataplane-mode: ambient
   - name: actual
+    labels:
+      istio.io/dataplane-mode: ambient
+  - name: immich
     labels:
       istio.io/dataplane-mode: ambient
