@@ -26,20 +26,38 @@ home-ops-chart:
     initialDelaySeconds: 10
     periodSeconds: 10
 
-  env:
-    - name: ACTUAL_LOGIN_METHOD
-      value: "openid"
-    - name: ACTUAL_OPENID_DISCOVERY_URL
-      value: "https://auth.schober.dev/application/o/actual/.well-known/openid-configuration"
-    - name: ACTUAL_OPENID_CLIENT_ID
-      value: "actual"
-    - name: ACTUAL_OPENID_CLIENT_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: actual-home-ops-chart-secrets
-          key: actual-oidc-client-secret
-    - name: ACTUAL_OPENID_SERVER_HOSTNAME
-      value: "https://actual.schober.dev"
+  initContainers:
+    - name: config-init
+      image: busybox:1.36
+      command:
+        - sh
+        - -c
+        - |
+          sed "s|\${ACTUAL_OPENID_CLIENT_SECRET}|${ACTUAL_OPENID_CLIENT_SECRET}|g" \
+            /config-tpl/config.json.tpl > /config-out/config.json
+      env:
+        - name: ACTUAL_OPENID_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: actual-home-ops-chart-secrets
+              key: actual-oidc-client-secret
+      volumeMounts:
+        - name: config-template
+          mountPath: /config-tpl
+        - name: config-out
+          mountPath: /config-out
+
+  extraVolumes:
+    - name: config-template
+      configMap:
+        name: actual-config-template
+    - name: config-out
+      emptyDir: {}
+
+  extraVolumeMounts:
+    - name: config-out
+      mountPath: /data/config.json
+      subPath: config.json
 
   service:
     ports:
