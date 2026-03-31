@@ -30,6 +30,8 @@ immich:
         existingClaim: immich-library
     metrics:
       enabled: false
+    existingConfiguration: immich-config
+    configurationKind: Secret
 
   # Disable built-in Valkey (use shared cluster Valkey)
   valkey:
@@ -112,3 +114,4 @@ externalSecret:
     kind: ClusterSecretStore
   keys:
     redisPassword: valkey-password
+    oidcClientSecret: authentik-immich-client-secret

@@ -56,6 +56,11 @@ authentik:
           secretKeyRef:
             name: authentik-secret
             key: actualClientSecret
+      - name: AUTHENTIK_IMMICH_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: immichClientSecret
       - name: AUTHENTIK_USER_PASSWORD_V3RO
         valueFrom:
           secretKeyRef:
@@ -79,6 +84,7 @@ authentik:
       - blueprint-gitea
       - blueprint-adguard
       - blueprint-actual
+      - blueprint-immich
       - blueprint-users
 
     users:
@@ -95,6 +101,7 @@ authentik:
           - gitea-admins
           - actual-users
           - adguard-admins
+          - immich-admins
 
     data:
       - name: demo-app
@@ -231,6 +238,26 @@ authentik:
           metaLaunchUrl: https://actual.schober.dev
         groups:
           - name: actual-users
+      - name: immich
+        provider:
+          kind: oauth2
+          name: Immich
+          clientId: immich
+          clientSecretEnv: AUTHENTIK_IMMICH_CLIENT_SECRET
+          redirectUris:
+            - url: https://immich.schober.dev/auth/login
+              matchingMode: strict
+            - url: https://immich.schober.dev/user-settings
+              matchingMode: strict
+            - url: app.immich:///oauth-callback
+              matchingMode: strict
+        application:
+          name: Immich
+          slug: immich
+          metaLaunchUrl: https://immich.schober.dev
+        groups:
+          - name: immich-admins
+          - name: immich-users
 
 externalSecret:
   enabled: true
@@ -248,6 +275,7 @@ externalSecret:
     zotClientSecret: zot-oidc-client-secret
     giteaClientSecret: authentik-gitea-client-secret
     actualClientSecret: authentik-actual-client-secret
+    immichClientSecret: authentik-immich-client-secret
     userPasswords:
       - username: V3RO
         bitwardenItem: authentik-user-v3ro-password

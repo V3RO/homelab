@@ -1,0 +1,22 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: immich-config
+  namespace: {{ .Release.Namespace }}
+spec:
+  refreshInterval: {{ .Values.externalSecret.refreshInterval | default "1h" }}
+  secretStoreRef:
+    name: {{ .Values.externalSecret.secretStoreRef.name }}
+    kind: {{ .Values.externalSecret.secretStoreRef.kind }}
+  target:
+    name: immich-config
+    template:
+      type: Opaque
+      engineVersion: v2
+      data:
+        immich-config.yaml: |
+{{ .Files.Get "immich.json" | replace "OAUTH_CLIENT_SECRET_PLACEHOLDER" "{{`{{ .oidcClientSecret }}`}}" | indent 10 }}
+  data:
+    - secretKey: oidcClientSecret
+      remoteRef:
+        key: {{ .Values.externalSecret.keys.oidcClientSecret | quote }}
