@@ -83,4 +83,6 @@ grafana:
   
   # Disable HA
   persistence:
-    enabled: false
+    enabled: true
+    storageClassName: proxmox-csi
+    size: 2Gi

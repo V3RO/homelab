@@ -3,9 +3,11 @@ prometheus:
   server:
     replicaCount: 1
     statefulSet:
-      enabled: false
+      enabled: true
     persistentVolume:
-      enabled: false
+      enabled: true
+      storageClass: proxmox-csi
+      size: 10Gi
 
   # Disable alertmanager HA
   alertmanager:

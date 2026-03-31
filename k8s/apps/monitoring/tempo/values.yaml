@@ -1,0 +1,5 @@
+tempo:
+  persistence:
+    enabled: true
+    storageClassName: proxmox-csi
+    size: 10Gi

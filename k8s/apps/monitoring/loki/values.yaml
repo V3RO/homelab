@@ -48,13 +48,9 @@ loki:
   singleBinary:
     replicas: 1
     persistence:
-      enabled: false
-    extraVolumes:
-      - name: loki-data
-        emptyDir: {}
-    extraVolumeMounts:
-      - name: loki-data
-        mountPath: /var/loki
+      enabled: true
+      storageClass: proxmox-csi
+      size: 10Gi
 
   # Disable all caches to save memory
   chunksCache:
