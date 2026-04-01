@@ -113,6 +113,7 @@ authentik:
           name: Demo App
           slug: demo-app
           metaLaunchUrl: https://demo.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/nginx.svg
       - name: argocd
         provider:
           kind: oauth2
@@ -128,6 +129,7 @@ authentik:
           name: ArgoCD
           slug: argocd
           metaLaunchUrl: https://argo.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/argo-cd.svg
         groups:
           - name: ArgoCD Admins
           - name: ArgoCD Viewers
@@ -145,6 +147,7 @@ authentik:
           name: Grafana
           slug: grafana
           metaLaunchUrl: https://grafana.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grafana.svg
         groups:
           - name: Grafana Admins
           - name: Grafana Editors
@@ -158,6 +161,7 @@ authentik:
           name: n8n
           slug: n8n
           metaLaunchUrl: https://n8n.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/n8n.svg
       - name: mealie
         provider:
           kind: oauth2
@@ -174,6 +178,7 @@ authentik:
           name: Mealie
           slug: mealie
           metaLaunchUrl: https://mealie.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/mealie.svg
         groups:
           - name: mealie-admins
           - name: mealie-users
@@ -191,6 +196,7 @@ authentik:
           name: Zot
           slug: zot
           metaLaunchUrl: https://zot.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/zot-registry.svg
         groups:
           - name: zot-admins
           - name: zot-users
@@ -207,6 +213,7 @@ authentik:
           name: Gitea
           slug: gitea
           metaLaunchUrl: https://git.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/gitea.svg
         groups:
           - name: gitea-admins
           - name: gitea-users
@@ -221,6 +228,7 @@ authentik:
           name: AdGuard Home
           slug: adguard
           metaLaunchUrl: https://adguard.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/adguard-home.svg
         groups:
           - name: adguard-admins
       - name: actual
@@ -236,6 +244,7 @@ authentik:
           name: Actual Budget
           slug: actual
           metaLaunchUrl: https://actual.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/actual-budget.svg
         groups:
           - name: actual-users
       - name: immich
@@ -255,6 +264,7 @@ authentik:
           name: Immich
           slug: immich
           metaLaunchUrl: https://immich.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/immich.svg
         groups:
           - name: immich-admins
           - name: immich-users

@@ -51,6 +51,9 @@ data:
           provider: !KeyOf {{ .name }}-provider
           meta_launch_url: {{ .application.metaLaunchUrl }}
           policy_engine_mode: any
+          {{- with .application.icon }}
+          icon: {{ . }}
+          {{- end }}
       {{- else if eq .provider.kind "oauth2" }}
       {{- if (default false .provider.includeGroups) }}
       - model: authentik_providers_oauth2.scopemapping
@@ -102,5 +105,8 @@ data:
           provider: !KeyOf {{ .name }}-provider
           meta_launch_url: {{ .application.metaLaunchUrl }}
           policy_engine_mode: any
+          {{- with .application.icon }}
+          icon: {{ . }}
+          {{- end }}
       {{- end }}
 {{- end }}
