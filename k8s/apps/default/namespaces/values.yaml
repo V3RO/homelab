@@ -57,3 +57,6 @@ namespaces:
   - name: immich
     labels:
       istio.io/dataplane-mode: ambient
+  - name: it-tools
+    labels:
+      istio.io/dataplane-mode: ambient
