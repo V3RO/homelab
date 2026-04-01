@@ -86,6 +86,7 @@ authentik:
       - blueprint-actual
       - blueprint-immich
       - blueprint-users
+      - blueprint-enrollment
 
     users:
       - username: V3RO
