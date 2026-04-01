@@ -14,7 +14,7 @@ spec:
       type: Opaque
       engineVersion: v2
       data:
-        immich-config.yaml: |
+        immich-config.json: |
 {{ .Files.Get "immich.json" | replace "OAUTH_CLIENT_SECRET_PLACEHOLDER" "{{`{{ .oidcClientSecret }}`}}" | indent 10 }}
   data:
     - secretKey: oidcClientSecret
