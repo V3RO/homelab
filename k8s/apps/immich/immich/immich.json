@@ -9,7 +9,7 @@
   "ffmpeg": {
     "accel": "disabled",
     "accelDecode": false,
-    "acceptedAudioCodecs": ["aac", "mp3", "opus"],
+    "acceptedAudioCodecs": ["aac", "mp3", "libopus"],
     "acceptedContainers": ["mov", "ogg", "webm"],
     "acceptedVideoCodecs": ["h264"],
     "bframes": -1,
@@ -67,9 +67,6 @@
     "notifications": {
       "concurrency": 5
     },
-    "ocr": {
-      "concurrency": 1
-    },
     "search": {
       "concurrency": 5
     },
@@ -121,13 +118,6 @@
       "minScore": 0.7,
       "modelName": "buffalo_l"
     },
-    "ocr": {
-      "enabled": true,
-      "maxResolution": 736,
-      "minDetectionScore": 0.5,
-      "minRecognitionScore": 0.8,
-      "modelName": "PP-OCRv5_mobile"
-    },
     "urls": ["http://immich-machine-learning:3003"]
   },
   "map": {
@@ -161,7 +151,6 @@
         "ignoreCert": false,
         "password": "",
         "port": 587,
-        "secure": false,
         "username": ""
       }
     }
