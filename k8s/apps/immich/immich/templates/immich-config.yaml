@@ -177,7 +177,7 @@ spec:
               "autoRegister": true,
               "buttonText": "Login with Authentik",
               "clientId": "immich",
-              "clientSecret": "{{ .oidcClientSecret }}",
+              "clientSecret": "{{`{{.oidcClientSecret}}`}}",
               "defaultStorageQuota": null,
               "enabled": true,
               "issuerUrl": "https://auth.schober.dev/application/o/immich/.well-known/openid-configuration",
@@ -206,7 +206,7 @@ spec:
             "storageTemplate": {
               "enabled": false,
               "hashVerificationEnabled": true,
-              "template": "{{`{{"}}{{y}}/{{y}}-{{MM}}-{{dd}}/{{filename}}"}}`}}"
+              "template": "{{`{{"{{y}}/{{y}}-{{MM}}-{{dd}}/{{filename}}"}}`}}"
             },
             "templates": {
               "email": {
