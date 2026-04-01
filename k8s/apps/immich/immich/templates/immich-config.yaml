@@ -14,7 +14,7 @@ spec:
       type: Opaque
       engineVersion: v2
       data:
-        immich-config.json: |
+        immich-config.yaml: |
           {
             "backup": {
               "database": {
@@ -206,7 +206,7 @@ spec:
             "storageTemplate": {
               "enabled": false,
               "hashVerificationEnabled": true,
-              "template": "{{`{{y}}/{{y}}-{{MM}}-{{dd}}/{{filename}}`}}"
+              "template": "{{`{{{{y}}/{{y}}-{{MM}}-{{dd}}/{{filename}}}}`}}"
             },
             "templates": {
               "email": {
