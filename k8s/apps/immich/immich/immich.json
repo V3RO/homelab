@@ -160,7 +160,7 @@
     "autoRegister": true,
     "buttonText": "Login with Authentik",
     "clientId": "immich",
-    "clientSecret": "OAUTH_CLIENT_SECRET_PLACEHOLDER",
+    "clientSecret": "",
     "defaultStorageQuota": null,
     "enabled": true,
     "issuerUrl": "https://auth.schober.dev/application/o/immich/.well-known/openid-configuration",
