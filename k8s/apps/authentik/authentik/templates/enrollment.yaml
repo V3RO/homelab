@@ -138,11 +138,3 @@ data:
           target: !KeyOf enrollment-flow
           stage: !KeyOf enrollment-user-login
           order: 30
-
-      - model: authentik_stages_identification.identificationstage
-        state: present
-        identifiers:
-          name: default-authentication-identification
-        attrs:
-          enrollment_flow:
-            !Find [authentik_flows.flow, [slug, self-service-enrollment]]
