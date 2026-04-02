@@ -60,3 +60,6 @@ namespaces:
   - name: it-tools
     labels:
       istio.io/dataplane-mode: ambient
+  - name: uptime-kuma
+    labels:
+      istio.io/dataplane-mode: ambient
