@@ -38,7 +38,7 @@ namespaces:
   - name: zot
     labels:
       istio.io/dataplane-mode: ambient
-  - name: gitea
+  - name: forgejo
     labels:
       istio.io/dataplane-mode: ambient
   - name: proxmox

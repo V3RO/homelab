@@ -46,11 +46,11 @@ authentik:
           secretKeyRef:
             name: authentik-secret
             key: zotClientSecret
-      - name: AUTHENTIK_GITEA_CLIENT_SECRET
+      - name: AUTHENTIK_FORGEJO_CLIENT_SECRET
         valueFrom:
           secretKeyRef:
             name: authentik-secret
-            key: giteaClientSecret
+            key: forgejoClientSecret
       - name: AUTHENTIK_ACTUAL_CLIENT_SECRET
         valueFrom:
           secretKeyRef:
@@ -81,7 +81,7 @@ authentik:
       - blueprint-n8n
       - blueprint-mealie
       - blueprint-zot
-      - blueprint-gitea
+      - blueprint-forgejo
       - blueprint-adguard
       - blueprint-actual
       - blueprint-immich
@@ -99,7 +99,7 @@ authentik:
           - Grafana Admins
           - mealie-admins
           - zot-admins
-          - gitea-admins
+          - forgejo-admins
           - actual-users
           - adguard-admins
           - immich-admins
@@ -201,23 +201,23 @@ authentik:
         groups:
           - name: zot-admins
           - name: zot-users
-      - name: gitea
+      - name: forgejo
         provider:
           kind: oauth2
-          name: Gitea
-          clientId: gitea
-          clientSecretEnv: AUTHENTIK_GITEA_CLIENT_SECRET
+          name: Forgejo
+          clientId: forgejo
+          clientSecretEnv: AUTHENTIK_FORGEJO_CLIENT_SECRET
           redirectUris:
             - url: https://git.schober.dev/user/oauth2/authentik/callback
               matchingMode: strict
         application:
-          name: Gitea
-          slug: gitea
+          name: Forgejo
+          slug: forgejo
           metaLaunchUrl: https://git.schober.dev
-          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/gitea.svg
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/forgejo.svg
         groups:
-          - name: gitea-admins
-          - name: gitea-users
+          - name: forgejo-admins
+          - name: forgejo-users
       - name: adguard
         provider:
           name: AdGuard Home
@@ -284,7 +284,7 @@ externalSecret:
     grafanaClientSecret: authentik-grafana-client-secret
     mealieClientSecret: authentik-mealie-client-secret
     zotClientSecret: zot-oidc-client-secret
-    giteaClientSecret: authentik-gitea-client-secret
+    forgejoClientSecret: authentik-forgejo-client-secret
     actualClientSecret: authentik-actual-client-secret
     immichClientSecret: authentik-immich-client-secret
     userPasswords:
