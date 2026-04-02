@@ -46,9 +46,6 @@ home-ops-chart:
           - name: uptime-kuma-home-ops-chart
             port: 3001
 
-  authPolicy:
-    enabled: true
-
   persistence:
     data:
       enabled: true
