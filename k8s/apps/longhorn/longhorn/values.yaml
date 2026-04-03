@@ -108,7 +108,7 @@ longhorn:
   # ---------------------------------------------------------------------------
   metrics:
     serviceMonitor:
-      enabled: true
+      enabled: false
 
   # ---------------------------------------------------------------------------
   # Disable the built-in ingress — HTTPRoute (Gateway API) is managed by
