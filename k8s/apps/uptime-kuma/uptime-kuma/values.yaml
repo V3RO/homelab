@@ -49,6 +49,6 @@ home-ops-chart:
   persistence:
     data:
       enabled: true
-      existingClaim: uptime-kuma-data-longhorn
+      existingClaim: uptime-kuma-data
       size: 5Gi
       mountPath: /app/data

@@ -1,0 +1,63 @@
+{{- /*
+  Renders one Longhorn Volume CRD + one Kubernetes PV per entry in .Values.volumes.
+
+  Volume name  = the map key (e.g. "valkey", "forgejo-postgres")
+  PV name      = "longhorn-<key>"   (avoids clashing with legacy pv-* names)
+  PVC name     = .pvcName           (must match exactly what the app creates)
+  Namespace    = .namespace         (where the consuming PVC lives)
+
+  After a cluster recreate ArgoCD re-applies this template, Longhorn finds the
+  replica directory on disk (named "<key>-<suffix>") and re-attaches it to the
+  recreated Volume CRD — no manual orphan recovery required.
+*/ -}}
+{{- range $name, $vol := .Values.volumes }}
+---
+# Longhorn volume: {{ $name }}
+apiVersion: longhorn.io/v1beta2
+kind: Volume
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "longhorn.labels" $ | nindent 4 }}
+spec:
+  numberOfReplicas: {{ $.Values.longhorn.defaultSettings.defaultReplicaCount }}
+  dataLocality: disabled
+  accessMode: rwo
+  # sizeBytes must be an integer byte string — Longhorn rejects Kubernetes quantity notation.
+  size: "{{ $vol.sizeBytes }}"
+  migratable: true
+  dataEngine: v1
+  frontend: blockdev
+{{- end }}
+{{- range $name, $vol := .Values.volumes }}
+---
+# PersistentVolume for Longhorn volume: {{ $name }}
+# Bound to PVC {{ $vol.pvcName }} in namespace {{ $vol.namespace }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: longhorn-{{ $name }}
+  labels:
+    {{- include "longhorn.labels" $ | nindent 4 }}
+spec:
+  capacity:
+    storage: {{ $vol.size }}
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: longhorn-static
+  csi:
+    driver: driver.longhorn.io
+    fsType: ext4
+    volumeHandle: {{ $name }}
+    volumeAttributes:
+      numberOfReplicas: "{{ $.Values.longhorn.defaultSettings.defaultReplicaCount }}"
+      staleReplicaTimeout: "30"
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    namespace: {{ $vol.namespace }}
+    name: {{ $vol.pvcName }}
+{{- end }}

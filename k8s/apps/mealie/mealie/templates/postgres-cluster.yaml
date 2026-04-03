@@ -17,6 +17,9 @@ spec:
       {{- with (get (default dict (get $postgres "storage")) "class") }}
       storageClassName: {{ . }}
       {{- end }}
+      {{- with (get (default dict (get $postgres "storage")) "volumeName") }}
+      volumeName: {{ . }}
+      {{- end }}
   bootstrap:
     initdb:
       database: {{ default "mealie" (get $postgres "database") }}

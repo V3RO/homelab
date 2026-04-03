@@ -1,5 +1,5 @@
 tempo:
   persistence:
     enabled: true
-    storageClassName: longhorn
+    storageClassName: longhorn-static
     size: 10Gi

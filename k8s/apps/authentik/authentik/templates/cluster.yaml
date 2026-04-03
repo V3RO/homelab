@@ -12,9 +12,11 @@ spec:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 5Gi
-      storageClassName: proxmox-csi
-      volumeName: pv-authentik
+          storage: {{ .Values.postgres.storage.size }}
+      storageClassName: {{ .Values.postgres.storage.class }}
+      {{- with .Values.postgres.storage.volumeName }}
+      volumeName: {{ . }}
+      {{- end }}
 
   bootstrap:
     initdb:

@@ -5,7 +5,7 @@ zot:
   pvc:
     create: true
     storage: 10Gi
-    storageClassName: longhorn
+    storageClassName: longhorn-static
   mountConfig: true
   configFiles:
     config.json: |-

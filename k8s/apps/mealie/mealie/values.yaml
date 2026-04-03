@@ -52,8 +52,8 @@ persistence:
   enabled: true
   claimName: mealie-data
   accessMode: ReadWriteOnce
-  storageClass: proxmox-csi
-  volumeName: pv-mealie-data
+  storageClass: longhorn-static
+  volumeName: longhorn-mealie  # pre-created PV → volume mealie
   size: 5Gi
   mountPath: /app/data
 
@@ -62,8 +62,9 @@ postgres:
   clusterName: mealie-postgres
   instances: 1
   storage:
-    class: proxmox-csi
+    class: longhorn-static
     size: 10Gi
+    volumeName: longhorn-mealie-postgres  # pre-created PV → volume mealie-postgres
   database: mealie
   owner: mealie
 

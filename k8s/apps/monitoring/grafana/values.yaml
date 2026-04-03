@@ -84,5 +84,8 @@ grafana:
   # Disable HA
   persistence:
     enabled: true
-    storageClassName: longhorn
+    storageClassName: longhorn-static
+    # Binds to the pre-created PV longhorn-grafana (created by the longhorn chart).
+    # reclaimPolicy: Retain on that PV means data survives cluster recreate.
+    volumeName: longhorn-grafana
     size: 2Gi

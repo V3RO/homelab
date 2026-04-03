@@ -270,6 +270,12 @@ authentik:
           - name: immich-admins
           - name: immich-users
 
+postgres:
+  storage:
+    class: longhorn-static
+    size: 5Gi
+    volumeName: longhorn-authentik-postgres  # pre-created PV → volume authentik-postgres
+
 externalSecret:
   enabled: true
   secretStoreRef:

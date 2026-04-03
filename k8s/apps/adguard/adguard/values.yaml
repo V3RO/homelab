@@ -84,7 +84,7 @@ home-ops-chart:
   persistence:
     conf:
       enabled: true
-      existingClaim: adguard-conf-longhorn
+      existingClaim: adguard-data
       size: 2Gi
       mountPath: /opt/adguardhome/conf
 

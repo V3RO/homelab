@@ -52,7 +52,6 @@ spec:
     {{`{{ if has .path.basename (list
         "namespaces"
         "cilium"
-        "proxmox-csi-driver"
         "base"
         "istiod"
         "cni"

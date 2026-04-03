@@ -52,10 +52,16 @@ postgres:
   clusterName: n8n-postgres
   instances: 1
   storage:
-    class: proxmox-csi
+    class: longhorn-static
     size: 10Gi
+    volumeName: longhorn-n8n-postgres  # pre-created PV → volume n8n-postgres
   database: n8n
   owner: n8n
+
+pvc:
+  storageClass: longhorn-static
+  volumeName: longhorn-n8n  # pre-created PV → volume n8n
+  size: 5Gi
 
 app:
   host: n8n.schober.dev

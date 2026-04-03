@@ -16,6 +16,9 @@ spec:
       {{- with .Values.postgres.storage.class }}
       storageClassName: {{ . }}
       {{- end }}
+      {{- with .Values.postgres.storage.volumeName }}
+      volumeName: {{ . }}
+      {{- end }}
   bootstrap:
     initdb:
       database: {{ .Values.postgres.database }}

@@ -100,16 +100,17 @@ postgres:
   clusterName: forgejo-postgres
   instances: 1
   storage:
-    class: proxmox-csi
+    class: longhorn-static
     size: 5Gi
+    volumeName: longhorn-forgejo-postgres  # pre-created PV → volume forgejo-postgres
   database: forgejo
   owner: forgejo
 
 pvc:
   enabled: true
   claimName: forgejo-data
-  storageClass: proxmox-csi
-  volumeName: pv-forgejo  # references PV created by OpenTofu
+  storageClass: longhorn-static
+  volumeName: longhorn-forgejo  # pre-created PV → volume forgejo
   size: 10Gi
 
 app:

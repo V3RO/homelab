@@ -82,7 +82,7 @@ home-ops-chart:
   persistence:
     data:
       enabled: true
-      existingClaim: actual-data-longhorn
+      existingClaim: actual-data
       size: 5Gi
       mountPath: /data
 

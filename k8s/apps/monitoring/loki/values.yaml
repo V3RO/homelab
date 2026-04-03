@@ -49,7 +49,7 @@ loki:
     replicas: 1
     persistence:
       enabled: true
-      storageClass: longhorn
+      storageClass: longhorn-static
       size: 10Gi
 
   # Disable all caches to save memory
