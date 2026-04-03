@@ -58,8 +58,9 @@ variable "talos_nodes" {
       vm_id         = number
       cpu           = number
       ram_dedicated = number
-      update        = optional(bool, false)
-      igpu          = optional(bool, false)
+      update             = optional(bool, false)
+      igpu               = optional(bool, false)
+      longhorn_disk_size = optional(number, 0)
     })
   )
   validation {
@@ -85,21 +86,4 @@ variable "bitwarden_access_token" {
     condition     = length(var.bitwarden_access_token) > 0
     error_message = "bitwarden_access_token must be provided"
   }
-}
-
-variable "kubernetes_volumes" {
-  type = map(
-    object({
-      node     = string
-      size     = string
-      storage  = optional(string, "local-lvm")
-      vmid     = optional(number, 9999)
-      format   = optional(string, "raw")
-      existing = optional(bool, false)
-      claim_ref = optional(object({
-        name      = string
-        namespace = string
-      }), null)
-    })
-  )
 }

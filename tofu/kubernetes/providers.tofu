@@ -12,10 +12,6 @@ terraform {
       source  = "siderolabs/talos"
       version = "0.9.0"
     }
-    restapi = {
-      source  = "Mastercard/restapi"
-      version = "2.0.1"
-    }
     helm = {
       source  = "hashicorp/helm"
       version = "2.13.2"
@@ -32,17 +28,6 @@ provider "proxmox" {
     agent    = true
     username = var.proxmox.username
     private_key = file("~/.ssh/github")
-  }
-}
-
-provider "restapi" {
-  uri                  = var.proxmox.endpoint
-  insecure             = var.proxmox.insecure
-  write_returns_object = true
-
-  headers = {
-    "Content-Type"  = "application/json"
-    "Authorization" = "PVEAPIToken=${var.proxmox_api_token}"
   }
 }
 
