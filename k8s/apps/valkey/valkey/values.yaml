@@ -19,7 +19,7 @@ valkey:
     kind: Deployment
     persistence:
       enabled: true
-      existingClaim: valkey-data-valkey-primary
+      existingClaim: valkey-data-longhorn
     resources:
       requests:
         cpu: 100m

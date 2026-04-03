@@ -5,7 +5,7 @@ zot:
   pvc:
     create: true
     storage: 10Gi
-    storageClassName: proxmox-csi
+    storageClassName: longhorn
   mountConfig: true
   configFiles:
     config.json: |-

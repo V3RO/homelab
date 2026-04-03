@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "skills": {
+    "distributed-tracing": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "f02a5e738e6b6ccb498d8fc3270899d6b3b37f8e7d82a791e12636c8eb916218"
+    },
+    "prometheus-configuration": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "cd29329107ab228834f6c08a8a17c5463ece4c0c2a19ac193ba39a8b3d8c734c"
+    },
+    "service-mesh-observability": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "a2669e2456cc804aa8de858959077c639acd45eb87fc1a30efcd8624ed302217"
+    }
+  }
+}

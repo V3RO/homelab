@@ -84,8 +84,7 @@ home-ops-chart:
   persistence:
     conf:
       enabled: true
-      storageClass: proxmox-csi
-      volumeName: pv-adguard
+      existingClaim: adguard-conf-longhorn
       size: 2Gi
       mountPath: /opt/adguardhome/conf
 

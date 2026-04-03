@@ -6,7 +6,7 @@ prometheus:
       enabled: true
     persistentVolume:
       enabled: true
-      storageClass: proxmox-csi
+      storageClass: longhorn
       size: 10Gi
 
   # Disable alertmanager HA

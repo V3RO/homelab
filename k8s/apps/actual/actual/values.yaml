@@ -82,7 +82,7 @@ home-ops-chart:
   persistence:
     data:
       enabled: true
-      storageClass: proxmox-csi
+      existingClaim: actual-data-longhorn
       size: 5Gi
       mountPath: /data
 

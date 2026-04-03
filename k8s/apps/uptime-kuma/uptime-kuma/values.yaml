@@ -49,6 +49,6 @@ home-ops-chart:
   persistence:
     data:
       enabled: true
-      storageClass: proxmox-csi
+      existingClaim: uptime-kuma-data-longhorn
       size: 5Gi
       mountPath: /app/data
