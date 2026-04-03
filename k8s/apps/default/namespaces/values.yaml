@@ -63,3 +63,6 @@ namespaces:
   - name: uptime-kuma
     labels:
       istio.io/dataplane-mode: ambient
+  - name: vert-sh
+    labels:
+      istio.io/dataplane-mode: ambient

@@ -63,6 +63,7 @@ spec:
         "cloudflare-issuer"
         "external-secrets"
         "cnpg-operator"
+        "longhorn"
       ) }}`}}
     spec:
       syncPolicy:

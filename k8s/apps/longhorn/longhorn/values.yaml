@@ -1,0 +1,123 @@
+longhorn:
+  # ---------------------------------------------------------------------------
+  # Default settings applied to all Longhorn volumes unless overridden per-PVC.
+  # ---------------------------------------------------------------------------
+  defaultSettings:
+    # Single replica — no redundancy on a single node. Increase to 2+ when
+    # adding worker nodes to get actual fault tolerance.
+    defaultReplicaCount: 1
+
+    # Data path on the host. Talos formats /dev/sdb and mounts it here
+    # (configured via machine.disks in the Talos machine config patch).
+    defaultDataPath: /var/lib/longhorn
+
+    # Reserve 10% of the disk for metadata, WAL overhead, and OS headroom.
+    storageMinimalAvailablePercentage: 10
+
+    # 100% = provision up to the raw disk size (no thin-provisioning beyond
+    # physical capacity). Raise if you want thin-over-provisioning later.
+    storageOverProvisioningPercentage: 100
+
+    # Clean up detached volumes whose pod was deleted unexpectedly so the
+    # volume does not stay in a stuck "attaching" state.
+    autoDeletePodWhenVolumeDetachedUnexpectedly: true
+
+    # Always allow node drain (required for Talos upgrades / reboots).
+    # Longhorn will gracefully detach volumes before the node drains.
+    nodeDrainPolicy: always-allow
+
+    # Automatically delete orphaned replicas left behind after a crash.
+    orphanAutoDeletion: true
+
+    # Allow replica placement on the same node as the primary (necessary on
+    # a single-node cluster where all replicas would otherwise conflict).
+    replicaSoftAntiAffinity: true
+
+    # Upgrade Longhorn engines one at a time to avoid simultaneous IO
+    # disruption across all volumes.
+    concurrentAutomaticEngineUpgradePerNodeLimit: 1
+
+    # Log level — use Info for production, Debug only when troubleshooting.
+    logLevel: Info
+
+  # ---------------------------------------------------------------------------
+  # StorageClass settings
+  # ---------------------------------------------------------------------------
+  persistence:
+    # Keep proxmox-csi as the default StorageClass during the migration period.
+    # Flip to true (and remove the proxmox-csi default annotation) after all
+    # workloads have been migrated to Longhorn.
+    defaultClass: false
+    defaultClassReplicaCount: 1
+    defaultFsType: ext4
+    reclaimPolicy: Retain
+    # Migratable volumes can be live-migrated to another node without detaching
+    # first — required for proper pod rescheduling in a multi-node setup later.
+    migratable: true
+
+  # ---------------------------------------------------------------------------
+  # Component placement — tolerate the control-plane taint.
+  # All Longhorn DaemonSets and Deployments must be schedulable on ctrl-01
+  # because it is the only node in the cluster.
+  # ---------------------------------------------------------------------------
+  longhornManager:
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: ""
+    priorityClass: system-node-critical
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+  longhornDriver:
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: ""
+    priorityClass: system-cluster-critical
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
+
+  longhornUI:
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: ""
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        memory: 128Mi
+
+  # ---------------------------------------------------------------------------
+  # Prometheus integration — emit ServiceMonitor so the existing Prometheus
+  # stack in the monitoring namespace picks up Longhorn metrics automatically.
+  # ---------------------------------------------------------------------------
+  metrics:
+    serviceMonitor:
+      enabled: true
+
+  # ---------------------------------------------------------------------------
+  # Disable the built-in ingress — HTTPRoute (Gateway API) is managed by
+  # templates/route.yaml using the existing Istio internal gateway.
+  # ---------------------------------------------------------------------------
+  ingress:
+    enabled: false
+
+  # Run the pre-upgrade checker job to catch incompatibilities before upgrades.
+  preUpgradeChecker:
+    jobEnabled: true
+    upgradeVersionCheck: true
