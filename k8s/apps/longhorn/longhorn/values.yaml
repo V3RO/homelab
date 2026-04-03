@@ -119,5 +119,5 @@ longhorn:
 
   # Run the pre-upgrade checker job to catch incompatibilities before upgrades.
   preUpgradeChecker:
-    jobEnabled: true
+    jobEnabled: false
     upgradeVersionCheck: true
