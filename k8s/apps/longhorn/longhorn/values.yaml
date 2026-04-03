@@ -136,130 +136,109 @@ volumes:
   # Fields:
   #   namespace  – where the consuming PVC lives
   #   pvcName    – must match exactly what the app creates (VCT, CNPG, or existingClaim)
-  #   size       – Kubernetes quantity used in the PV capacity field
-  #   sizeBytes  – exact byte count required by the Longhorn Volume CRD spec.size
-  #                (Longhorn rejects Kubernetes quantity notation like "2Gi")
-  #
-  # Quick reference: 1 Gi = 1073741824 bytes
+  #   size       – Kubernetes quantity string (Mi / Gi / Ti).
+  #                Used verbatim in the PV capacity field AND converted to bytes
+  #                by the longhorn.quantityToBytes helper for the Volume CRD spec.size.
 
   # --- simple apps (home-ops-chart, existingClaim) -------------------------
   valkey:
     namespace: valkey
     pvcName: valkey-data
     size: 2Gi
-    sizeBytes: "2147483648"
 
   adguard:
     namespace: adguard
     pvcName: adguard-data
     size: 1Gi
-    sizeBytes: "1073741824"
 
   actual:
     namespace: actual
     pvcName: actual-data
     size: 2Gi
-    sizeBytes: "2147483648"
 
   uptime-kuma:
     namespace: uptime-kuma
     pvcName: uptime-kuma-data
     size: 2Gi
-    sizeBytes: "2147483648"
 
   # --- monitoring (StatefulSet VCT binds by volumeName) --------------------
   grafana:
     namespace: monitoring
     pvcName: grafana
     size: 2Gi
-    sizeBytes: "2147483648"
 
   loki:
     namespace: monitoring
     pvcName: storage-loki-0
     size: 10Gi
-    sizeBytes: "10737418240"
 
   tempo:
     namespace: monitoring
     pvcName: storage-tempo-0
     size: 10Gi
-    sizeBytes: "10737418240"
 
   prometheus:
     namespace: monitoring
     pvcName: storage-volume-prometheus-server-0
     size: 10Gi
-    sizeBytes: "10737418240"
 
   # --- zot (StatefulSet VCT) -----------------------------------------------
   zot:
     namespace: zot
     pvcName: zot-pvc-zot-0
     size: 10Gi
-    sizeBytes: "10737418240"
 
   # --- forgejo -------------------------------------------------------------
   forgejo:
     namespace: forgejo
     pvcName: forgejo-data
     size: 10Gi
-    sizeBytes: "10737418240"
 
   forgejo-postgres:
     namespace: forgejo
     pvcName: forgejo-postgres-1
     size: 5Gi
-    sizeBytes: "5368709120"
 
   # --- authentik -----------------------------------------------------------
   authentik-postgres:
     namespace: authentik
     pvcName: authentik-postgres-1
     size: 5Gi
-    sizeBytes: "5368709120"
 
   # --- mealie --------------------------------------------------------------
   mealie:
     namespace: mealie
     pvcName: mealie-data
     size: 5Gi
-    sizeBytes: "5368709120"
 
   mealie-postgres:
     namespace: mealie
     pvcName: mealie-postgres-1
     size: 10Gi
-    sizeBytes: "10737418240"
 
   # --- n8n -----------------------------------------------------------------
   n8n:
     namespace: n8n
     pvcName: n8n
     size: 5Gi
-    sizeBytes: "5368709120"
 
   n8n-postgres:
     namespace: n8n
     pvcName: n8n-postgres-1
     size: 10Gi
-    sizeBytes: "10737418240"
 
   # --- immich --------------------------------------------------------------
   immich-library:
     namespace: immich
     pvcName: immich-library
     size: 250Gi
-    sizeBytes: "268435456000"
 
   immich-ml:
     namespace: immich
     pvcName: immich-ml-cache
     size: 10Gi
-    sizeBytes: "10737418240"
 
   immich-postgres:
     namespace: immich
     pvcName: immich-postgres-1
     size: 20Gi
-    sizeBytes: "21474836480"

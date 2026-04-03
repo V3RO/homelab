@@ -24,8 +24,10 @@ spec:
   numberOfReplicas: {{ $.Values.longhorn.defaultSettings.defaultReplicaCount }}
   dataLocality: disabled
   accessMode: rwo
-  # sizeBytes must be an integer byte string — Longhorn rejects Kubernetes quantity notation.
-  size: "{{ $vol.sizeBytes }}"
+  # Size must be an integer byte string — Longhorn rejects Kubernetes quantity notation.
+  # longhorn.quantityToBytes converts the human-readable `size` field (e.g. "10Gi") at
+  # render time so values.yaml only needs a single `size` field, not a parallel `sizeBytes`.
+  size: "{{ include "longhorn.quantityToBytes" $vol.size }}"
   migratable: true
   dataEngine: v1
   frontend: blockdev
