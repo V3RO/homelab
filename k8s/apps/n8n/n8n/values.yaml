@@ -42,9 +42,7 @@ n8n:
             key: ENCRYPTION_KEY
     persistence:
       enabled: true
-      type: dynamic
-      storageClass: proxmox-csi
-      size: 10Gi
+      existingClaim: n8n
 
   valkey:
     enabled: false

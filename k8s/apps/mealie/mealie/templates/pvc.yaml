@@ -14,4 +14,7 @@ spec:
   {{- with (get $persistence "storageClass") }}
   storageClassName: {{ . }}
   {{- end }}
+  {{- with (get $persistence "volumeName") }}
+  volumeName: {{ . }}
+  {{- end }}
 {{- end }}

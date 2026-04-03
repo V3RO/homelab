@@ -16,10 +16,10 @@ valkey:
     maxmemory-policy allkeys-lru
 
   primary:
+    kind: Deployment
     persistence:
       enabled: true
-      storageClass: proxmox-csi
-      size: 8Gi
+      existingClaim: valkey-data-valkey-primary
     resources:
       requests:
         cpu: 100m

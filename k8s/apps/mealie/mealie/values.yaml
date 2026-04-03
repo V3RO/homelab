@@ -53,6 +53,7 @@ persistence:
   claimName: mealie-data
   accessMode: ReadWriteOnce
   storageClass: proxmox-csi
+  volumeName: pv-mealie-data
   size: 5Gi
   mountPath: /app/data
 
