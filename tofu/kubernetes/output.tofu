@@ -15,6 +15,28 @@ resource "local_file" "kube_config" {
   content         = module.talos.kube_config.kubeconfig_raw
   filename        = "output/kube-config.yaml"
   file_permission = "0600"
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<-EOT
+      set -euo pipefail
+      KUBECONFIG="${self.filename}"
+      echo "Waiting for all proxmox-csi PVs to be fully deleted before removing kubeconfig..."
+      for i in $(seq 1 60); do
+        COUNT=$(kubectl --kubeconfig "$KUBECONFIG" get pv \
+          --no-headers -o custom-columns=NAME:.metadata.name,DRIVER:.spec.csi.driver 2>/dev/null \
+          | awk '/csi\.proxmox\.sinextra\.dev/ {print $1}' | wc -l | tr -d ' ')
+        if [ "$COUNT" -eq 0 ]; then
+          echo "All proxmox-csi PVs are gone."
+          exit 0
+        fi
+        echo "  $COUNT proxmox-csi PV(s) still present (attempt $i/60), waiting 5s..."
+        sleep 5
+      done
+      echo "Timeout waiting for proxmox-csi PVs to be deleted." >&2
+      exit 1
+    EOT
+  }
 }
 
 output "kube_config" {

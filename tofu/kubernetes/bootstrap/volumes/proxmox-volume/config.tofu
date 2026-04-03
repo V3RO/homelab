@@ -1,9 +1,22 @@
 locals {
   filename = "vm-${var.volume.vmid}-${var.volume.name}"
+
+  # Convert Kubernetes binary size notation (e.g. 2Gi) to Proxmox size notation (e.g. 2048M).
+  # Proxmox uses M (mebibytes) natively, so converting Gi -> M avoids any mismatch
+  # between Gi (2^30) and G (10^9) that would cause PVC binding failures.
+  size_number = tonumber(regex("^([0-9]+)", var.volume.size)[0])
+  size_suffix = regex("[0-9]+(.+)$", var.volume.size)[0]
+  proxmox_size = (
+    local.size_suffix == "Gi" ? "${local.size_number * 1024}M" :
+    local.size_suffix == "Ti" ? "${local.size_number * 1024}G" :
+    local.size_suffix == "Mi" ? "${local.size_number}M" :
+    var.volume.size
+  )
 }
 
 resource "restapi_object" "proxmox-volume" {
-  path = "/api2/json/nodes/${var.volume.node}/storage/${var.volume.storage}/content"
+  count = var.volume.existing ? 0 : 1
+  path  = "/api2/json/nodes/${var.volume.node}/storage/${var.volume.storage}/content"
 
   id_attribute = "data"
 
@@ -12,7 +25,7 @@ resource "restapi_object" "proxmox-volume" {
   data = jsonencode({
     vmid     = var.volume.vmid
     filename = local.filename
-    size     = var.volume.size
+    size     = local.proxmox_size
     format   = var.volume.format
   })
 

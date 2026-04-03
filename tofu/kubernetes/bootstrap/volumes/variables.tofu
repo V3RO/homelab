@@ -9,11 +9,16 @@ variable "proxmox_api" {
 variable "volumes" {
   type = map(
     object({
-      node    = string
-      size    = string
-      storage = optional(string, "local-lvm")
-      vmid    = optional(number, 9999)
-      format  = optional(string, "raw")
+      node     = string
+      size     = string
+      storage  = optional(string, "local-lvm")
+      vmid     = optional(number, 9999)
+      format   = optional(string, "raw")
+      existing = optional(bool, false)
+      claim_ref = optional(object({
+        name      = string
+        namespace = string
+      }), null)
     })
   )
 }

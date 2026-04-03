@@ -7,12 +7,13 @@ module "proxmox-volume" {
   }
 
   volume = {
-    name    = each.key
-    node    = each.value.node
-    size    = each.value.size
-    storage = each.value.storage
-    vmid    = each.value.vmid
-    format  = each.value.format
+    name     = each.key
+    node     = each.value.node
+    size     = each.value.size
+    storage  = each.value.storage
+    vmid     = each.value.vmid
+    format   = each.value.format
+    existing = each.value.existing
   }
 }
 
@@ -29,5 +30,6 @@ module "persistent-volume" {
     capacity      = each.value.size
     volume_handle = "${var.proxmox_api.cluster_name}/${module.proxmox-volume[each.key].node}/${module.proxmox-volume[each.key].storage}/${module.proxmox-volume[each.key].filename}"
     storage       = each.value.storage
+    claim_ref     = each.value.claim_ref
   }
 }

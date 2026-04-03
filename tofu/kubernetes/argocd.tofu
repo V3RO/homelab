@@ -81,8 +81,38 @@ resource "helm_release" "argo_config" {
   chart            = local.argo_config_chart_path
   values           = [file(local.argo_config_values_path)]
   timeout          = 600
-  wait             = true
-  atomic           = true
+  # wait/atomic intentionally disabled: argo-config contains ExternalSecret CRs
+  # (for ArgoCD's Authentik OIDC and Zot OCI repo credentials) which require the
+  # external-secrets CRDs to exist. Those CRDs are only installed later by ArgoCD
+  # itself. The ApplicationSet and ExternalSecrets are valid resources -- ArgoCD
+  # will reconcile the ExternalSecrets once external-secrets is running.
+  wait                       = false
+  atomic                     = false
+  disable_openapi_validation = true
+
+  # On destroy, ArgoCD will prune the proxmox-csi-driver Application which kills
+  # the CSI pods. Wait for all proxmox-csi PVs to be fully released first so the
+  # CSI external-attacher can clear their finalizers before the pods are removed.
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<-EOT
+      set -euo pipefail
+      echo "Waiting for all proxmox-csi PVs to be released before uninstalling ArgoCD config (CSI driver will be pruned)..."
+      for i in $(seq 1 120); do
+        COUNT=$(kubectl get pv --no-headers \
+          -o custom-columns=DRIVER:.spec.csi.driver 2>/dev/null \
+          | grep -c 'csi\.proxmox\.sinextra\.dev' || true)
+        if [ "$COUNT" -eq 0 ]; then
+          echo "All proxmox-csi PVs are gone, proceeding."
+          exit 0
+        fi
+        echo "  $COUNT proxmox-csi PV(s) still present (attempt $i/120), waiting 5s..."
+        sleep 5
+      done
+      echo "Timeout waiting for proxmox-csi PVs to be deleted." >&2
+      exit 1
+    EOT
+  }
 
   depends_on = [helm_release.argocd]
 }

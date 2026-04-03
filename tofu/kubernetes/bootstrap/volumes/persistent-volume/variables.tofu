@@ -13,5 +13,9 @@ variable "volume" {
     cache              = optional(string, "writethrough")
     ssd                = optional(bool, true)
     storage            = optional(string, "local-lvm")
+    claim_ref = optional(object({
+      name      = string
+      namespace = string
+    }), null)
   })
 }
