@@ -1,6 +1,19 @@
 machine:
   kubelet:
     ${indent(4, kubelet)}
+%{ if longhorn_disk }
+    # Longhorn requires the data directory to be a shared bind-mount so that
+    # volume mounts created inside the kubelet namespace are propagated back
+    # to the host — this is the standard Talos + Longhorn requirement.
+    extraMounts:
+      - destination: /var/lib/longhorn
+        type: bind
+        source: /var/lib/longhorn
+        options:
+          - bind
+          - rshared
+          - rw
+%{ endif }
   nodeLabels:
     topology.kubernetes.io/region: ${cluster_name}
     topology.kubernetes.io/zone: ${node_name}
@@ -13,3 +26,13 @@ machine:
     net.ipv4.tcp_congestion_control: bbr
     net.ipv4.tcp_fastopen: 3
     net.ipv4.tcp_mtu_probing: 1   # optional
+%{ if longhorn_disk }
+  # Format the dedicated Longhorn disk and mount it at the Longhorn data path
+  # on first boot. We use the stable by-id path (scsi1 serial assigned by
+  # Proxmox/QEMU) rather than /dev/sdX because the CSI PV raw volumes also
+  # appear as block devices inside the VM, making sdX assignments unstable.
+  disks:
+    - device: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1
+      partitions:
+        - mountpoint: /var/lib/longhorn
+%{ endif }

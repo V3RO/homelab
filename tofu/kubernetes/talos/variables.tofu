@@ -18,17 +18,20 @@ variable "cluster" {
 variable "nodes" {
   description = "Configuration for cluster nodes"
   type = map(object({
-    host_node     = string
-    machine_type  = string
-    datastore_id = optional(string, "local-lvm")
-    ip            = string
-    vlan_id      = optional(number)
-    mac_address   = string
-    vm_id         = number
-    cpu           = number
-    ram_dedicated = number
-    update = optional(bool, false)
-    igpu = optional(bool, false)
+    host_node          = string
+    machine_type       = string
+    datastore_id       = optional(string, "local-lvm")
+    ip                 = string
+    vlan_id            = optional(number)
+    mac_address        = string
+    vm_id              = number
+    cpu                = number
+    ram_dedicated      = number
+    update             = optional(bool, false)
+    igpu               = optional(bool, false)
+    # Size in GB of the dedicated Longhorn storage disk (scsi1).
+    # Set to 0 (default) to skip disk creation for nodes without Longhorn.
+    longhorn_disk_size = optional(number, 0)
   }))
 }
 

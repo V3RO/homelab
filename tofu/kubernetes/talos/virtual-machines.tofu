@@ -44,6 +44,23 @@ resource "proxmox_virtual_environment_vm" "this" {
     file_id      = proxmox_virtual_environment_download_file.this["${each.value.host_node}_${each.value.update == true ? local.update_image_id : local.image_id}"].id
   }
 
+  # Dedicated Longhorn storage disk (scsi1 → /dev/sdb inside the VM).
+  # Only created when longhorn_disk_size > 0 for this node.
+  # cache = "none" because Longhorn manages its own caching per volume.
+  dynamic "disk" {
+    for_each = each.value.longhorn_disk_size > 0 ? [each.value.longhorn_disk_size] : []
+    content {
+      datastore_id = each.value.datastore_id
+      interface    = "scsi1"
+      iothread     = true
+      cache        = "none"
+      discard      = "on"
+      ssd          = true
+      file_format  = "raw"
+      size         = disk.value
+    }
+  }
+
   boot_order = ["scsi0"]
 
   operating_system {

@@ -4,3 +4,5 @@ customization:
       - siderolabs/i915-ucode
       - siderolabs/intel-ucode
       - siderolabs/qemu-guest-agent
+      - siderolabs/iscsi-tools       # Required by Longhorn (iSCSI initiator)
+      - siderolabs/util-linux-tools  # Required by Longhorn (nsenter, blkid, etc.)
