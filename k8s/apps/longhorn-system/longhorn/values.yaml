@@ -40,6 +40,13 @@ longhorn:
     # Log level — use Info for production, Debug only when troubleshooting.
     logLevel: Info
 
+    # Allow Longhorn instance-manager and replica pods to run on the control-plane
+    # node. Without this, the replica scheduler filters out ctrl-01 entirely because
+    # it carries the node-role.kubernetes.io/control-plane:NoSchedule taint, causing
+    # "no available disk candidates" for all new volumes.
+    # Format: "key=value:Effect" — multiple entries separated by semicolons.
+    taintToleration: "node-role.kubernetes.io/control-plane:NoSchedule"
+
   # ---------------------------------------------------------------------------
   # StorageClass settings
   # ---------------------------------------------------------------------------

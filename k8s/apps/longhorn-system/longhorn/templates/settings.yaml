@@ -1,0 +1,24 @@
+{{- /*
+  Explicit Longhorn Setting CRs that must be managed declaratively.
+
+  These are settings where:
+  1. The value must be present at runtime (not just on first boot via ConfigMap), AND
+  2. The setting is a genuine Setting CR (not migrated to a dedicated CRD like BackupTarget).
+
+  Safe to re-apply on every ArgoCD sync — Longhorn validates and applies the value.
+*/ -}}
+---
+# Allows Longhorn instance-manager and replica pods to be scheduled on the
+# control-plane node. Without this, the Longhorn replica scheduler filters out
+# ctrl-01 entirely (it has the node-role.kubernetes.io/control-plane:NoSchedule
+# taint), resulting in "no available disk candidates" for every new volume even
+# though the disk is ready and has free space.
+# Format: "key=value:Effect" — multiple tolerations separated by semicolons.
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: taint-toleration
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "longhorn.labels" . | nindent 4 }}
+value: "node-role.kubernetes.io/control-plane:NoSchedule"
