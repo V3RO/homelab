@@ -89,7 +89,7 @@ forgejo:
       - name: "authentik"
         provider: "openidConnect"
         existingSecret: forgejo-secret  # has keys 'key' (client ID) and 'secret' (client secret)
-        autoDiscoverUrl: "http://authentik-server.authentik.svc.cluster.local/application/o/forgejo/.well-known/openid-configuration"
+        autoDiscoverUrl: "https://auth.schober.dev/application/o/forgejo/.well-known/openid-configuration"
         iconUrl: "https://auth.schober.dev/static/dist/assets/icons/icon.png"
         scopes: "openid email profile"
 
