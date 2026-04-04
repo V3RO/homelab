@@ -28,7 +28,8 @@ spec:
   # longhorn.quantityToBytes converts the human-readable `size` field (e.g. "10Gi") at
   # render time so values.yaml only needs a single `size` field, not a parallel `sizeBytes`.
   size: "{{ include "longhorn.quantityToBytes" $vol.size }}"
-  migratable: true
+  # migratable is only valid with accessMode: rwx — not supported for rwo block volumes.
+  migratable: false
   dataEngine: v1
   frontend: blockdev
 {{- end }}
