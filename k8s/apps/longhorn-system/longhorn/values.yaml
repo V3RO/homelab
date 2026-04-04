@@ -40,15 +40,6 @@ longhorn:
     # Log level — use Info for production, Debug only when troubleshooting.
     logLevel: Info
 
-    # Backup target — set to empty string so the Setting CR is explicitly created
-    # with a known value. Without this the CR is never created, and the Longhorn
-    # admission webhook rejects every Volume update with:
-    #   "backup target name cannot be empty when creating a volume or updating
-    #    from an existing backup target"
-    # Configure to an actual S3/NFS URL if/when you set up a backup store.
-    backupTarget: ""
-    backupTargetCredentialSecret: ""
-
   # ---------------------------------------------------------------------------
   # StorageClass settings
   # ---------------------------------------------------------------------------

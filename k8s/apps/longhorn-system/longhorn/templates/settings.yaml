@@ -1,0 +1,33 @@
+{{- /*
+  Explicit Longhorn Setting CRs for values that must exist at runtime.
+
+  The longhorn-default-setting ConfigMap is only consumed by the Longhorn manager
+  on first boot — it does NOT retroactively create Setting CRs on a running cluster.
+  Any setting that the admission webhook validates at apply-time must exist as a
+  Setting CR, otherwise the webhook rejects Volume updates with errors like:
+    "backup target name cannot be empty when creating a volume or updating
+     from an existing backup target"
+
+  These CRs are idempotent and safe to re-apply on every ArgoCD sync.
+*/ -}}
+---
+# An explicit empty backup target satisfies the Longhorn admission webhook which
+# rejects Volume CR updates if this Setting does not exist, even when no backup
+# store is configured.
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: backup-target
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "longhorn.labels" . | nindent 4 }}
+value: ""
+---
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: backup-target-credential-secret
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "longhorn.labels" . | nindent 4 }}
+value: ""
