@@ -9,7 +9,7 @@
     Gi  →  1073741824       (2^30)
     Ti  →  1099511627776    (2^40)
 */ -}}
-{{- define "longhorn.quantityToBytes" -}}
+{{- define "longhorn-volumes.quantityToBytes" -}}
   {{- $q := . -}}
   {{- if hasSuffix "Ti" $q -}}
     {{- $n := trimSuffix "Ti" $q | int64 -}}
@@ -21,11 +21,6 @@
     {{- $n := trimSuffix "Mi" $q | int64 -}}
     {{- mul $n 1048576 | toString -}}
   {{- else -}}
-    {{- fail (printf "longhorn.quantityToBytes: unsupported suffix in %q (use Mi, Gi, or Ti)" $q) -}}
+    {{- fail (printf "longhorn-volumes.quantityToBytes: unsupported suffix in %q (use Mi, Gi, or Ti)" $q) -}}
   {{- end -}}
-{{- end -}}
-
-{{- define "longhorn.labels" -}}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 {{- end -}}

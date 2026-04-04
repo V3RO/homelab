@@ -6,9 +6,10 @@
   PVC name     = .pvcName           (must match exactly what the app creates)
   Namespace    = .namespace         (where the consuming PVC lives)
 
-  After a cluster recreate ArgoCD re-applies this template, Longhorn finds the
-  replica directory on disk (named "<key>-<suffix>") and re-attaches it to the
-  recreated Volume CRD — no manual orphan recovery required.
+  These Volume CRs are deliberately kept in a separate chart from the Longhorn
+  operator itself. The pre-sync hook (presync-wait.yaml) ensures that Longhorn's
+  engine image is fully deployed before these objects are created, preventing the
+  race condition that causes volumes to be stuck in a permanently faulted state.
 */ -}}
 {{- range $name, $vol := .Values.volumes }}
 ---
@@ -18,23 +19,20 @@ kind: Volume
 metadata:
   name: {{ $name }}
   namespace: {{ $.Release.Namespace }}
-  labels:
-    {{- include "longhorn.labels" $ | nindent 4 }}
 spec:
-  numberOfReplicas: {{ $.Values.longhorn.defaultSettings.defaultReplicaCount }}
+  numberOfReplicas: 1
   dataLocality: disabled
   accessMode: rwo
   # Size must be an integer byte string — Longhorn rejects Kubernetes quantity notation.
-  # longhorn.quantityToBytes converts the human-readable `size` field (e.g. "10Gi") at
-  # render time so values.yaml only needs a single `size` field, not a parallel `sizeBytes`.
-  size: "{{ include "longhorn.quantityToBytes" $vol.size }}"
+  size: "{{ include "longhorn-volumes.quantityToBytes" $vol.size }}"
   # migratable is only valid with accessMode: rwx — not supported for rwo block volumes.
   migratable: false
   dataEngine: v1
+  # Required: without an explicit frontend the webhook rejects the CREATE.
   frontend: blockdev
   # Required in Longhorn v1.8+: the admission webhook rejects Volume updates unless
   # backupTargetName is explicitly set. "default" is the built-in BackupTarget CR
-  # created by Longhorn on install (spec.backupTargetURL: "" = no backup store configured).
+  # created by Longhorn on install (spec.backupTargetURL: "" = no backup configured).
   backupTargetName: default
 {{- end }}
 {{- range $name, $vol := .Values.volumes }}
@@ -45,8 +43,6 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: longhorn-{{ $name }}
-  labels:
-    {{- include "longhorn.labels" $ | nindent 4 }}
 spec:
   capacity:
     storage: {{ $vol.size }}
@@ -60,7 +56,7 @@ spec:
     fsType: ext4
     volumeHandle: {{ $name }}
     volumeAttributes:
-      numberOfReplicas: "{{ $.Values.longhorn.defaultSettings.defaultReplicaCount }}"
+      numberOfReplicas: "1"
       staleReplicaTimeout: "30"
   claimRef:
     apiVersion: v1

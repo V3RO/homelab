@@ -1,0 +1,14 @@
+apiVersion: v2
+name: longhorn-volumes
+description: |
+  Pre-provisioned Longhorn Volume CRs and their matching Kubernetes PersistentVolumes.
+
+  Kept intentionally separate from the longhorn chart so that ArgoCD can gate
+  this sync on Longhorn's engine image being fully deployed — preventing the
+  race condition where Volume CRs are applied before Longhorn initialises its
+  engine image, which causes volumes to be permanently stuck in a faulted state.
+
+  The pre-sync hook Job (templates/presync-wait.yaml) blocks the sync until
+  the engine image DaemonSet reports all pods ready.
+type: application
+version: 0.1.0

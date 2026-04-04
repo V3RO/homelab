@@ -1,0 +1,116 @@
+{{- /*
+  Pre-sync hook: wait for Longhorn engine image to be fully deployed.
+
+  WHY THIS EXISTS:
+  Longhorn Volume CRs applied before the engine image DaemonSet is ready are
+  permanently poisoned — the volume controller sets spec.image: "" and
+  robustness: faulted immediately, and Longhorn never self-heals them. This
+  happens because the ApplicationSet syncs all apps simultaneously, so the
+  Volume CRs land in the cluster ~90 seconds before the engine image pod is
+  ready on ctrl-01.
+
+  HOW IT WORKS:
+  ArgoCD runs this Job BEFORE applying any other resource in this chart
+  (argocd.argoproj.io/hook: PreSync). The Job uses kubectl to wait until
+  the engine-image DaemonSet has at least one pod with containerStatuses
+  ready — meaning the Longhorn engine binary is pulled, started, and the
+  volume controller can resolve spec.image. Only then does ArgoCD proceed
+  to apply the Volume CRs and PVs.
+
+  RBAC:
+  A dedicated ServiceAccount + ClusterRole is created so the Job can read
+  DaemonSets in longhorn-system. Scoped to the minimum required.
+*/ -}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: longhorn-volumes-presync
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: longhorn-volumes-presync
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+rules:
+  - apiGroups: ["apps"]
+    resources: ["daemonsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["longhorn.io"]
+    resources: ["engineimages"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: longhorn-volumes-presync
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: longhorn-volumes-presync
+subjects:
+  - kind: ServiceAccount
+    name: longhorn-volumes-presync
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: longhorn-volumes-presync-wait
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    # Run this Job before any other resource in this chart is applied.
+    argocd.argoproj.io/hook: PreSync
+    # Clean up automatically once the Job succeeds so it doesn't clutter the namespace.
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  # If the Job fails (timeout exceeded), let ArgoCD see the failure so the
+  # sync is blocked rather than proceeding with an unready Longhorn.
+  backoffLimit: 0
+  activeDeadlineSeconds: {{ .Values.presyncWaitTimeout }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: longhorn-volumes-presync
+    spec:
+      restartPolicy: Never
+      serviceAccountName: longhorn-volumes-presync
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+      containers:
+        - name: wait
+          # Use the same kubectl image as the cluster version — no external pull needed
+          # because bitnami/kubectl is a small image already present in many clusters.
+          # If image pull is a concern for air-gapped setups, replace with any image
+          # that has kubectl and shell available.
+          image: bitnami/kubectl:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Waiting for Longhorn engine image to be deployed..."
+
+              # Poll the EngineImage CR status until state == "deployed".
+              # Longhorn sets this only after the engine image DaemonSet pod is
+              # Running and the engine binary has passed its readiness check.
+              until kubectl get engineimages.longhorn.io \
+                    -n longhorn-system \
+                    -o jsonpath='{.items[*].status.state}' 2>/dev/null \
+                  | grep -qw "deployed"; do
+                echo "  Engine image not yet deployed — retrying in 5s..."
+                sleep 5
+              done
+
+              echo "Longhorn engine image is deployed. Proceeding with volume sync."
