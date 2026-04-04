@@ -50,5 +50,12 @@ home-ops-chart:
     data:
       enabled: true
       existingClaim: uptime-kuma-data
-      size: 5Gi
+      size: 2Gi
       mountPath: /app/data
+
+# PVC pre-created to bind to the static Longhorn PV (longhorn-uptime-kuma)
+pvc:
+  name: uptime-kuma-data
+  storageClass: longhorn-static
+  volumeName: longhorn-uptime-kuma
+  size: 2Gi

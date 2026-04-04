@@ -108,6 +108,12 @@ persistence:
     size: 250Gi
     storageClass: longhorn-static
     volumeName: longhorn-immich-library  # pre-created PV → volume immich-library
+  immich-ml-cache:
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: longhorn-static
+    volumeName: longhorn-immich-ml  # pre-created PV → volume immich-ml
 
 # External Secrets (Bitwarden)
 externalSecret:

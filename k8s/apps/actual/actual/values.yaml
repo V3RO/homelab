@@ -98,3 +98,10 @@ home-ops-chart:
           remoteRef:
             key: authentik-actual-client-secret
       injectAsEnv: false
+
+# PVC pre-created to bind to the static Longhorn PV (longhorn-actual)
+pvc:
+  name: actual-data
+  storageClass: longhorn-static
+  volumeName: longhorn-actual
+  size: 2Gi

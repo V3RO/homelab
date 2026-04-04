@@ -99,6 +99,13 @@ home-ops-chart:
     - name: work
       mountPath: /opt/adguardhome/work
 
+# PVC pre-created to bind to the static Longhorn PV (longhorn-adguard)
+pvc:
+  name: adguard-data
+  storageClass: longhorn-static
+  volumeName: longhorn-adguard
+  size: 1Gi
+
 # Values for the custom DNS LoadBalancer service template
 service:
   dns:
