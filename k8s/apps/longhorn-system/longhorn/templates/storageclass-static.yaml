@@ -1,32 +1,40 @@
 # longhorn-static StorageClass
 #
 # Used exclusively for pre-provisioned (static) Longhorn volumes.
-# Apps reference pre-created PVs via volumeName in their PVC or CNPG pvcTemplate.
+# Pre-created Longhorn Volume CRs + PVs are defined in the longhorn-volumes chart.
+#
+# IMPORTANT — why provisioner is kubernetes.io/no-provisioner:
+#   Using driver.longhorn.io as the provisioner here caused dynamic volume
+#   creation: whenever a PVC referenced this StorageClass without a volumeName
+#   (e.g. StatefulSet VolumeClaimTemplates for loki, tempo, prometheus, zot),
+#   the Longhorn CSI provisioner immediately created a new volume instead of
+#   waiting for the pre-created static PV to bind. The result was duplicate
+#   Longhorn volumes — one static (orphaned, named longhorn-*) and one dynamic
+#   (named pvc-<uuid>), with the dynamic one winning the bind race.
+#
+#   kubernetes.io/no-provisioner disables dynamic provisioning entirely for this
+#   StorageClass. Kubernetes will only bind PVCs to pre-existing PVs that match
+#   on storageClassName + capacity + accessModes (+ volumeName if set on the PVC).
+#   This is the standard Kubernetes pattern for static/pre-provisioned volumes.
 #
 # Key properties:
-#   - provisioner: driver.longhorn.io  (Longhorn CSI driver handles bind)
-#   - volumeBindingMode: Immediate     (PV/PVC binding happens on claim creation)
-#   - reclaimPolicy: Retain            (volume data survives PVC deletion —
-#                                       critical for disaster recovery: cluster
-#                                       destroy+recreate re-attaches existing data)
-#   - No parameters that trigger auto-provisioning; all volumes are pre-created
-#     via the Longhorn Volume CRDs in volumes.yaml.
+#   - provisioner: kubernetes.io/no-provisioner  (no dynamic provisioning)
+#   - volumeBindingMode: WaitForFirstConsumer     (delays binding until pod is
+#                                                  scheduled — safe on single node,
+#                                                  and avoids premature binding to
+#                                                  the wrong PV)
+#   - reclaimPolicy: Retain                       (volume data survives PVC deletion —
+#                                                  critical for cluster recreate)
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: longhorn-static
   annotations:
-    # Not the default; the standard `longhorn` SC remains default during migration.
-    # Set storageclass.kubernetes.io/is-default-class: "true" here (and remove it
-    # from the longhorn SC) once proxmox-csi is fully removed.
     storageclass.kubernetes.io/is-default-class: "false"
-provisioner: driver.longhorn.io
-volumeBindingMode: Immediate
+provisioner: kubernetes.io/no-provisioner
+# WaitForFirstConsumer: Kubernetes only binds the PVC once a pod is scheduled
+# that needs it, at which point it picks the best matching pre-existing PV.
+# This prevents the dynamic provisioner race on cluster startup.
+volumeBindingMode: WaitForFirstConsumer
 reclaimPolicy: Retain
-allowVolumeExpansion: true
-parameters:
-  # Volumes using this SC are manually created; numberOfReplicas is informational
-  # and carried through as a volumeAttribute on the PV (see volumes.yaml).
-  numberOfReplicas: "{{ .Values.longhorn.defaultSettings.defaultReplicaCount }}"
-  staleReplicaTimeout: "30"
-  fromBackup: ""
+allowVolumeExpansion: false
