@@ -32,6 +32,10 @@ spec:
   migratable: false
   dataEngine: v1
   frontend: blockdev
+  # Required in Longhorn v1.8+: the admission webhook rejects Volume updates unless
+  # backupTargetName is explicitly set. "default" is the built-in BackupTarget CR
+  # created by Longhorn on install (spec.backupTargetURL: "" = no backup store configured).
+  backupTargetName: default
 {{- end }}
 {{- range $name, $vol := .Values.volumes }}
 ---
