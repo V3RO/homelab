@@ -23,7 +23,7 @@ The cluster already provides services for caching, database, DNS, and secret han
 - [Cache](./k8s/infra/valkey)
 - [Database](./k8s/infra/cnpg)
 - [External Secrets (uses Bitwarden)](./k8s/infra/external-secrets)
-- [Authentication](./k8s/apps/authentik)
+- [Authentication](k8s/infra/authentik)
 - Ingress:
   - Use Kubernetes Gateway API
   - Istio is used for service mesh and handles ingress

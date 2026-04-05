@@ -53,6 +53,7 @@ spec:
                 - intel-device-plugins-operator
                 - intel-device-plugins-gpu
                 - headlamp
+                - authentik
         # Wave 4: Observability
         - matchExpressions:
             - key: app.kubernetes.io/name
