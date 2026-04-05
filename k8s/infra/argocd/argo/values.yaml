@@ -44,6 +44,14 @@ argo-cd:
         g, ArgoCD Admins, role:admin
         g, ArgoCD Viewers, role:readonly
 
+  redis:
+    enabled: false
+
+  externalRedis:
+    host: valkey-primary.valkey.svc.cluster.local
+    port: 6379
+    existingSecret: argocd-redis
+
   server:
     httproute:
       enabled: true
