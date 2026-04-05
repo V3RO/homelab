@@ -64,6 +64,9 @@ namespaces:
   - name: uptime-kuma
     labels:
       istio.io/dataplane-mode: ambient
+  - name: kiali
+    labels:
+      istio.io/dataplane-mode: ambient
   - name: longhorn-system
     labels:
       istio.io/dataplane-mode: ambient

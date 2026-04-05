@@ -61,6 +61,11 @@ authentik:
           secretKeyRef:
             name: authentik-secret
             key: immichClientSecret
+      - name: AUTHENTIK_KIALI_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: kialiClientSecret
       - name: AUTHENTIK_USER_PASSWORD_V3RO
         valueFrom:
           secretKeyRef:
@@ -85,6 +90,7 @@ authentik:
       - blueprint-adguard
       - blueprint-actual
       - blueprint-immich
+      - blueprint-kiali
       - blueprint-users
       - blueprint-enrollment
 
@@ -103,6 +109,7 @@ authentik:
           - actual-users
           - adguard-admins
           - immich-admins
+          - kiali-admins
 
     data:
       - name: demo-app
@@ -269,6 +276,22 @@ authentik:
         groups:
           - name: immich-admins
           - name: immich-users
+      - name: kiali
+        provider:
+          kind: oauth2
+          name: Kiali
+          clientId: kiali
+          clientSecretEnv: AUTHENTIK_KIALI_CLIENT_SECRET
+          redirectUris:
+            - url: https://kiali.schober.dev/
+              matchingMode: strict
+        application:
+          name: Kiali
+          slug: kiali
+          metaLaunchUrl: https://kiali.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/kiali.svg
+        groups:
+          - name: kiali-admins
 
 postgres:
   storage:
@@ -293,6 +316,7 @@ externalSecret:
     forgejoClientSecret: authentik-forgejo-client-secret
     actualClientSecret: authentik-actual-client-secret
     immichClientSecret: authentik-immich-client-secret
+    kialiClientSecret: authentik-kiali-client-secret
     userPasswords:
       - username: V3RO
         bitwardenItem: authentik-user-v3ro-password
