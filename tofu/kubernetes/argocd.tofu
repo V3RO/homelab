@@ -70,6 +70,14 @@ resource "helm_release" "argocd" {
   wait              = true
   atomic            = true
 
+  # Disable the HTTPRoute during bootstrap — the Istio Gateway it references
+  # doesn't exist yet. ArgoCD will reconcile itself in wave 5 (after the
+  # gateway is deployed) and create the HTTPRoute then.
+  set {
+    name  = "argo-cd.server.httproute.enabled"
+    value = "false"
+  }
+
   depends_on = [null_resource.wait_for_cluster]
 }
 
