@@ -121,3 +121,8 @@ spec:
           name: istiod-default-validator
           jsonPointers:
             - /webhooks/0/failurePolicy
+        - group: apps
+          kind: DaemonSet
+          name: ztunnel
+          jqPathExpressions:
+            - .spec.template.spec.containers[].env[].valueFrom.resourceFieldRef.divisor
