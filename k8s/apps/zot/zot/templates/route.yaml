@@ -7,11 +7,19 @@ spec:
   hostnames:
     - zot.schober.dev
   parentRefs:
-    - kind: Gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
       name: internal-gateway
       namespace: istio-ingress-internal
       sectionName: https
   rules:
     - backendRefs:
-        - name: zot
+        - group: ""
+          kind: Service
+          name: zot
           port: 5000
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

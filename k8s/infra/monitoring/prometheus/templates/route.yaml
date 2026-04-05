@@ -7,11 +7,19 @@ spec:
   hostnames:
   - prometheus.schober.dev
   parentRefs:
-    - kind: Gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
       name: internal-gateway
       namespace: istio-ingress-internal
       sectionName: https
   rules:
     - backendRefs:
-        - name: prometheus-server
+        - group: ""
+          kind: Service
+          name: prometheus-server
           port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

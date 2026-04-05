@@ -7,11 +7,19 @@ spec:
   hostnames:
     - {{ .Values.proxmox.host }}
   parentRefs:
-    - kind: Gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
       name: {{ .Values.gateway.name }}
       namespace: {{ .Values.gateway.namespace }}
       sectionName: {{ .Values.gateway.sectionName }}
   rules:
     - backendRefs:
-        - name: proxmox
+        - group: ""
+          kind: Service
+          name: proxmox
           port: {{ .Values.proxmox.port }}
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

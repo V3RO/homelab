@@ -7,11 +7,19 @@ spec:
   hostnames:
   - grafana.schober.dev
   parentRefs:
-    - kind: Gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
       name: internal-gateway
       namespace: istio-ingress-internal
       sectionName: https
   rules:
     - backendRefs:
-        - name: grafana
+        - group: ""
+          kind: Service
+          name: grafana
           port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

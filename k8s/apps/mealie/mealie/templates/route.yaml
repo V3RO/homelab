@@ -9,7 +9,8 @@ spec:
   hostnames:
     - {{ get $app "host" }}
   parentRefs:
-    - kind: Gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
       name: {{ default "internal-gateway" (get (default dict (get $app "gateway")) "name") }}
       namespace: {{ default "istio-ingress-internal" (get (default dict (get $app "gateway")) "namespace") }}
       {{- with (get (default dict (get $app "gateway")) "sectionName") }}
@@ -17,6 +18,13 @@ spec:
       {{- end }}
   rules:
     - backendRefs:
-        - name: {{ default "mealie" (get $app "backendServiceName") }}
+        - group: ""
+          kind: Service
+          name: {{ default "mealie" (get $app "backendServiceName") }}
           port: {{ default 80 (get $app "servicePort") }}
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
 {{- end }}

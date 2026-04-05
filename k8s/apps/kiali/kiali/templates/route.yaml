@@ -8,7 +8,8 @@ spec:
   hostnames:
     - {{ .Values.app.host }}
   parentRefs:
-    - kind: Gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
       name: {{ .Values.app.gateway.name }}
       namespace: {{ .Values.app.gateway.namespace }}
       {{- with .Values.app.gateway.sectionName }}
@@ -16,6 +17,13 @@ spec:
       {{- end }}
   rules:
     - backendRefs:
-        - name: {{ .Values.app.backendServiceName }}
+        - group: ""
+          kind: Service
+          name: {{ .Values.app.backendServiceName }}
           port: {{ .Values.app.servicePort }}
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
 {{- end }}
