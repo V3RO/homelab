@@ -37,15 +37,15 @@ spec:
               operator: In
               values:
                 - cert-manager
+                - bitwarden-issuer
+                - cloudflare-issuer
                 - external-secrets
-        # Wave 4: Platform services (gateway must be before ArgoCD since argo needs the HTTPRoute)
+        # Wave 4: Platform services
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
               values:
                 - gateway
-                - bitwarden-issuer
-                - cloudflare-issuer
                 - cnpg-operator
                 - longhorn
                 - longhorn-volumes
@@ -56,7 +56,7 @@ spec:
                 - intel-device-plugins-gpu
                 - headlamp
                 - authentik
-        # Wave 5: ArgoCD self-management (depends on gateway for HTTPRoute + secrets for OIDC)
+        # Wave 5: ArgoCD self-management
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
@@ -74,7 +74,7 @@ spec:
                 - tempo
                 - alloy
                 - grafana
-        # Wave 7: Apps ApplicationSet — only created after all infra is healthy
+        # Wave 7: Apps ApplicationSet
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
