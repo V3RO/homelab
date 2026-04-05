@@ -22,6 +22,23 @@ argo-cd:
                 - openid
                 - profile
                 - email
+      # Custom health check for ApplicationSet: the default built-in check marks an
+      # ApplicationSet as Progressing whenever RolloutProgressing=True. This creates
+      # a circular deadlock when argo-config (which owns the infra ApplicationSet) is
+      # itself part of the RollingSync — the ApplicationSet can never report Healthy,
+      # so wave 5 never completes and wave 6 (observability) is never triggered.
+      # This check only fails on ErrorOccurred, treating RolloutProgressing as Healthy.
+      resource.customizations.health.argoproj.io_ApplicationSet: |
+        hs = {}
+        for _, condition in ipairs(obj.status.conditions or {}) do
+          if condition.type == "ErrorOccurred" and condition.status == "True" then
+            hs.status = "Degraded"
+            hs.message = condition.message
+            return hs
+          end
+        end
+        hs.status = "Healthy"
+        return hs
     rbac:
       policy.csv: |
         g, ArgoCD Admins, role:admin
