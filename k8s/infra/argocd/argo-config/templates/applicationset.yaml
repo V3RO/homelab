@@ -69,6 +69,12 @@ spec:
                 - tempo
                 - alloy
                 - grafana
+        # Wave 6: Apps ApplicationSet — only created after all infra is healthy
+        - matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - argo-apps
   template:
     metadata:
       name: '{{`{{ .path.basename }}`}}'

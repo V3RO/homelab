@@ -1,0 +1,5 @@
+apiVersion: v2
+name: argo-apps-applicationset
+version: 0.1.0
+description: "ApplicationSet for user-facing applications — deployed after infra is healthy"
+type: application
