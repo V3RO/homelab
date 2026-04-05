@@ -1,0 +1,106 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infra
+  namespace: argocd
+spec:
+  goTemplate: true
+  generators:
+    - git:
+        repoURL: https://github.com/V3RO/homelab.git
+        revision: main
+        directories:
+          - path: k8s/infra/*/*
+  strategy:
+    type: RollingSync
+    rollingSync:
+      steps:
+        # Wave 1: ArgoCD (self-management), Namespaces, and CNI
+        - matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - argo
+                - argo-config
+                - argo-secrets
+                - namespaces
+                - cilium
+        # Wave 2: Service mesh + certificates + secrets
+        - matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - base
+                - cni
+                - istiod
+                - ztunnel
+                - cert-manager
+                - external-secrets
+        # Wave 3: Remaining infrastructure services
+        - matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - gateway
+                - bitwarden-issuer
+                - cloudflare-issuer
+                - cnpg-operator
+                - longhorn
+                - longhorn-volumes
+                - valkey
+                - node-feature-discovery
+                - external-dns-unifi
+                - intel-device-plugins-operator
+                - intel-device-plugins-gpu
+                - headlamp
+        # Wave 4: Observability
+        - matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - prometheus
+                - loki
+                - tempo
+                - alloy
+                - grafana
+  template:
+    metadata:
+      name: '{{`{{ .path.basename }}`}}'
+      labels:
+        app.kubernetes.io/managed-by: argocd
+        app.kubernetes.io/name: '{{`{{ .path.basename }}`}}'
+        app.kubernetes.io/part-of: infra
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/V3RO/homelab.git
+        targetRevision: main
+        path: '{{`{{ .path.path }}`}}'
+        helm:
+          releaseName: '{{`{{ .path.basename }}`}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{`{{ index .path.segments 2 }}`}}'
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: true
+        syncOptions:
+          - ServerSideApply=true
+        retry:
+          limit: 10
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 5m
+      ignoreDifferences:
+        - group: admissionregistration.k8s.io
+          kind: ValidatingWebhookConfiguration
+          name: istio-validator-istio-system
+          jsonPointers:
+            - /webhooks/0/failurePolicy
+        - group: admissionregistration.k8s.io
+          kind: ValidatingWebhookConfiguration
+          name: istiod-default-validator
+          jsonPointers:
+            - /webhooks/0/failurePolicy

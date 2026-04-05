@@ -1,8 +1,8 @@
 locals {
-  argocd_chart_path  = "${path.root}/../../k8s/apps/argocd/argo"
-  argocd_values_path = "${path.root}/../../k8s/apps/argocd/argo/values.yaml"
-  argo_config_chart_path  = "${path.root}/../../k8s/apps/argocd/argo-config"
-  argo_config_values_path = "${path.root}/../../k8s/apps/argocd/argo-config/values.yaml"
+  argocd_chart_path  = "${path.root}/../../k8s/infra/argocd/argo"
+  argocd_values_path = "${path.root}/../../k8s/infra/argocd/argo/values.yaml"
+  argo_config_chart_path  = "${path.root}/../../k8s/infra/argocd/argo-config"
+  argo_config_values_path = "${path.root}/../../k8s/infra/argocd/argo-config/values.yaml"
 }
 
 # Wait for cluster health and Cilium readiness before installing Argo CD
