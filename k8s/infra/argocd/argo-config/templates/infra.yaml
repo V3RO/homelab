@@ -15,7 +15,7 @@ spec:
     type: RollingSync
     rollingSync:
       steps:
-        # Wave 1: ArgoCD (self-management), Namespaces, and CNI
+        # Wave 1: ArgoCD (self-management), Namespaces, and Cilium CNI
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
@@ -25,18 +25,23 @@ spec:
                 - argo-secrets
                 - namespaces
                 - cilium
-        # Wave 2: Service mesh + certificates + secrets
+        # Wave 2: Istio mesh
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
               values:
                 - base
-                - cni
                 - istiod
+                - cni
                 - ztunnel
+        # Wave 3: Certificates + secrets
+        - matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
                 - cert-manager
                 - external-secrets
-        # Wave 3: Remaining infrastructure services
+        # Wave 4: Platform services
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
@@ -54,7 +59,7 @@ spec:
                 - intel-device-plugins-gpu
                 - headlamp
                 - authentik
-        # Wave 4: Observability
+        # Wave 5: Observability
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
