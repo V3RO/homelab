@@ -146,3 +146,12 @@ spec:
           name: longhorn-post-upgrade
           jqPathExpressions:
             - .status
+        # StatefulSet volumeClaimTemplates: API server injects apiVersion, kind,
+        # volumeMode and status into each entry which are absent from Helm charts
+        - group: apps
+          kind: StatefulSet
+          jqPathExpressions:
+            - .spec.volumeClaimTemplates[].apiVersion
+            - .spec.volumeClaimTemplates[].kind
+            - .spec.volumeClaimTemplates[].spec.volumeMode
+            - .spec.volumeClaimTemplates[].status
