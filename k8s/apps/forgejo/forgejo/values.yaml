@@ -99,6 +99,7 @@ postgres:
   enabled: true
   clusterName: forgejo-postgres
   instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
     class: longhorn-static
     size: 5Gi

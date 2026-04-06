@@ -51,6 +51,7 @@ postgres:
   enabled: true
   clusterName: n8n-postgres
   instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
     class: longhorn-static
     size: 10Gi

@@ -294,6 +294,7 @@ authentik:
           - name: kiali-admins
 
 postgres:
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
     class: longhorn-static
     size: 5Gi

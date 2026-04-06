@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   instances: 1
+  imageName: {{ .Values.postgres.imageName }}
 
   storage:
     pvcTemplate:
