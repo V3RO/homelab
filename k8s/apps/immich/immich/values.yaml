@@ -42,6 +42,15 @@ immich:
     ingress:
       main:
         enabled: false  # using Gateway API HTTPRoute instead
+    persistence:
+      ca-bundle:
+        enabled: true
+        type: configMap
+        name: ca-bundle
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca-bundle.crt
+            readOnly: true
 
   # Machine Learning component (Intel OpenVINO for iGPU acceleration)
   machine-learning:
@@ -69,6 +78,14 @@ immich:
         storageClass: longhorn-static
         # Binds to pre-created PV longhorn-immich-ml → volume immich-ml
         existingClaim: immich-ml-cache
+      ca-bundle:
+        enabled: true
+        type: configMap
+        name: ca-bundle
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca-bundle.crt
+            readOnly: true
 
 # --- Custom template values (platform integration) ---
 
