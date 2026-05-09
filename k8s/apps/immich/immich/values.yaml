@@ -42,6 +42,12 @@ immich:
     ingress:
       main:
         enabled: false  # using Gateway API HTTPRoute instead
+    controllers:
+      main:
+        containers:
+          main:
+            env:
+              NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
     persistence:
       ca-bundle:
         enabled: true
