@@ -60,3 +60,12 @@ zot:
       mountPath: /secrets/zot
   mountSecret: true
   secretFiles: {}
+  extraVolumes:
+    - name: ca-bundle
+      configMap:
+        name: ca-bundle
+  extraVolumeMounts:
+    - name: ca-bundle
+      mountPath: /etc/ssl/certs/ca-certificates.crt
+      subPath: ca-bundle.crt
+      readOnly: true
