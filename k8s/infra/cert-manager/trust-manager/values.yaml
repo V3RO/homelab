@@ -1,0 +1,4 @@
+trust-manager:
+  certManagerNamespace: cert-manager
+  crds:
+    enabled: true

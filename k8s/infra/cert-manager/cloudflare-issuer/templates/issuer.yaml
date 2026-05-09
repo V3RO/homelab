@@ -5,10 +5,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   acme:
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
     profile: tlsserver
     privateKeySecretRef:
-      name: cloudflare-acme
+      name: cloudflare-acme-prod
     solvers:
       - dns01:
           cloudflare:
@@ -16,3 +16,24 @@ spec:
               name: cloudflare-api-token
               key: api-token
           cnameStrategy: Follow
+{{- if .Values.staging.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: cloudflare-letsencrypt-staging
+  namespace: {{ .Release.Namespace }}
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    profile: tlsserver
+    privateKeySecretRef:
+      name: cloudflare-acme-staging
+    solvers:
+      - dns01:
+          cloudflare:
+            apiTokenSecretRef:
+              name: cloudflare-api-token
+              key: api-token
+          cnameStrategy: Follow
+{{- end }}

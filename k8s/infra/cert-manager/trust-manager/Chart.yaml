@@ -1,0 +1,9 @@
+apiVersion: v2
+name: trust-manager
+description: A Helm chart for trust-manager (cert-manager sub-project for distributing CA bundles)
+type: application
+version: 1.0.0
+dependencies:
+  - name: trust-manager
+    version: v0.22.1
+    repository: https://charts.jetstack.io

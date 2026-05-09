@@ -37,6 +37,7 @@ spec:
               operator: In
               values:
                 - cert-manager
+                - trust-manager
                 - bitwarden-issuer
                 - cloudflare-issuer
                 - external-secrets
