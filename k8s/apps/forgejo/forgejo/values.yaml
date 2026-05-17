@@ -138,7 +138,7 @@ externalSecret:
   enabled: true
   refreshInterval: 1h
   secretStoreRef:
-    name: bitwarden
+    name: bitwarden-app-secrets
     kind: ClusterSecretStore
   keys:
     secretKey: forgejo-secret-key                     # Bitwarden item name

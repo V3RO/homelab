@@ -86,7 +86,7 @@ home-ops-chart:
       refreshInterval: 1h
       secretStoreRef:
         kind: ClusterSecretStore
-        name: bitwarden
+        name: bitwarden-app-secrets
       data:
         - secretKey: homepage-proton-calendar-url
           remoteRef:

@@ -84,7 +84,7 @@ externalSecret:
   enabled: true
   refreshInterval: 1h
   secretStoreRef:
-    name: bitwarden
+    name: bitwarden-app-secrets
     kind: ClusterSecretStore
   keys:
     secretKey: mealie-secret-key

@@ -304,7 +304,7 @@ postgres:
 externalSecret:
   enabled: true
   secretStoreRef:
-    name: bitwarden
+    name: bitwarden-app-secrets
     kind: ClusterSecretStore
   data:
     secretKey: authentik-secret-key

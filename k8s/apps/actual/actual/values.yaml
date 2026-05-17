@@ -92,7 +92,7 @@ home-ops-chart:
       refreshInterval: 1h
       secretStoreRef:
         kind: ClusterSecretStore
-        name: bitwarden
+        name: bitwarden-app-secrets
       data:
         - secretKey: actual-oidc-client-secret
           remoteRef:
