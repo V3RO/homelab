@@ -68,6 +68,7 @@ postgres:
     volumeName: longhorn-mealie-postgres  # pre-created PV → volume mealie-postgres
   database: mealie
   owner: mealie
+  restore: false
 
 database:
   secretName: mealie-postgres-app

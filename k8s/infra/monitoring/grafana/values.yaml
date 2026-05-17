@@ -1,3 +1,6 @@
+postgres:
+  restore: false
+
 grafana:
   # Single replica for homelab
   replicas: 1

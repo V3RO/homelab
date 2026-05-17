@@ -15,7 +15,9 @@ spec:
           storage: 5Gi
       storageClassName: longhorn-static
       volumeName: longhorn-grafana-postgres
+  {{- if not .Values.postgres.restore }}
   bootstrap:
     initdb:
       database: grafana
       owner: grafana
+  {{- end }}

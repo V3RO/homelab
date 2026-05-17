@@ -116,6 +116,7 @@ postgres:
     volumeName: longhorn-forgejo-postgres  # pre-created PV → volume forgejo-postgres
   database: forgejo
   owner: forgejo
+  restore: false
 
 pvc:
   enabled: true

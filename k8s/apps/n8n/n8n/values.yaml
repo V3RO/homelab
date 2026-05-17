@@ -58,6 +58,7 @@ postgres:
     volumeName: longhorn-n8n-postgres  # pre-created PV → volume n8n-postgres
   database: n8n
   owner: n8n
+  restore: false
 
 pvc:
   storageClass: longhorn-static

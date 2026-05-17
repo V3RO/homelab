@@ -18,8 +18,9 @@ spec:
       {{- with .Values.postgres.storage.volumeName }}
       volumeName: {{ . }}
       {{- end }}
-
+  {{- if not .Values.postgres.restore }}
   bootstrap:
     initdb:
       database: authentik
       owner: authentik
+  {{- end }}

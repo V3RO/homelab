@@ -26,8 +26,17 @@ longhorn:
     # Longhorn will gracefully detach volumes before the node drains.
     nodeDrainPolicy: always-allow
 
-    # Automatically delete orphaned replicas left behind after a crash.
-    orphanAutoDeletion: true
+    # Do NOT automatically delete orphaned replicas.
+    # Orphaned replicas are replica directories on disk that have no corresponding
+    # Replica CR — this happens on every cluster rebuild because Longhorn's state
+    # (CRs) is reset while the physical data on the data-VM disk survives.
+    # With orphanAutoDeletion: true, Longhorn would delete the old replica data
+    # during the window between cluster creation and the longhorn-volumes chart
+    # creating Volume CRs, causing permanent data loss.
+    # Keep this false so orphaned replicas remain available for manual recovery
+    # via the Longhorn UI (Volume → recover from orphaned replica) before
+    # flipping postgres.restore: true in the CNPG app charts.
+    orphanAutoDeletion: false
 
     # Allow replica placement on the same node as the primary (necessary on
     # a single-node cluster where all replicas would otherwise conflict).

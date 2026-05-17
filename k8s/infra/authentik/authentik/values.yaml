@@ -298,7 +298,8 @@ postgres:
   storage:
     class: longhorn-static
     size: 5Gi
-    volumeName: longhorn-authentik-postgres  # pre-created PV → volume authentik-postgres
+    volumeName: longhorn-authentik-postgres
+  restore: false
 
 externalSecret:
   enabled: true

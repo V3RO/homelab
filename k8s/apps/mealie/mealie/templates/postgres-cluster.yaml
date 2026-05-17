@@ -21,8 +21,10 @@ spec:
       {{- with (get (default dict (get $postgres "storage")) "volumeName") }}
       volumeName: {{ . }}
       {{- end }}
+  {{- if not (default false (get $postgres "restore")) }}
   bootstrap:
     initdb:
       database: {{ default "mealie" (get $postgres "database") }}
       owner: {{ default "mealie" (get $postgres "owner") }}
+  {{- end }}
 {{- end }}
