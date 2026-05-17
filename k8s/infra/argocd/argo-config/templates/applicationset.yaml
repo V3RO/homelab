@@ -156,3 +156,10 @@ spec:
             - .spec.volumeClaimTemplates[].kind
             - .spec.volumeClaimTemplates[].spec.volumeMode
             - .spec.volumeClaimTemplates[].status
+        # CNPG operator injects many default fields into Cluster .spec at runtime
+        # that are not present in the Helm chart templates
+        - group: postgresql.cnpg.io
+          kind: Cluster
+          jqPathExpressions:
+            - .spec.managed.roles[].connectionLimit
+            - .spec.managed.roles[].inherit
