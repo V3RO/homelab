@@ -112,7 +112,7 @@ postgres:
   postInitSQL:
     - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
     - CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
-  restore: false
+  restore: true
 
 # Gateway API HTTPRoute
 app:
