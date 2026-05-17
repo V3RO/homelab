@@ -8,6 +8,7 @@
 {{- $db := default dict .Values.database -}}
 {{- $dbKeys := default dict (get $db "keys") -}}
 {{- $dbSecretName := default "mealie-postgres-app" (get $db "secretName") -}}
+{{- $dbPasswordSecretName := default $dbSecretName (get $db "passwordSecretName") -}}
 {{- $auth := default dict .Values.authentik -}}
 {{- $authEnabled := default false (get $auth "enabled") -}}
 {{- $authSecret := default dict (get $auth "clientSecret") -}}
@@ -99,7 +100,7 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ $dbSecretName }}
+                  name: {{ $dbPasswordSecretName }}
                   key: {{ default "password" (get $dbKeys "password") }}
             {{- end }}
             {{- if $secretKeyEnabled }}

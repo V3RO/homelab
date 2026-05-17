@@ -22,7 +22,7 @@ grafana:
         key: username
     GF_DATABASE_PASSWORD:
       secretKeyRef:
-        name: grafana-postgres-app
+        name: cnpg-grafana-credentials
         key: password
 
   grafana.ini:

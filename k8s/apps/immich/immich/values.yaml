@@ -13,7 +13,7 @@ immich:
             DB_PASSWORD:
               valueFrom:
                 secretKeyRef:
-                  name: immich-postgres-app
+                  name: cnpg-immich-credentials
                   key: password
             REDIS_HOSTNAME: valkey-primary.valkey.svc.cluster.local
             REDIS_PORT: "6379"
@@ -149,3 +149,4 @@ externalSecret:
   keys:
     redisPassword: valkey-password
     oidcClientSecret: authentik-immich-client-secret
+    cnpgPassword: cnpg-immich

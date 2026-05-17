@@ -19,7 +19,7 @@ authentik:
       - name: AUTHENTIK_POSTGRESQL__PASSWORD
         valueFrom:
           secretKeyRef:
-            name: authentik-postgres-app
+            name: cnpg-authentik-credentials
             key: password
       - name: AUTHENTIK_POSTGRESQL__PORT
         valueFrom:
@@ -322,6 +322,7 @@ externalSecret:
     userPasswords:
       - username: V3RO
         bitwardenItem: authentik-user-v3ro-password
+    cnpgPassword: cnpg-authentik
 
 route:
   enabled: true

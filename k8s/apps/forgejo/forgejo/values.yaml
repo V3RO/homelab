@@ -81,7 +81,7 @@ forgejo:
       - name: FORGEJO__DATABASE__PASSWD
         valueFrom:
           secretKeyRef:
-            name: forgejo-postgres-app  # auto-created by CNPG operator
+            name: cnpg-forgejo-credentials
             key: password
       - name: FORGEJO__SECURITY__SECRET_KEY
         valueFrom:
@@ -144,3 +144,4 @@ externalSecret:
     secretKey: forgejo-secret-key                     # Bitwarden item name
     valkeyPassword: valkey-password                   # Bitwarden item name
     oauthClientSecret: authentik-forgejo-client-secret  # Bitwarden item name
+    cnpgPassword: cnpg-forgejo                        # Bitwarden item name

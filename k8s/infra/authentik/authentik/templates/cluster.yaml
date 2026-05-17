@@ -18,6 +18,13 @@ spec:
       {{- with .Values.postgres.storage.volumeName }}
       volumeName: {{ . }}
       {{- end }}
+  managed:
+    roles:
+      - name: authentik
+        ensure: present
+        login: true
+        passwordSecret:
+          name: cnpg-authentik-credentials
   {{- if not .Values.postgres.restore }}
   bootstrap:
     initdb:

@@ -20,6 +20,13 @@ spec:
       {{- with .Values.postgres.storage.volumeName }}
       volumeName: {{ . }}
       {{- end }}
+  managed:
+    roles:
+      - name: {{ .Values.postgres.owner }}
+        ensure: present
+        login: true
+        passwordSecret:
+          name: cnpg-{{ .Values.postgres.owner }}-credentials
   {{- if not .Values.postgres.restore }}
   bootstrap:
     initdb:

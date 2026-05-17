@@ -28,7 +28,7 @@ n8n:
       DB_POSTGRESDB_PASSWORD:
         valueFrom:
           secretKeyRef:
-            name: n8n-postgres-app
+            name: cnpg-n8n-credentials
             key: password
       QUEUE_BULL_REDIS_PASSWORD:
         valueFrom:
@@ -86,3 +86,4 @@ externalSecret:
   keys:
     encryption: n8n-encryption-key
     redisPassword: valkey-password
+    cnpgPassword: cnpg-n8n

@@ -23,6 +23,13 @@ spec:
   postgresql:
     shared_preload_libraries:
       {{- toYaml .Values.postgres.sharedPreloadLibraries | nindent 6 }}
+  managed:
+    roles:
+      - name: {{ .Values.postgres.owner }}
+        ensure: present
+        login: true
+        passwordSecret:
+          name: cnpg-{{ .Values.postgres.owner }}-credentials
   {{- if not .Values.postgres.restore }}
   bootstrap:
     initdb:

@@ -21,6 +21,13 @@ spec:
       {{- with (get (default dict (get $postgres "storage")) "volumeName") }}
       volumeName: {{ . }}
       {{- end }}
+  managed:
+    roles:
+      - name: {{ default "mealie" (get $postgres "owner") }}
+        ensure: present
+        login: true
+        passwordSecret:
+          name: cnpg-{{ default "mealie" (get $postgres "owner") }}-credentials
   {{- if not (default false (get $postgres "restore")) }}
   bootstrap:
     initdb:
