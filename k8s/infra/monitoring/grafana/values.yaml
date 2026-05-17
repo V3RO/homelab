@@ -4,15 +4,40 @@ grafana:
 
   envFromSecret: grafana-authentik-oidc
 
+  envValueFrom:
+    GF_DATABASE_HOST:
+      secretKeyRef:
+        name: grafana-postgres-app
+        key: host
+    GF_DATABASE_NAME:
+      secretKeyRef:
+        name: grafana-postgres-app
+        key: dbname
+    GF_DATABASE_USER:
+      secretKeyRef:
+        name: grafana-postgres-app
+        key: username
+    GF_DATABASE_PASSWORD:
+      secretKeyRef:
+        name: grafana-postgres-app
+        key: password
+
   grafana.ini:
+    database:
+      type: postgres
+      host: ${GF_DATABASE_HOST}:5432
+      name: ${GF_DATABASE_NAME}
+      user: ${GF_DATABASE_USER}
+      password: ${GF_DATABASE_PASSWORD}
+      ssl_mode: require
     server:
       root_url: https://grafana.schober.dev
     auth:
       signout_redirect_url: https://auth.schober.dev/application/o/grafana/end-session/
-      oauth_auto_login: true
     auth.generic_oauth:
       name: authentik
       enabled: true
+      auto_login: true
       client_id: grafana
       client_secret: $__env{GRAFANA_OAUTH_CLIENT_SECRET}
       scopes: "openid profile email groups"
@@ -80,12 +105,3 @@ grafana:
         gnetId: 7645
         revision: 229
         datasource: Prometheus
-  
-  # Disable HA
-  persistence:
-    enabled: true
-    storageClassName: longhorn-static
-    # Binds to the pre-created PV longhorn-grafana (created by the longhorn chart).
-    # reclaimPolicy: Retain on that PV means data survives cluster recreate.
-    volumeName: longhorn-grafana
-    size: 2Gi

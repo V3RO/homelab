@@ -50,6 +50,11 @@ volumes:
     pvcName: grafana
     size: 2Gi
 
+  grafana-postgres:
+    namespace: monitoring
+    pvcName: grafana-postgres-1
+    size: 5Gi
+
   loki:
     namespace: monitoring
     pvcName: storage-loki-0
