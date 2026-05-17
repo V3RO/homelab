@@ -27,10 +27,8 @@ spec:
         login: true
         passwordSecret:
           name: cnpg-{{ .Values.postgres.owner }}-credentials
-  {{- if not .Values.postgres.restore }}
   bootstrap:
     initdb:
       database: {{ .Values.postgres.database }}
       owner: {{ .Values.postgres.owner }}
-  {{- end }}
 {{- end }}

@@ -25,9 +25,7 @@ spec:
         login: true
         passwordSecret:
           name: cnpg-authentik-credentials
-  {{- if not .Values.postgres.restore }}
   bootstrap:
     initdb:
       database: authentik
       owner: authentik
-  {{- end }}

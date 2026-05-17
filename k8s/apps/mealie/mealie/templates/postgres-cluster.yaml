@@ -28,10 +28,8 @@ spec:
         login: true
         passwordSecret:
           name: cnpg-{{ default "mealie" (get $postgres "owner") }}-credentials
-  {{- if not (default false (get $postgres "restore")) }}
   bootstrap:
     initdb:
       database: {{ default "mealie" (get $postgres "database") }}
       owner: {{ default "mealie" (get $postgres "owner") }}
-  {{- end }}
 {{- end }}

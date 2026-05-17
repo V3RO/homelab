@@ -22,9 +22,7 @@ spec:
         login: true
         passwordSecret:
           name: cnpg-grafana-credentials
-  {{- if not .Values.postgres.restore }}
   bootstrap:
     initdb:
       database: grafana
       owner: grafana
-  {{- end }}
