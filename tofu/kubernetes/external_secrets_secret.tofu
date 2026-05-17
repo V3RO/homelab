@@ -22,7 +22,7 @@ resource "null_resource" "wait_for_external_secrets_ns" {
     EOT
   }
   depends_on = [
-    helm_release.argo_config,
+    null_resource.argo_config,
   ]
 }
 

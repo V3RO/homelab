@@ -60,9 +60,12 @@ data "talos_machine_configuration" "this" {
       kubernetes_version = var.cluster.kubernetes_version
       hostname           = each.key
       kubelet            = var.cluster.kubelet
-      # Pass true when the node has a dedicated Longhorn disk (scsi1 / /dev/sdb)
-      # so the template emits the disk partition + kubelet extraMounts config.
-      longhorn_disk      = coalesce(each.value.longhorn_disk_size, 0) > 0
+      # Pass true when the node has a dedicated Longhorn disk (scsi1) so the
+      # template emits the disk partition + kubelet extraMounts config.
+      longhorn_disk = coalesce(each.value.longhorn_disk_size, 0) > 0
+      # vm_id is kept for reference/logging but is no longer used for the
+      # disk device path (the by-id interface name drive-scsi1 is used instead).
+      vm_id = each.value.vm_id
     }), each.value.machine_type == "controlplane" ?
     templatefile("${path.module}/machine-config/control-plane.yaml.tftpl", {
       ip               = each.value.ip

@@ -10,6 +10,15 @@ locals {
 
   image_id        = "${local.schematic_id}_${local.version}"
   update_image_id = "${local.update_schematic_id}_${local.update_version}"
+
+  # Keys for proxmox_virtual_environment_download_file.this must be statically
+  # known at plan time (for_each restriction). We derive them from the schematic
+  # file content hash + version — both are local values available immediately,
+  # unlike local.image_id which depends on the data.http response.
+  schematic_hash        = sha256(local.schematic)
+  update_schematic_hash = sha256(local.update_schematic)
+  static_image_key        = "${local.schematic_hash}_${local.version}"
+  static_update_image_key = "${local.update_schematic_hash}_${local.update_version}"
 }
 
 data "http" "schematic_id" {
@@ -35,7 +44,7 @@ resource "talos_image_factory_schematic" "updated" {
 resource "proxmox_virtual_environment_download_file" "this" {
   for_each = {
     for k, v in var.nodes :
-    "${v.host_node}_${v.update == true ? local.update_image_id : local.image_id}" => {
+    "${v.host_node}_${v.update == true ? local.static_update_image_key : local.static_image_key}" => {
       host_node = v.host_node
       schematic = v.update ? talos_image_factory_schematic.updated.id : talos_image_factory_schematic.this.id
       version   = v.update ? local.update_version : local.version

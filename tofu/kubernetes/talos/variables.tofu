@@ -35,6 +35,23 @@ variable "nodes" {
   }))
 }
 
+variable "longhorn_disks" {
+  description = <<-EOT
+    Disk attachment metadata produced by the longhorn-storage module, keyed by
+    node name. Only nodes that have a Longhorn data VM are present in the map.
+    When a node key is absent the virtual-machines module skips attaching a
+    Longhorn disk for that node (longhorn_disk_size must also be 0).
+  EOT
+  type = map(object({
+    datastore_id      = string
+    path_in_datastore = string
+    file_format       = string
+    size              = number
+    serial            = string
+  }))
+  default = {}
+}
+
 variable "image" {
   description = "Talos image configuration"
   type = object({
