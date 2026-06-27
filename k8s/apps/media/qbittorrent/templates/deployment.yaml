@@ -45,25 +45,22 @@ spec:
           startupProbe:
             exec:
               command:
-                - sh
-                - -c
-                - ping -c 1 $(echo $WIREGUARD_ADDRESSES | cut -d'/' -f1)
+                - /gluetun-entrypoint
+                - healthcheck
             initialDelaySeconds: 5
             periodSeconds: 5
             failureThreshold: 30
           livenessProbe:
             exec:
               command:
-                - sh
-                - -c
-                - ping -c 1 $(echo $WIREGUARD_ADDRESSES | cut -d'/' -f1)
+                - /gluetun-entrypoint
+                - healthcheck
             periodSeconds: 30
           readinessProbe:
             exec:
               command:
-                - sh
-                - -c
-                - ping -c 1 $(echo $WIREGUARD_ADDRESSES | cut -d'/' -f1)
+                - /gluetun-entrypoint
+                - healthcheck
             periodSeconds: 10
       containers:
         - name: qbittorrent
