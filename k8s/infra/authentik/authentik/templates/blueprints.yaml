@@ -54,6 +54,49 @@ data:
           {{- with .application.icon }}
           icon: {{ . }}
           {{- end }}
+      {{- else if eq .provider.kind "ldap" }}
+      - model: authentik_providers_ldap.ldapprovider
+        id: {{ .name }}-provider
+        identifiers:
+          name: {{ .provider.name }}
+        attrs:
+          name: {{ .provider.name }}
+          base_dn: {{ .provider.baseDn }}
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, {{ default "default-authentication-flow" .provider.bindFlowSlug | quote }}]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, {{ default "default-invalidation-flow" .provider.unbindFlowSlug | quote }}]]
+          {{- with .provider.bindMode }}
+          bind_mode: {{ . }}
+          {{- end }}
+          {{- with .provider.searchMode }}
+          search_mode: {{ . }}
+          {{- end }}
+          {{- with .provider.tlsServerName }}
+          tls_server_name: {{ . }}
+          {{- end }}
+          {{- with .provider.uidStartNumber }}
+          uid_start_number: {{ . }}
+          {{- end }}
+          {{- with .provider.gidStartNumber }}
+          gid_start_number: {{ . }}
+          {{- end }}
+          {{- if hasKey .provider "mfaSupport" }}
+          mfa_support: {{ .provider.mfaSupport }}
+          {{- end }}
+      - model: authentik_core.application
+        id: {{ .name }}-application
+        identifiers:
+          slug: {{ .application.slug }}
+        attrs:
+          name: {{ .application.name }}
+          slug: {{ .application.slug }}
+          provider: !KeyOf {{ .name }}-provider
+          meta_launch_url: {{ .application.metaLaunchUrl }}
+          policy_engine_mode: any
+          {{- with .application.icon }}
+          icon: {{ . }}
+          {{- end }}
       {{- else if eq .provider.kind "oauth2" }}
       {{- if (default false .provider.includeGroups) }}
       - model: authentik_providers_oauth2.scopemapping

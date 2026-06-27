@@ -87,6 +87,7 @@ authentik:
       - blueprint-sonarr
       - blueprint-radarr
       - blueprint-prowlarr
+      - blueprint-jellyfin
       - blueprint-mealie
       - blueprint-zot
       - blueprint-forgejo
@@ -203,6 +204,19 @@ authentik:
           slug: prowlarr
           metaLaunchUrl: https://prowlarr.schober.dev
           icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/prowlarr.svg
+      - name: jellyfin
+        provider:
+          kind: ldap
+          name: Jellyfin LDAP
+          baseDn: dc=ldap,dc=schober,dc=dev
+        application:
+          name: Jellyfin
+          slug: jellyfin
+          metaLaunchUrl: https://jellyfin.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/jellyfin.svg
+        groups:
+          - name: jellyfin-users
+          - name: jellyfin-admins
       - name: mealie
         provider:
           kind: oauth2
