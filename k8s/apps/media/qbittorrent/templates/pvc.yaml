@@ -1,0 +1,44 @@
+{{- if .Values.persistence.config.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.config.claimName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.config.size }}
+  storageClassName: proxmox-csi
+---
+{{- end }}
+{{- if .Values.persistence.downloads.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.downloads.claimName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.downloads.size }}
+  storageClassName: proxmox-csi
+---
+{{- end }}
+{{- if .Values.persistence.library.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.library.claimName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.library.size }}
+  storageClassName: proxmox-csi
+{{- end }}

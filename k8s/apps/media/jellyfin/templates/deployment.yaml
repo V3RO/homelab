@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: jellyfin
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+        - name: jellyfin
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: JELLYFIN_PublishedServerUrl
+              value: {{ .Values.env.JELLYFIN_PublishedServerUrl | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            {{- if .Values.persistence.config.enabled }}
+            - name: config
+              mountPath: {{ .Values.persistence.config.mountPath }}
+            {{- end }}
+            {{- if .Values.persistence.media.enabled }}
+            - name: media
+              mountPath: {{ .Values.persistence.media.mountPath }}
+              {{- if .Values.persistence.media.readOnly }}
+              readOnly: true
+              {{- end }}
+            {{- end }}
+      volumes:
+        {{- if .Values.persistence.config.enabled }}
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.config.claimName }}
+        {{- end }}
+        {{- if .Values.persistence.media.enabled }}
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.media.claimName }}
+        {{- end }}

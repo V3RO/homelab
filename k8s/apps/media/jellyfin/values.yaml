@@ -1,0 +1,35 @@
+image:
+  repository: jellyfin/jellyfin
+  tag: "10.11.6"
+  pullPolicy: IfNotPresent
+
+env:
+  JELLYFIN_PublishedServerUrl: https://jellyfin.schober.dev
+
+service:
+  port: 80
+  targetPort: 8096
+
+persistence:
+  config:
+    enabled: true
+    claimName: jellyfin-config
+    size: 10Gi
+    mountPath: /config
+  media:
+    enabled: true
+    claimName: media-library
+    mountPath: /media
+    readOnly: true
+
+app:
+  host: jellyfin.schober.dev
+  gateway:
+    name: internal-gateway
+    namespace: istio-ingress-internal
+    sectionName: https
+  backendServiceName: jellyfin
+  servicePort: 80
+  authentik:
+    enabled: true
+    provider: authentik
