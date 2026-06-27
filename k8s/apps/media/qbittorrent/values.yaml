@@ -6,11 +6,15 @@ gluetun:
   env:
     VPN_SERVICE_PROVIDER: protonvpn
     VPN_TYPE: wireguard
-    SERVER_COUNTRIES: Netherlands
+    SERVER_COUNTRIES: Romania
     VPN_PORT_FORWARDING: "on"
     PORT_FORWARD_ONLY: "on"
     HTTPPROXY: "on"
     HTTPPROXY_LISTENING_ADDRESS: ":8888"
+    FIREWALL_OUTBOUND_SUBNETS: "10.244.0.0/16,10.96.0.0/12"
+    FIREWALL_INPUT_PORTS: "8080,8888"
+    DNS_KEEP_NAMESERVER: "on"
+    DOT: "off"
   healthCheck:
     port: 9999
 

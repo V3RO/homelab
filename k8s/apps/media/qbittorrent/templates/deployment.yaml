@@ -26,21 +26,10 @@ spec:
             capabilities:
               add:
                 - NET_ADMIN
+          envFrom:
+            - configMapRef:
+                name: qbittorrent-gluetun
           env:
-            - name: VPN_SERVICE_PROVIDER
-              value: {{ .Values.gluetun.env.VPN_SERVICE_PROVIDER | quote }}
-            - name: VPN_TYPE
-              value: {{ .Values.gluetun.env.VPN_TYPE | quote }}
-            - name: SERVER_COUNTRIES
-              value: {{ .Values.gluetun.env.SERVER_COUNTRIES | quote }}
-            - name: VPN_PORT_FORWARDING
-              value: {{ .Values.gluetun.env.VPN_PORT_FORWARDING | quote }}
-            - name: PORT_FORWARD_ONLY
-              value: {{ .Values.gluetun.env.PORT_FORWARD_ONLY | quote }}
-            - name: HTTPPROXY
-              value: {{ .Values.gluetun.env.HTTPPROXY | quote }}
-            - name: HTTPPROXY_LISTENING_ADDRESS
-              value: {{ .Values.gluetun.env.HTTPPROXY_LISTENING_ADDRESS | quote }}
             - name: WIREGUARD_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
@@ -54,18 +43,27 @@ spec:
               containerPort: {{ .Values.gluetun.healthCheck.port }}
               protocol: TCP
           startupProbe:
-            tcpSocket:
-              port: control
+            exec:
+              command:
+                - sh
+                - -c
+                - ping -c 1 $(echo $WIREGUARD_ADDRESSES | cut -d'/' -f1)
             initialDelaySeconds: 5
             periodSeconds: 5
             failureThreshold: 30
           livenessProbe:
-            tcpSocket:
-              port: control
+            exec:
+              command:
+                - sh
+                - -c
+                - ping -c 1 $(echo $WIREGUARD_ADDRESSES | cut -d'/' -f1)
             periodSeconds: 30
           readinessProbe:
-            tcpSocket:
-              port: control
+            exec:
+              command:
+                - sh
+                - -c
+                - ping -c 1 $(echo $WIREGUARD_ADDRESSES | cut -d'/' -f1)
             periodSeconds: 10
       containers:
         - name: qbittorrent
