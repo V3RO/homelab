@@ -34,5 +34,5 @@ app:
   backendServiceName: prowlarr
   servicePort: 80
   authentik:
-    enabled: true
+    enabled: false
     provider: authentik
