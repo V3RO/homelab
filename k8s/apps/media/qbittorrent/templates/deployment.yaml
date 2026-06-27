@@ -26,7 +26,6 @@ spec:
             capabilities:
               add:
                 - NET_ADMIN
-                - SYS_MODULE
           env:
             - name: VPN_SERVICE_PROVIDER
               value: {{ .Values.gluetun.env.VPN_SERVICE_PROVIDER | quote }}
