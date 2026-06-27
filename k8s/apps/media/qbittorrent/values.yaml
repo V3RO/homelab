@@ -68,7 +68,7 @@ externalSecret:
   enabled: true
   refreshInterval: 12h
   secretStoreRef:
-    name: bitwarden
+    name: bitwarden-app-secrets
     kind: ClusterSecretStore
   keys:
     wireguardPrivateKey: protonvpn-wireguard-private-key

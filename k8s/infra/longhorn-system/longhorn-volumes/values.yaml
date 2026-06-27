@@ -130,3 +130,44 @@ volumes:
     namespace: immich
     pvcName: immich-postgres-1
     size: 20Gi
+
+  # --- media ---------------------------------------------------------------
+  jellyfin-config:
+    namespace: media
+    pvcName: jellyfin-config
+    size: 10Gi
+
+  jellyseerr-config:
+    namespace: media
+    pvcName: jellyseerr-config
+    size: 2Gi
+
+  prowlarr-config:
+    namespace: media
+    pvcName: prowlarr-config
+    size: 2Gi
+
+  qbittorrent-config:
+    namespace: media
+    pvcName: qbittorrent-config
+    size: 2Gi
+
+  media-downloads:
+    namespace: media
+    pvcName: media-downloads
+    size: 100Gi
+
+  media-library:
+    namespace: media
+    pvcName: media-library
+    size: 200Gi
+
+  radarr-config:
+    namespace: media
+    pvcName: radarr-config
+    size: 5Gi
+
+  sonarr-config:
+    namespace: media
+    pvcName: sonarr-config
+    size: 5Gi
