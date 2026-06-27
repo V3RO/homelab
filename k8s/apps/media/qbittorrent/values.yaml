@@ -35,16 +35,19 @@ proxy:
 persistence:
   config:
     enabled: true
+    create: true
     claimName: qbittorrent-config
     size: 2Gi
     mountPath: /config
   downloads:
     enabled: true
+    create: true
     claimName: media-downloads
     size: 100Gi
     mountPath: /downloads
   library:
     enabled: true
+    create: true
     claimName: media-library
     size: 200Gi
     mountPath: /media

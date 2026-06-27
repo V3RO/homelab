@@ -20,6 +20,7 @@ service:
 persistence:
   config:
     enabled: true
+    create: true
     claimName: prowlarr-config
     size: 2Gi
     mountPath: /config

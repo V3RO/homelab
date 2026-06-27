@@ -13,6 +13,7 @@ service:
 persistence:
   config:
     enabled: true
+    create: true
     claimName: jellyseerr-config
     size: 2Gi
     mountPath: /app/config

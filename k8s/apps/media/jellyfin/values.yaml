@@ -13,11 +13,13 @@ service:
 persistence:
   config:
     enabled: true
+    create: true
     claimName: jellyfin-config
     size: 10Gi
     mountPath: /config
   media:
     enabled: true
+    create: false
     claimName: media-library
     mountPath: /media
     readOnly: true

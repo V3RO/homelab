@@ -20,15 +20,18 @@ service:
 persistence:
   config:
     enabled: true
+    create: true
     claimName: sonarr-config
     size: 5Gi
     mountPath: /config
   media:
     enabled: true
+    create: false
     claimName: media-library
     mountPath: /media
   downloads:
     enabled: true
+    create: false
     claimName: media-downloads
     mountPath: /downloads
 
