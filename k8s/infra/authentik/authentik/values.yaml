@@ -86,6 +86,7 @@ authentik:
       - blueprint-n8n
       - blueprint-sonarr
       - blueprint-radarr
+      - blueprint-prowlarr
       - blueprint-mealie
       - blueprint-zot
       - blueprint-forgejo
@@ -192,6 +193,16 @@ authentik:
           slug: radarr
           metaLaunchUrl: https://radarr.schober.dev
           icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/radarr.svg
+      - name: prowlarr
+        provider:
+          name: Prowlarr
+          externalHost: https://prowlarr.schober.dev
+          mode: forward_single
+        application:
+          name: Prowlarr
+          slug: prowlarr
+          metaLaunchUrl: https://prowlarr.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/prowlarr.svg
       - name: mealie
         provider:
           kind: oauth2
