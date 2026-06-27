@@ -160,7 +160,7 @@ volumes:
   media-library:
     namespace: media
     pvcName: media-library
-    size: 200Gi
+    size: 100Gi
 
   radarr-config:
     namespace: media
