@@ -129,7 +129,7 @@ persistence:
   immich-library:
     enabled: true
     accessMode: ReadWriteOnce
-    size: 250Gi
+    size: 100Gi
     storageClass: longhorn-static
     volumeName: longhorn-immich-library  # pre-created PV → volume immich-library
   immich-ml-cache:
