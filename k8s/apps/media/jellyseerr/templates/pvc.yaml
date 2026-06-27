@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       storage: {{ $pvc.size }}
-  storageClassName: {{ $pvc.storageClass | default "proxmox-csi" }}
+  storageClassName: {{ $pvc.storageClass | default "longhorn-static" }}
   {{- with $pvc.volumeName }}
   volumeName: {{ . }}
   {{- end }}
