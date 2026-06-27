@@ -1,0 +1,45 @@
+image:
+  repository: lscr.io/linuxserver/radarr
+  tag: "5.20.2"
+  pullPolicy: IfNotPresent
+
+env:
+  PUID: "1000"
+  PGID: "1000"
+  TZ: Europe/Vienna
+
+proxy:
+  HTTP_PROXY: "http://qbittorrent.media.svc.cluster.local:8888"
+  HTTPS_PROXY: "http://qbittorrent.media.svc.cluster.local:8888"
+  NO_PROXY: "localhost,127.0.0.1,.svc.cluster.local,.cluster.local"
+
+service:
+  port: 80
+  targetPort: 7878
+
+persistence:
+  config:
+    enabled: true
+    claimName: radarr-config
+    size: 5Gi
+    mountPath: /config
+  media:
+    enabled: true
+    claimName: media-library
+    mountPath: /media
+  downloads:
+    enabled: true
+    claimName: media-downloads
+    mountPath: /downloads
+
+app:
+  host: radarr.schober.dev
+  gateway:
+    name: internal-gateway
+    namespace: istio-ingress-internal
+    sectionName: https
+  backendServiceName: radarr
+  servicePort: 80
+  authentik:
+    enabled: true
+    provider: authentik

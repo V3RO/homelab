@@ -1,0 +1,74 @@
+gluetun:
+  image:
+    repository: qmcgaw/gluetun
+    tag: v3.41.1
+    pullPolicy: IfNotPresent
+  env:
+    VPN_SERVICE_PROVIDER: protonvpn
+    VPN_TYPE: wireguard
+    SERVER_COUNTRIES: Netherlands
+    VPN_PORT_FORWARDING: "on"
+    PORT_FORWARD_ONLY: "on"
+    HTTPPROXY: "on"
+    HTTPPROXY_LISTENING_ADDRESS: ":8888"
+  healthCheck:
+    port: 9999
+
+qbittorrent:
+  image:
+    repository: lscr.io/linuxserver/qbittorrent
+    tag: "5.1.4"
+    pullPolicy: IfNotPresent
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: Europe/Vienna
+    WEBUI_PORT: "8080"
+  service:
+    port: 80
+    targetPort: 8080
+
+proxy:
+  service:
+    port: 8888
+
+persistence:
+  config:
+    enabled: true
+    claimName: qbittorrent-config
+    size: 2Gi
+    mountPath: /config
+  downloads:
+    enabled: true
+    claimName: media-downloads
+    size: 100Gi
+    mountPath: /downloads
+  library:
+    enabled: true
+    claimName: media-library
+    size: 200Gi
+    mountPath: /media
+
+app:
+  host: qbit.schober.dev
+  gateway:
+    name: internal-gateway
+    namespace: istio-ingress-internal
+    sectionName: https
+  backendServiceName: qbittorrent
+  servicePort: 80
+  authentik:
+    enabled: true
+    provider: authentik
+
+externalSecret:
+  enabled: true
+  refreshInterval: 12h
+  secretStoreRef:
+    name: bitwarden
+    kind: ClusterSecretStore
+  keys:
+    wireguardPrivateKey: protonvpn-wireguard-private-key
+
+networkPolicy:
+  enabled: true

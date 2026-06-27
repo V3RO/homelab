@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: qbittorrent
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: qbittorrent
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      initContainers:
+        - name: gluetun
+          image: "{{ .Values.gluetun.image.repository }}:{{ .Values.gluetun.image.tag }}"
+          imagePullPolicy: {{ .Values.gluetun.image.pullPolicy }}
+          restartPolicy: Always
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_MODULE
+          env:
+            - name: VPN_SERVICE_PROVIDER
+              value: {{ .Values.gluetun.env.VPN_SERVICE_PROVIDER | quote }}
+            - name: VPN_TYPE
+              value: {{ .Values.gluetun.env.VPN_TYPE | quote }}
+            - name: SERVER_COUNTRIES
+              value: {{ .Values.gluetun.env.SERVER_COUNTRIES | quote }}
+            - name: VPN_PORT_FORWARDING
+              value: {{ .Values.gluetun.env.VPN_PORT_FORWARDING | quote }}
+            - name: PORT_FORWARD_ONLY
+              value: {{ .Values.gluetun.env.PORT_FORWARD_ONLY | quote }}
+            - name: HTTPPROXY
+              value: {{ .Values.gluetun.env.HTTPPROXY | quote }}
+            - name: HTTPPROXY_LISTENING_ADDRESS
+              value: {{ .Values.gluetun.env.HTTPPROXY_LISTENING_ADDRESS | quote }}
+            - name: WIREGUARD_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-vpn-secret
+                  key: WIREGUARD_PRIVATE_KEY
+          ports:
+            - name: http-proxy
+              containerPort: 8888
+              protocol: TCP
+            - name: control
+              containerPort: {{ .Values.gluetun.healthCheck.port }}
+              protocol: TCP
+          startupProbe:
+            tcpSocket:
+              port: control
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            tcpSocket:
+              port: control
+            periodSeconds: 30
+          readinessProbe:
+            tcpSocket:
+              port: control
+            periodSeconds: 10
+      containers:
+        - name: qbittorrent
+          image: "{{ .Values.qbittorrent.image.repository }}:{{ .Values.qbittorrent.image.tag }}"
+          imagePullPolicy: {{ .Values.qbittorrent.image.pullPolicy }}
+          env:
+            - name: PUID
+              value: {{ .Values.qbittorrent.env.PUID | quote }}
+            - name: PGID
+              value: {{ .Values.qbittorrent.env.PGID | quote }}
+            - name: TZ
+              value: {{ .Values.qbittorrent.env.TZ | quote }}
+            - name: WEBUI_PORT
+              value: {{ .Values.qbittorrent.env.WEBUI_PORT | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.qbittorrent.service.targetPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            {{- if .Values.persistence.config.enabled }}
+            - name: config
+              mountPath: {{ .Values.persistence.config.mountPath }}
+            {{- end }}
+            {{- if .Values.persistence.downloads.enabled }}
+            - name: downloads
+              mountPath: {{ .Values.persistence.downloads.mountPath }}
+            {{- end }}
+            {{- if .Values.persistence.library.enabled }}
+            - name: library
+              mountPath: {{ .Values.persistence.library.mountPath }}
+            {{- end }}
+      volumes:
+        {{- if .Values.persistence.config.enabled }}
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.config.claimName }}
+        {{- end }}
+        {{- if .Values.persistence.downloads.enabled }}
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.downloads.claimName }}
+        {{- end }}
+        {{- if .Values.persistence.library.enabled }}
+        - name: library
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.library.claimName }}
+        {{- end }}
