@@ -42,6 +42,29 @@ spec:
             - name: no_proxy
               value: {{ .Values.proxy.NO_PROXY | quote }}
             {{- end }}
+          {{- if .Values.app.authentik.enabled }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    file=/config/config.xml
+                    i=0
+                    while [ $i -lt 60 ]; do
+                      if [ -f "$file" ]; then
+                        if grep -q '<AuthenticationMethod>' "$file"; then
+                          sed -i 's|<AuthenticationMethod>[^<]*</AuthenticationMethod>|<AuthenticationMethod>External</AuthenticationMethod>|g' "$file"
+                        elif grep -q '</Config>' "$file"; then
+                          sed -i '/<\/Config>/i\\  <AuthenticationMethod>External</AuthenticationMethod>' "$file"
+                        fi
+                        exit 0
+                      fi
+                      i=$((i + 1))
+                      sleep 2
+                    done
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}

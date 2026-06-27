@@ -44,5 +44,9 @@ app:
   backendServiceName: radarr
   servicePort: 80
   authentik:
-    enabled: false
+    enabled: true
     provider: authentik
+    outpostService:
+      name: authentik-server
+      namespace: authentik
+      port: 80

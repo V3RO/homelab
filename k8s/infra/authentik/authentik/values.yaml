@@ -84,6 +84,8 @@ authentik:
       - blueprint-argocd
       - blueprint-grafana
       - blueprint-n8n
+      - blueprint-sonarr
+      - blueprint-radarr
       - blueprint-mealie
       - blueprint-zot
       - blueprint-forgejo
@@ -170,6 +172,26 @@ authentik:
           slug: n8n
           metaLaunchUrl: https://n8n.schober.dev
           icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/n8n.svg
+      - name: sonarr
+        provider:
+          name: Sonarr
+          externalHost: https://sonarr.schober.dev
+          mode: forward_single
+        application:
+          name: Sonarr
+          slug: sonarr
+          metaLaunchUrl: https://sonarr.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/sonarr.svg
+      - name: radarr
+        provider:
+          name: Radarr
+          externalHost: https://radarr.schober.dev
+          mode: forward_single
+        application:
+          name: Radarr
+          slug: radarr
+          metaLaunchUrl: https://radarr.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/radarr.svg
       - name: mealie
         provider:
           kind: oauth2

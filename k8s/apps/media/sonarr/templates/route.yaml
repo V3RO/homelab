@@ -16,6 +16,24 @@ spec:
       {{- end }}
   rules:
     - backendRefs:
-        - name: {{ .Values.app.backendServiceName }}
+        - group: ""
+          kind: Service
+          name: {{ .Values.app.authentik.outpostService.name }}
+          namespace: {{ .Values.app.authentik.outpostService.namespace }}
+          port: {{ .Values.app.authentik.outpostService.port }}
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /outpost.goauthentik.io
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: {{ .Values.app.backendServiceName }}
           port: {{ .Values.app.servicePort }}
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
 {{- end }}
