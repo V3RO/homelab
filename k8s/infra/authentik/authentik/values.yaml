@@ -101,6 +101,7 @@ authentik:
       - blueprint-actual
       - blueprint-immich
       - blueprint-kiali
+      - blueprint-proxy-outpost
       - blueprint-users
       - blueprint-enrollment
 
@@ -132,6 +133,14 @@ authentik:
           local: true
       defaults:
         serviceConnectionName: Local Kubernetes Cluster
+      proxy:
+        enabled: true
+        name: proxy
+        authentikHost: http://authentik-server.authentik.svc.cluster.local
+        authentikHostBrowser: https://auth.schober.dev
+        kubernetesDisabledComponents:
+          - ingress
+          - httproute
 
     data:
       - name: demo-app

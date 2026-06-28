@@ -18,8 +18,8 @@ istiod:
           port: 4317
       - name: authentik
         envoyExtAuthzHttp:
-          service: authentik-server.authentik.svc.cluster.local
-          port: 80
+          service: ak-outpost-proxy.authentik.svc.cluster.local
+          port: 9000
           pathPrefix: /outpost.goauthentik.io/auth/envoy
           headersToDownstreamOnAllow:
             - cookie

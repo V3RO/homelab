@@ -47,6 +47,6 @@ app:
     enabled: true
     provider: authentik
     outpostService:
-      name: authentik-server
+      name: ak-outpost-proxy
       namespace: authentik
-      port: 80
+      port: 9000

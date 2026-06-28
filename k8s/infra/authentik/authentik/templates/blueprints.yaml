@@ -211,3 +211,75 @@ data:
           {{- end }}
       {{- end }}
 {{- end }}
+
+{{- $proxyOutpost := .Values.authentik.blueprints.outposts.proxy }}
+{{- if and $proxyOutpost $proxyOutpost.enabled }}
+{{- $proxyProviders := list }}
+{{- range .Values.authentik.blueprints.data }}
+{{- if eq (default "proxy" .provider.kind) "proxy" }}
+{{- $proxyProviders = append $proxyProviders .provider.name }}
+{{- end }}
+{{- end }}
+{{- if gt (len $proxyProviders) 0 }}
+{{- $serviceConnectionName := default .Values.authentik.blueprints.outposts.defaults.serviceConnectionName $proxyOutpost.serviceConnectionName }}
+{{- $authentikHost := default (printf "https://%s" .Values.route.hostname) $proxyOutpost.authentikHost }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blueprint-proxy-outpost
+  namespace: {{ .Release.Namespace }}
+data:
+  proxy-outpost.yaml: |
+    # yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+    version: 1
+    metadata:
+      name: Proxy Outpost
+      labels:
+        blueprints.goauthentik.io/description: "Blueprint for the shared proxy outpost"
+    entries:
+      - model: authentik_outposts.outpost
+        id: proxy-outpost
+        state: present
+        identifiers:
+          name: {{ default "proxy" $proxyOutpost.name }}
+        attrs:
+          name: {{ default "proxy" $proxyOutpost.name }}
+          type: proxy
+          providers:
+            {{- range $proxyProviders }}
+            - !Find [authentik_providers_proxy.proxyprovider, [name, {{ . | quote }}]]
+            {{- end }}
+          service_connection:
+            !Find [authentik_outposts.kubernetesserviceconnection, [name, {{ $serviceConnectionName | quote }}]]
+          config:
+            log_level: {{ default "info" $proxyOutpost.logLevel }}
+            refresh_interval: {{ default "minutes=5" $proxyOutpost.refreshInterval }}
+            authentik_host: {{ $authentikHost | quote }}
+            authentik_host_browser: {{ default "" $proxyOutpost.authentikHostBrowser | quote }}
+            authentik_host_insecure: {{ default false $proxyOutpost.authentikHostInsecure }}
+            object_naming_template: {{ default "ak-outpost-%(name)s" $proxyOutpost.objectNamingTemplate | quote }}
+            kubernetes_replicas: {{ default 1 $proxyOutpost.kubernetesReplicas }}
+            kubernetes_namespace: {{ default .Release.Namespace $proxyOutpost.kubernetesNamespace | quote }}
+            kubernetes_service_type: {{ default "ClusterIP" $proxyOutpost.kubernetesServiceType | quote }}
+            {{- with $proxyOutpost.kubernetesIngressAnnotations }}
+            kubernetes_ingress_annotations:
+{{ toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with $proxyOutpost.kubernetesIngressSecretName }}
+            kubernetes_ingress_secret_name: {{ . | quote }}
+            {{- end }}
+            {{- with $proxyOutpost.kubernetesDisabledComponents }}
+            kubernetes_disabled_components:
+              {{- range . }}
+              - {{ . | quote }}
+              {{- end }}
+            {{- end }}
+            {{- with $proxyOutpost.kubernetesImagePullSecrets }}
+            kubernetes_image_pull_secrets:
+              {{- range . }}
+              - {{ . | quote }}
+              {{- end }}
+            {{- end }}
+{{- end }}
+{{- end }}

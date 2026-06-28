@@ -1,7 +1,7 @@
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: ReferenceGrant
 metadata:
-  name: authentik-server-media-routes
+  name: authentik-proxy-outpost-media-routes
   namespace: {{ .Release.Namespace }}
 spec:
   from:
@@ -11,4 +11,4 @@ spec:
   to:
     - group: ""
       kind: Service
-      name: authentik-server
+      name: ak-outpost-proxy
