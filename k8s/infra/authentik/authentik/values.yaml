@@ -71,6 +71,11 @@ authentik:
           secretKeyRef:
             name: authentik-secret
             key: userPassword-V3RO
+      - name: AUTHENTIK_USER_PASSWORD_JELLYFIN_LDAP
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: userPassword-jellyfin-ldap
   authentik:
     existingSecret:
       secretName: authentik-secret
@@ -115,6 +120,10 @@ authentik:
           - adguard-admins
           - immich-admins
           - kiali-admins
+      - username: jellyfin-ldap
+        name: Jellyfin LDAP
+        email: jellyfin-ldap@schober.dev
+        passwordEnv: AUTHENTIK_USER_PASSWORD_JELLYFIN_LDAP
 
     outposts:
       serviceConnections:
@@ -218,6 +227,9 @@ authentik:
           kind: ldap
           name: Jellyfin LDAP
           baseDn: dc=ldap,dc=schober,dc=dev
+          permissions:
+            - permission: authentik_providers_ldap.search_full_directory
+              user: jellyfin-ldap
         outpost:
           enabled: true
           name: jellyfin-ldap
@@ -381,6 +393,8 @@ externalSecret:
     userPasswords:
       - username: V3RO
         bitwardenItem: authentik-user-v3ro-password
+      - username: jellyfin-ldap
+        bitwardenItem: authentik-user-jellyfin-ldap-password
     cnpgPassword: cnpg-authentik
 
 route:

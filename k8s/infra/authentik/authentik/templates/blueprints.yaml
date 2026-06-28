@@ -84,6 +84,18 @@ data:
           {{- if hasKey .provider "mfaSupport" }}
           mfa_support: {{ .provider.mfaSupport }}
           {{- end }}
+        {{- with .provider.permissions }}
+        permissions:
+          {{- range . }}
+          - permission: {{ .permission }}
+            {{- with .user }}
+            user: !Find [authentik_core.user, [username, {{ . | quote }}]]
+            {{- end }}
+            {{- with .role }}
+            role: !Find [authentik_rbac.role, [name, {{ . | quote }}]]
+            {{- end }}
+          {{- end }}
+        {{- end }}
       - model: authentik_core.application
         id: {{ .name }}-application
         identifiers:
