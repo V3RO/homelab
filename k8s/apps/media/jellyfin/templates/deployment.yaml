@@ -17,6 +17,92 @@ spec:
       labels:
         app: jellyfin
     spec:
+      {{- if .Values.ldapAuth.enabled }}
+      initContainers:
+        - name: ldap-auth-config
+          image: python:3.12-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - python3
+            - -c
+            - |
+              import os
+              import xml.etree.ElementTree as ET
+
+              path = "/config/plugins/configurations/LDAP-Auth.xml"
+              os.makedirs(os.path.dirname(path), exist_ok=True)
+
+              if os.path.exists(path):
+                  tree = ET.parse(path)
+                  root = tree.getroot()
+              else:
+                  root = ET.Element(
+                      "PluginConfiguration",
+                      {
+                          "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                          "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                      },
+                  )
+                  tree = ET.ElementTree(root)
+
+              values = {
+                  "LdapServer": {{ .Values.ldapAuth.server | quote }},
+                  "LdapPort": {{ .Values.ldapAuth.port }},
+                  "UseSsl": {{ ternary "True" "False" .Values.ldapAuth.useSsl }},
+                  "UseStartTls": {{ ternary "True" "False" .Values.ldapAuth.useStartTls }},
+                  "SkipSslVerify": {{ ternary "True" "False" .Values.ldapAuth.skipSslVerify }},
+                  "LdapBindUser": {{ .Values.ldapAuth.bindUser | quote }},
+                  "LdapBindPassword": os.environ["LDAP_BIND_PASSWORD"],
+                  "LdapBaseDn": {{ .Values.ldapAuth.baseDn | quote }},
+                  "LdapSearchFilter": {{ .Values.ldapAuth.searchFilter | quote }},
+                  "LdapAdminBaseDn": {{ .Values.ldapAuth.adminBaseDn | quote }},
+                  "LdapAdminFilter": {{ .Values.ldapAuth.adminFilter | quote }},
+                  "EnableLdapAdminFilterMemberUid": {{ ternary "True" "False" .Values.ldapAuth.enableAdminFilterMemberUid }},
+                  "LdapSearchAttributes": {{ .Values.ldapAuth.searchAttributes | quote }},
+                  "LdapClientCertPath": {{ .Values.ldapAuth.clientCertPath | quote }},
+                  "LdapClientKeyPath": {{ .Values.ldapAuth.clientKeyPath | quote }},
+                  "LdapRootCaPath": {{ .Values.ldapAuth.rootCaPath | quote }},
+                  "CreateUsersFromLdap": {{ ternary "True" "False" .Values.ldapAuth.createUsersFromLdap }},
+                  "AllowPassChange": {{ ternary "True" "False" .Values.ldapAuth.allowPassChange }},
+                  "LdapUidAttribute": {{ .Values.ldapAuth.uidAttribute | quote }},
+                  "LdapUsernameAttribute": {{ .Values.ldapAuth.usernameAttribute | quote }},
+                  "LdapPasswordAttribute": {{ .Values.ldapAuth.passwordAttribute | quote }},
+                  "EnableLdapProfileImageSync": {{ ternary "True" "False" .Values.ldapAuth.enableProfileImageSync }},
+                  "RemoveImagesNotInLdap": {{ ternary "True" "False" .Values.ldapAuth.removeImagesNotInLdap }},
+                  "LdapProfileImageAttribute": {{ .Values.ldapAuth.profileImageAttribute | quote }},
+                  "LdapProfileImageFormat": {{ .Values.ldapAuth.profileImageFormat | quote }},
+                  "EnableAllFolders": {{ ternary "True" "False" .Values.ldapAuth.enableAllFolders }},
+                  "PasswordResetUrl": {{ .Values.ldapAuth.passwordResetUrl | quote }},
+              }
+
+              for key, value in values.items():
+                  node = root.find(key)
+                  if node is None:
+                      node = ET.SubElement(root, key)
+                  if isinstance(value, bool):
+                      text = str(value).lower()
+                  else:
+                      text = str(value)
+                  node.text = text
+
+              for key in ("EnabledFolders", "LdapUsers"):
+                  if root.find(key) is None:
+                      ET.SubElement(root, key)
+
+              ET.indent(tree, space="  ")
+              tree.write(path, encoding="utf-8", xml_declaration=True)
+          env:
+            - name: LDAP_BIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jellyfin-secret
+                  key: ldapBindPassword
+          volumeMounts:
+            {{- if .Values.persistence.config.enabled }}
+            - name: config
+              mountPath: {{ .Values.persistence.config.mountPath }}
+            {{- end }}
+      {{- end }}
       containers:
         - name: jellyfin
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

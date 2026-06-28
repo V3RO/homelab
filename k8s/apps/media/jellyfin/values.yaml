@@ -6,6 +6,35 @@ image:
 env:
   JELLYFIN_PublishedServerUrl: https://jellyfin.schober.dev
 
+ldapAuth:
+  enabled: true
+  server: ak-outpost-jellyfin-ldap.authentik.svc.cluster.local
+  port: 389
+  useSsl: false
+  useStartTls: false
+  skipSslVerify: false
+  bindUser: cn=jellyfin-ldap,ou=users,dc=ldap,dc=schober,dc=dev
+  baseDn: dc=ldap,dc=schober,dc=dev
+  searchFilter: (|(memberOf=cn=jellyfin-users,ou=groups,dc=ldap,dc=schober,dc=dev)(memberOf=cn=jellyfin-admins,ou=groups,dc=ldap,dc=schober,dc=dev))
+  adminBaseDn: ou=users,dc=ldap,dc=schober,dc=dev
+  adminFilter: (memberOf=cn=jellyfin-admins,ou=groups,dc=ldap,dc=schober,dc=dev)
+  enableAdminFilterMemberUid: false
+  searchAttributes: cn,mail
+  clientCertPath: ""
+  clientKeyPath: ""
+  rootCaPath: ""
+  createUsersFromLdap: true
+  allowPassChange: false
+  uidAttribute: uid
+  usernameAttribute: cn
+  passwordAttribute: userPassword
+  enableProfileImageSync: false
+  removeImagesNotInLdap: false
+  profileImageAttribute: jpegphoto
+  profileImageFormat: Default
+  enableAllFolders: false
+  passwordResetUrl: ""
+
 service:
   port: 80
   targetPort: 8096
@@ -35,3 +64,12 @@ app:
   authentik:
     enabled: false
     provider: authentik
+
+externalSecret:
+  enabled: true
+  refreshInterval: 1h
+  secretStoreRef:
+    name: bitwarden-app-secrets
+    kind: ClusterSecretStore
+  keys:
+    ldapBindPassword: authentik-user-jellyfin-ldap-password
