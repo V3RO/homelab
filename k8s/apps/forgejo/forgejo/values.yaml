@@ -3,16 +3,6 @@ forgejo:
   image:
     rootless: true
 
-  extraVolumes:
-    - name: ca-bundle
-      configMap:
-        name: ca-bundle
-  extraVolumeMounts:
-    - name: ca-bundle
-      mountPath: /etc/ssl/certs/ca-certificates.crt
-      subPath: ca-bundle.crt
-      readOnly: true
-
   # Disable all bundled DB/cache sub-charts - using external CNPG + shared Valkey
   redis-cluster:
     enabled: false
