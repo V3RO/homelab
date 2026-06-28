@@ -233,6 +233,8 @@ authentik:
         outpost:
           enabled: true
           name: jellyfin-ldap
+          authentikHost: http://authentik-server.authentik.svc.cluster.local
+          authentikHostBrowser: https://auth.schober.dev
         application:
           name: Jellyfin
           slug: jellyfin
