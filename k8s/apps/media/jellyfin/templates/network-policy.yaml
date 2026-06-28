@@ -11,6 +11,16 @@ spec:
   policyTypes:
     - Egress
   egress:
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
     - to:
         - namespaceSelector:
             matchLabels:
