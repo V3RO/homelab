@@ -54,12 +54,17 @@ spec:
                     i=0
                     while [ $i -lt 60 ]; do
                       if [ -f "$file" ]; then
+                        if grep -q '<AuthenticationMethod>External</AuthenticationMethod>' "$file"; then
+                          exit 0
+                        fi
                         if grep -q '<AuthenticationMethod>' "$file"; then
                           sed -i 's|<AuthenticationMethod>[^<]*</AuthenticationMethod>|<AuthenticationMethod>External</AuthenticationMethod>|g' "$file"
                         elif grep -q '</Config>' "$file"; then
                           sed -i '/<\/Config>/i\\  <AuthenticationMethod>External</AuthenticationMethod>' "$file"
                         fi
-                        exit 0
+                        if grep -q '<AuthenticationMethod>External</AuthenticationMethod>' "$file"; then
+                          exit 0
+                        fi
                       fi
                       i=$((i + 1))
                       sleep 2
