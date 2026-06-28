@@ -83,6 +83,7 @@ authentik:
       - blueprint-demo-app
       - blueprint-argocd
       - blueprint-grafana
+      - blueprint-outpost-service-connections
       - blueprint-n8n
       - blueprint-sonarr
       - blueprint-radarr
@@ -114,6 +115,14 @@ authentik:
           - adguard-admins
           - immich-admins
           - kiali-admins
+
+    outposts:
+      serviceConnections:
+        - name: Local Kubernetes Cluster
+          kind: kubernetes
+          local: true
+      defaults:
+        serviceConnectionName: Local Kubernetes Cluster
 
     data:
       - name: demo-app
@@ -209,6 +218,9 @@ authentik:
           kind: ldap
           name: Jellyfin LDAP
           baseDn: dc=ldap,dc=schober,dc=dev
+        outpost:
+          enabled: true
+          name: jellyfin-ldap
         application:
           name: Jellyfin
           slug: jellyfin

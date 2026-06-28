@@ -97,6 +97,52 @@ data:
           {{- with .application.icon }}
           icon: {{ . }}
           {{- end }}
+      {{- if and .outpost .outpost.enabled }}
+      {{- $outpostName := default (printf "%s-ldap" .name) .outpost.name }}
+      {{- $serviceConnectionName := default $.Values.authentik.blueprints.outposts.defaults.serviceConnectionName .outpost.serviceConnectionName }}
+      {{- $authentikHost := default (printf "https://%s" $.Values.route.hostname) .outpost.authentikHost }}
+      - model: authentik_outposts.outpost
+        id: {{ .name }}-outpost
+        state: present
+        identifiers:
+          name: {{ $outpostName }}
+        attrs:
+          name: {{ $outpostName }}
+          type: ldap
+          providers:
+            - !KeyOf {{ .name }}-provider
+          service_connection:
+            !Find [authentik_outposts.kubernetesserviceconnection, [name, {{ $serviceConnectionName | quote }}]]
+          config:
+            log_level: {{ default "info" .outpost.logLevel }}
+            refresh_interval: {{ default "minutes=5" .outpost.refreshInterval }}
+            authentik_host: {{ $authentikHost | quote }}
+            authentik_host_browser: {{ default "" .outpost.authentikHostBrowser | quote }}
+            authentik_host_insecure: {{ default false .outpost.authentikHostInsecure }}
+            object_naming_template: {{ default "ak-outpost-%(name)s" .outpost.objectNamingTemplate | quote }}
+            kubernetes_replicas: {{ default 1 .outpost.kubernetesReplicas }}
+            kubernetes_namespace: {{ default $.Release.Namespace .outpost.kubernetesNamespace | quote }}
+            kubernetes_service_type: {{ default "ClusterIP" .outpost.kubernetesServiceType | quote }}
+            {{- with .outpost.kubernetesIngressAnnotations }}
+            kubernetes_ingress_annotations:
+{{ toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with .outpost.kubernetesIngressSecretName }}
+            kubernetes_ingress_secret_name: {{ . | quote }}
+            {{- end }}
+            {{- with .outpost.kubernetesDisabledComponents }}
+            kubernetes_disabled_components:
+              {{- range . }}
+              - {{ . | quote }}
+              {{- end }}
+            {{- end }}
+            {{- with .outpost.kubernetesImagePullSecrets }}
+            kubernetes_image_pull_secrets:
+              {{- range . }}
+              - {{ . | quote }}
+              {{- end }}
+            {{- end }}
+      {{- end }}
       {{- else if eq .provider.kind "oauth2" }}
       {{- if (default false .provider.includeGroups) }}
       - model: authentik_providers_oauth2.scopemapping
