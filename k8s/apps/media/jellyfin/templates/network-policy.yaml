@@ -29,4 +29,8 @@ spec:
         - protocol: TCP
           port: 389
         - protocol: TCP
+          port: 3389
+        - protocol: TCP
           port: 636
+        - protocol: TCP
+          port: 6636
