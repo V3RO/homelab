@@ -93,6 +93,7 @@ authentik:
       - blueprint-sonarr
       - blueprint-radarr
       - blueprint-prowlarr
+      - blueprint-qbittorrent
       - blueprint-jellyfin
       - blueprint-mealie
       - blueprint-zot
@@ -231,6 +232,16 @@ authentik:
           slug: prowlarr
           metaLaunchUrl: https://prowlarr.schober.dev
           icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/prowlarr.svg
+      - name: qbittorrent
+        provider:
+          name: qBittorrent
+          externalHost: https://qbit.schober.dev
+          mode: forward_single
+        application:
+          name: qBittorrent
+          slug: qbittorrent
+          metaLaunchUrl: https://qbit.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/qbittorrent.svg
       - name: jellyfin
         provider:
           kind: ldap

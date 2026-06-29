@@ -28,6 +28,10 @@ qbittorrent:
     PGID: "1000"
     TZ: Europe/Vienna
     WEBUI_PORT: "8080"
+  authBypass:
+    enabled: true
+    trustedReverseProxies: 10.244.0.0/16
+    authSubnetWhitelist: 0.0.0.0/0
   service:
     port: 80
     targetPort: 8080
@@ -65,8 +69,12 @@ app:
   backendServiceName: qbittorrent
   servicePort: 80
   authentik:
-    enabled: false
+    enabled: true
     provider: authentik
+    outpostService:
+      name: ak-outpost-proxy
+      namespace: authentik
+      port: 9000
 
 externalSecret:
   enabled: true

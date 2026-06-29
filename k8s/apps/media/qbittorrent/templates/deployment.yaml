@@ -18,6 +18,62 @@ spec:
         app: qbittorrent
     spec:
       initContainers:
+        {{- if .Values.qbittorrent.authBypass.enabled }}
+        - name: configure-qbittorrent-auth
+          image: "{{ .Values.qbittorrent.image.repository }}:{{ .Values.qbittorrent.image.tag }}"
+          imagePullPolicy: {{ .Values.qbittorrent.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              config_dir={{ .Values.persistence.config.mountPath }}/qBittorrent
+              config_file=${config_dir}/qBittorrent.conf
+              mkdir -p "${config_dir}"
+              touch "${config_file}"
+              tmp_file=$(mktemp)
+              awk -v trusted='{{ .Values.qbittorrent.authBypass.trustedReverseProxies }}' -v whitelist='{{ .Values.qbittorrent.authBypass.authSubnetWhitelist }}' '
+                BEGIN {
+                  in_preferences = 0
+                  wrote_settings = 0
+                }
+                function write_settings() {
+                  if (!wrote_settings) {
+                    print "WebUI\\ReverseProxySupportEnabled=true"
+                    print "WebUI\\TrustedReverseProxiesList=\"" trusted "\""
+                    print "WebUI\\AuthSubnetWhitelistEnabled=true"
+                    print "WebUI\\AuthSubnetWhitelist=\"" whitelist "\""
+                    wrote_settings = 1
+                  }
+                }
+                {
+                  if ($0 == "[Preferences]") {
+                    print
+                    in_preferences = 1
+                    write_settings()
+                    next
+                  }
+                  if (in_preferences && $0 ~ /^\[/) {
+                    in_preferences = 0
+                  }
+                  if (index($0, "WebUI\\ReverseProxySupportEnabled=") == 1 || index($0, "WebUI\\TrustedReverseProxiesList=") == 1 || index($0, "WebUI\\AuthSubnetWhitelistEnabled=") == 1 || index($0, "WebUI\\AuthSubnetWhitelist=") == 1) {
+                    next
+                  }
+                  print
+                }
+                END {
+                  if (!wrote_settings) {
+                    print "[Preferences]"
+                    write_settings()
+                  }
+                }
+              ' "${config_file}" > "${tmp_file}"
+              mv "${tmp_file}" "${config_file}"
+          volumeMounts:
+            {{- if .Values.persistence.config.enabled }}
+            - name: config
+              mountPath: {{ .Values.persistence.config.mountPath }}
+            {{- end }}
+        {{- end }}
         - name: gluetun
           image: "{{ .Values.gluetun.image.repository }}:{{ .Values.gluetun.image.tag }}"
           imagePullPolicy: {{ .Values.gluetun.image.pullPolicy }}
