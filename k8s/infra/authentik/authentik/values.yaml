@@ -365,7 +365,11 @@ authentik:
           clientId: kiali
           clientSecretEnv: AUTHENTIK_KIALI_CLIENT_SECRET
           redirectUris:
+            - url: https://kiali.schober.dev
+              matchingMode: strict
             - url: https://kiali.schober.dev/
+              matchingMode: strict
+            - url: https://kiali.schober.dev:443
               matchingMode: strict
             - url: https://kiali.schober.dev:443/
               matchingMode: strict
