@@ -16,7 +16,15 @@ spec:
     metadata:
       labels:
         app: jellyfin
+        media-volume-group: shared
     spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  media-volume-group: shared
       {{- if .Values.ldapAuth.enabled }}
       initContainers:
         - name: ldap-auth-config
