@@ -28,6 +28,10 @@ qbittorrent:
     PGID: "1000"
     TZ: Europe/Vienna
     WEBUI_PORT: "8080"
+  apiKey:
+    enabled: true
+    secretName: qbittorrent-api-key
+    secretKey: API_KEY
   authBypass:
     enabled: true
     trustedReverseProxies: 10.244.0.0/16
@@ -84,6 +88,7 @@ externalSecret:
     kind: ClusterSecretStore
   keys:
     wireguardPrivateKey: protonvpn-wireguard-private-key
+    qbittorrentApiKey: qbittorrent-api-key
 
 networkPolicy:
   enabled: true

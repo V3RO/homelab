@@ -26,10 +26,18 @@ spec:
                 matchLabels:
                   media-volume-group: shared
       initContainers:
-        {{- if .Values.qbittorrent.authBypass.enabled }}
+        {{- if or .Values.qbittorrent.authBypass.enabled .Values.qbittorrent.apiKey.enabled }}
         - name: configure-qbittorrent-auth
           image: "{{ .Values.qbittorrent.image.repository }}:{{ .Values.qbittorrent.image.tag }}"
           imagePullPolicy: {{ .Values.qbittorrent.image.pullPolicy }}
+          {{- if .Values.qbittorrent.apiKey.enabled }}
+          env:
+            - name: QBITTORRENT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.qbittorrent.apiKey.secretName }}
+                  key: {{ .Values.qbittorrent.apiKey.secretKey }}
+          {{- end }}
           command:
             - /bin/sh
             - -ec
@@ -39,17 +47,22 @@ spec:
               mkdir -p "${config_dir}"
               touch "${config_file}"
               tmp_file=$(mktemp)
-              awk -v trusted='{{ .Values.qbittorrent.authBypass.trustedReverseProxies }}' -v whitelist='{{ .Values.qbittorrent.authBypass.authSubnetWhitelist }}' '
+              awk -v authBypassEnabled='{{ if .Values.qbittorrent.authBypass.enabled }}true{{ else }}false{{ end }}' -v apiKeyEnabled='{{ if .Values.qbittorrent.apiKey.enabled }}true{{ else }}false{{ end }}' -v trusted='{{ .Values.qbittorrent.authBypass.trustedReverseProxies }}' -v whitelist='{{ .Values.qbittorrent.authBypass.authSubnetWhitelist }}' -v apiKey="${QBITTORRENT_API_KEY}" '
                 BEGIN {
                   in_preferences = 0
                   wrote_settings = 0
                 }
                 function write_settings() {
                   if (!wrote_settings) {
-                    print "WebUI\\ReverseProxySupportEnabled=true"
-                    print "WebUI\\TrustedReverseProxiesList=\"" trusted "\""
-                    print "WebUI\\AuthSubnetWhitelistEnabled=true"
-                    print "WebUI\\AuthSubnetWhitelist=\"" whitelist "\""
+                    if (authBypassEnabled == "true") {
+                      print "WebUI\\ReverseProxySupportEnabled=true"
+                      print "WebUI\\TrustedReverseProxiesList=\"" trusted "\""
+                      print "WebUI\\AuthSubnetWhitelistEnabled=true"
+                      print "WebUI\\AuthSubnetWhitelist=\"" whitelist "\""
+                    }
+                    if (apiKeyEnabled == "true") {
+                      print "WebUI\\APIKey=\"" apiKey "\""
+                    }
                     wrote_settings = 1
                   }
                 }
@@ -63,7 +76,7 @@ spec:
                   if (in_preferences && $0 ~ /^\[/) {
                     in_preferences = 0
                   }
-                  if (index($0, "WebUI\\ReverseProxySupportEnabled=") == 1 || index($0, "WebUI\\TrustedReverseProxiesList=") == 1 || index($0, "WebUI\\AuthSubnetWhitelistEnabled=") == 1 || index($0, "WebUI\\AuthSubnetWhitelist=") == 1) {
+                  if (index($0, "WebUI\\ReverseProxySupportEnabled=") == 1 || index($0, "WebUI\\TrustedReverseProxiesList=") == 1 || index($0, "WebUI\\AuthSubnetWhitelistEnabled=") == 1 || index($0, "WebUI\\AuthSubnetWhitelist=") == 1 || index($0, "WebUI\\APIKey=") == 1) {
                     next
                   }
                   print
