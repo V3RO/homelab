@@ -37,6 +37,7 @@ kiali-server:
     web_fqdn: kiali.schober.dev
     web_root: /
     web_schema: https
+    web_port: 443
 
   # ── External services integration ──
   external_services:

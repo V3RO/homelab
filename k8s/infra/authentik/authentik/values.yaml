@@ -367,6 +367,8 @@ authentik:
           redirectUris:
             - url: https://kiali.schober.dev/
               matchingMode: strict
+            - url: https://kiali.schober.dev:443/
+              matchingMode: strict
         application:
           name: Kiali
           slug: kiali
