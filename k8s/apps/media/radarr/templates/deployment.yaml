@@ -28,6 +28,11 @@ spec:
               value: {{ .Values.env.PGID | quote }}
             - name: TZ
               value: {{ .Values.env.TZ | quote }}
+            - name: RADARR__AUTH__APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: radarr-secret
+                  key: apiKey
             {{- if .Values.proxy }}
             - name: HTTP_PROXY
               value: {{ .Values.proxy.HTTP_PROXY | quote }}

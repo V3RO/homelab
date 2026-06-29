@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configarr-config
+  namespace: {{ .Release.Namespace }}
+data:
+  config.yml: |
+    sonarr:
+      instance1:
+        base_url: {{ .Values.config.sonarr.baseUrl | quote }}
+        api_key: !env SONARR_API_KEY
+        download_clients:
+          data: []
+          delete_unmanaged:
+            enabled: false
+    radarr:
+      instance1:
+        base_url: {{ .Values.config.radarr.baseUrl | quote }}
+        api_key: !env RADARR_API_KEY
+        download_clients:
+          data: []
+          delete_unmanaged:
+            enabled: false

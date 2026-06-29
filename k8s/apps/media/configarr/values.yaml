@@ -1,0 +1,31 @@
+image:
+  repository: ghcr.io/raydak-labs/configarr
+  tag: "1.28-alpine3.22"
+  pullPolicy: IfNotPresent
+
+schedule: "0 * * * *"
+concurrencyPolicy: Forbid
+successfulJobsHistoryLimit: 1
+failedJobsHistoryLimit: 1
+backoffLimit: 1
+ttlSecondsAfterFinished: 3600
+restartPolicy: Never
+
+env:
+  TZ: Europe/Vienna
+
+config:
+  sonarr:
+    baseUrl: http://sonarr.media.svc.cluster.local
+  radarr:
+    baseUrl: http://radarr.media.svc.cluster.local
+
+externalSecret:
+  enabled: true
+  refreshInterval: 1h
+  secretStoreRef:
+    name: bitwarden-app-secrets
+    kind: ClusterSecretStore
+  keys:
+    sonarrApiKey: sonarr-api-key
+    radarrApiKey: radarr-api-key
