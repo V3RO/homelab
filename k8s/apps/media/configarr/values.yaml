@@ -14,6 +14,9 @@ restartPolicy: Never
 env:
   TZ: Europe/Vienna
 
+networkPolicy:
+  enabled: true
+
 config:
   sonarr:
     baseUrl: http://sonarr.media.svc.cluster.local
