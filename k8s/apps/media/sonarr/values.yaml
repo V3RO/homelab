@@ -9,8 +9,8 @@ env:
   TZ: Europe/Vienna
 
 proxy:
-  HTTP_PROXY: "http://qbittorrent.media.svc.cluster.local:8888"
-  HTTPS_PROXY: "http://qbittorrent.media.svc.cluster.local:8888"
+  HTTP_PROXY: "http://gluetun-proxy.media.svc.cluster.local:8888"
+  HTTPS_PROXY: "http://gluetun-proxy.media.svc.cluster.local:8888"
   NO_PROXY: "localhost,127.0.0.1,.svc.cluster.local,.cluster.local"
 
 service:
