@@ -17,8 +17,17 @@ env:
 config:
   sonarr:
     baseUrl: http://sonarr.media.svc.cluster.local
+    downloadClientName: qBittorrent
+    category: tv
   radarr:
     baseUrl: http://radarr.media.svc.cluster.local
+    downloadClientName: qBittorrent
+    category: movies
+  qbittorrent:
+    host: qbittorrent.media.svc.cluster.local
+    port: 80
+    useSsl: false
+    urlBase: /
 
 externalSecret:
   enabled: true
@@ -29,3 +38,4 @@ externalSecret:
   keys:
     sonarrApiKey: sonarr-api-key
     radarrApiKey: radarr-api-key
+    qbittorrentApiKey: qbittorrent-api-key

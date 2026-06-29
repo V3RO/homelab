@@ -38,6 +38,11 @@ spec:
                     secretKeyRef:
                       name: configarr-secret
                       key: RADARR_API_KEY
+                - name: QBITTORRENT_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: configarr-secret
+                      key: QBITTORRENT_API_KEY
               volumeMounts:
                 - name: config
                   mountPath: /app/config/config.yml

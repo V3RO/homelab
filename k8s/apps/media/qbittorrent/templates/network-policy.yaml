@@ -56,6 +56,20 @@ spec:
         - protocol: TCP
           port: {{ .Values.qbittorrent.service.targetPort }}
     - from:
+        - podSelector:
+            matchLabels:
+              app: sonarr
+      ports:
+        - protocol: TCP
+          port: {{ .Values.qbittorrent.service.targetPort }}
+    - from:
+        - podSelector:
+            matchLabels:
+              app: radarr
+      ports:
+        - protocol: TCP
+          port: {{ .Values.qbittorrent.service.targetPort }}
+    - from:
         - podSelector: {}
       ports:
         - protocol: TCP
