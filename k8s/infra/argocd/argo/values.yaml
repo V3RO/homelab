@@ -9,6 +9,14 @@ argo-cd:
     cm:
       url: https://argo.schober.dev
       dex.config: |
+        staticClients:
+          - id: argo-cd-cli
+            name: Argo CD CLI
+            public: true
+            redirectURIs:
+              - http://localhost
+              - http://localhost:8085/auth/callback
+              - argocd://auth/callback
         connectors:
           - type: oidc
             id: authentik
