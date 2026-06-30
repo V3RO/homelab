@@ -55,8 +55,6 @@ spec:
       ports:
         - protocol: TCP
           port: {{ .Values.qbittorrent.service.targetPort }}
-        - protocol: TCP
-          port: 15008
     - from:
         - podSelector:
             matchLabels:
@@ -64,20 +62,10 @@ spec:
       ports:
         - protocol: TCP
           port: {{ .Values.qbittorrent.service.targetPort }}
-        - protocol: TCP
-          port: 15008
     - from:
         - podSelector:
             matchLabels:
               app: radarr
-      ports:
-        - protocol: TCP
-          port: {{ .Values.qbittorrent.service.targetPort }}
-        - protocol: TCP
-          port: 15008
-    - from:
-        - ipBlock:
-            cidr: 169.254.7.127/32
       ports:
         - protocol: TCP
           port: {{ .Values.qbittorrent.service.targetPort }}
@@ -86,6 +74,4 @@ spec:
       ports:
         - protocol: TCP
           port: {{ .Values.proxy.service.port }}
-        - protocol: TCP
-          port: 15008
 {{- end }}
