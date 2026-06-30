@@ -60,6 +60,7 @@ namespaces:
       istio.io/dataplane-mode: ambient
   - name: media
     labels:
+      istio.io/dataplane-mode: ambient
       pod-security.kubernetes.io/enforce: privileged
   - name: it-tools
     labels:
