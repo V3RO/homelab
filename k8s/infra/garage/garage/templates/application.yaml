@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.application.name }}
+  namespace: argocd
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/name: {{ .Values.application.name }}
+    app.kubernetes.io/part-of: infra
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.application.project }}
+  sources:
+    - repoURL: {{ .Values.application.source.repoURL }}
+      targetRevision: {{ .Values.application.source.targetRevision }}
+      path: {{ .Values.application.source.path }}
+      helm:
+        releaseName: {{ .Values.application.source.releaseName }}
+        valueFiles:
+          - $values/{{ .Values.application.source.valuesFile }}
+    - repoURL: {{ .Values.application.valuesSource.repoURL }}
+      targetRevision: {{ .Values.application.valuesSource.targetRevision }}
+      ref: {{ .Values.application.valuesSource.ref }}
+  destination:
+    server: {{ .Values.application.destination.server }}
+    namespace: {{ .Values.application.destination.namespace }}
+  syncPolicy:
+    automated:
+      prune: {{ .Values.application.syncPolicy.automated.prune }}
+      selfHeal: {{ .Values.application.syncPolicy.automated.selfHeal }}
+    syncOptions:
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: {{ .Values.application.syncPolicy.retry.limit }}
+      backoff:
+        duration: {{ .Values.application.syncPolicy.retry.backoff.duration }}
+        factor: {{ .Values.application.syncPolicy.retry.backoff.factor }}
+        maxDuration: {{ .Values.application.syncPolicy.retry.backoff.maxDuration }}
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: garage-rpc-secret
+      jsonPointers:
+        - /data/rpcSecret
+    - group: apps
+      kind: StatefulSet
+      jqPathExpressions:
+        - .spec.volumeClaimTemplates[].apiVersion
+        - .spec.volumeClaimTemplates[].kind
+        - .spec.volumeClaimTemplates[].spec.volumeMode
+        - .spec.volumeClaimTemplates[].status

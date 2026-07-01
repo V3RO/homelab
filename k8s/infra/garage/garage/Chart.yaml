@@ -1,0 +1,5 @@
+apiVersion: v2
+name: garage
+description: "Garage Argo CD bootstrap for homelab"
+type: application
+version: 0.1.0

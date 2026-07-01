@@ -1,0 +1,40 @@
+fullnameOverride: garage
+
+garage:
+  replicationMode: "3"
+  s3:
+    api:
+      region: garage
+      rootDomain: .s3.garage.schober.dev
+    web:
+      rootDomain: .web.garage.schober.dev
+      index: index.html
+
+persistence:
+  enabled: true
+  meta:
+    storageClass: longhorn-static
+    size: 1Gi
+  data:
+    storageClass: longhorn-static
+    size: 20Gi
+
+deployment:
+  kind: StatefulSet
+  replicaCount: 3
+
+service:
+  type: ClusterIP
+
+ingress:
+  s3:
+    api:
+      enabled: false
+    web:
+      enabled: false
+
+monitoring:
+  metrics:
+    enabled: false
+    serviceMonitor:
+      enabled: false

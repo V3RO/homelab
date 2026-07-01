@@ -1,0 +1,37 @@
+application:
+  name: garage-cluster
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: garage
+  source:
+    repoURL: https://git.deuxfleurs.fr/Deuxfleurs/garage
+    targetRevision: main
+    path: script/helm/garage
+    releaseName: garage
+    valuesFile: k8s/infra/garage/garage/garage-values.yaml
+  valuesSource:
+    repoURL: https://github.com/V3RO/homelab.git
+    targetRevision: main
+    ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+route:
+  enabled: true
+  hostnames:
+    - s3.garage.schober.dev
+    - '*.s3.garage.schober.dev'
+  gatewayName: internal-gateway
+  gatewayNamespace: istio-ingress-internal
+  gatewaySectionName: https
+  serviceName: garage
+  servicePort: 3900

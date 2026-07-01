@@ -23,6 +23,7 @@ namespaces:
       istio.io/dataplane-mode: ambient
       pod-security.kubernetes.io/enforce: privileged
   - name: valkey
+  - name: garage
   - name: n8n
     labels:
       istio.io/dataplane-mode: ambient

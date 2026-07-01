@@ -51,6 +51,7 @@ spec:
                 - longhorn
                 - longhorn-volumes
                 - valkey
+                - garage
                 - node-feature-discovery
                 - external-dns-unifi
                 - intel-device-plugins-operator
