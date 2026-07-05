@@ -50,6 +50,7 @@ spec:
                 - cnpg-operator
                 - longhorn
                 - longhorn-volumes
+                - snapshot-controller
                 - valkey
                 - garage
                 - node-feature-discovery

@@ -1,0 +1,7 @@
+snapshot-controller:
+  controller:
+    enabled: true
+    replicaCount: 1
+
+  validatingWebhook:
+    enabled: false
