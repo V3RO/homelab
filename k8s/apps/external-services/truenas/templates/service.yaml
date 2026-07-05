@@ -6,7 +6,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: https
+    - name: http
       port: {{ .Values.truenas.port }}
       targetPort: {{ .Values.truenas.port }}
       protocol: TCP
@@ -21,21 +21,9 @@ spec:
     - truenas.{{ .Release.Namespace }}.svc.cluster.local
   location: MESH_EXTERNAL
   ports:
-    - name: https
+    - name: http
       number: {{ .Values.truenas.port }}
-      protocol: TLS
+      protocol: HTTP
   resolution: STATIC
   endpoints:
     - address: {{ .Values.truenas.ip }}
----
-apiVersion: networking.istio.io/v1
-kind: DestinationRule
-metadata:
-  name: truenas
-  namespace: {{ .Release.Namespace }}
-spec:
-  host: truenas.{{ .Release.Namespace }}.svc.cluster.local
-  trafficPolicy:
-    tls:
-      mode: SIMPLE
-      insecureSkipVerify: true
