@@ -51,6 +51,8 @@ spec:
                 - longhorn
                 - longhorn-volumes
                 - snapshot-controller
+                - democratic-csi-nfs
+                - democratic-csi-iscsi
                 - valkey
                 - garage
                 - node-feature-discovery
