@@ -42,7 +42,7 @@ namespaces:
   - name: forgejo
     labels:
       istio.io/dataplane-mode: ambient
-  - name: proxmox
+  - name: external-services
   - name: intel
     labels:
       istio.io/dataplane-mode: ambient
