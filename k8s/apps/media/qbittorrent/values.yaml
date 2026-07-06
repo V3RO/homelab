@@ -52,18 +52,21 @@ persistence:
     claimName: qbittorrent-config
     size: 2Gi
     mountPath: /config
+    storageClass: truenas-iscsi-db
   downloads:
     enabled: true
     create: true
     claimName: media-downloads
     size: 100Gi
     mountPath: /downloads
+    storageClass: truenas-nfs-media
   library:
     enabled: true
     create: true
     claimName: media-library
     size: 100Gi
     mountPath: /media
+    storageClass: truenas-nfs-media
 
 app:
   host: qbit.schober.dev

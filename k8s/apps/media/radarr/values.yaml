@@ -24,16 +24,19 @@ persistence:
     claimName: radarr-config
     size: 5Gi
     mountPath: /config
+    storageClass: truenas-iscsi-db
   media:
     enabled: true
     create: false
     claimName: media-library
     mountPath: /media
+    storageClass: truenas-nfs-media
   downloads:
     enabled: true
     create: false
     claimName: media-downloads
     mountPath: /downloads
+    storageClass: truenas-nfs-media
 
 app:
   host: radarr.schober.dev

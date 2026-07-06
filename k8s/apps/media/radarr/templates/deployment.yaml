@@ -16,15 +16,7 @@ spec:
     metadata:
       labels:
         app: radarr
-        media-volume-group: shared
     spec:
-      affinity:
-        podAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  media-volume-group: shared
       containers:
         - name: radarr
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

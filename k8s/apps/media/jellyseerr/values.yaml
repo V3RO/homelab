@@ -17,6 +17,7 @@ persistence:
     claimName: jellyseerr-config
     size: 2Gi
     mountPath: /app/config
+    storageClass: truenas-iscsi-db
 
 app:
   host: seerr.schober.dev

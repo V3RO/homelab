@@ -16,15 +16,7 @@ spec:
     metadata:
       labels:
         app: sonarr
-        media-volume-group: shared
     spec:
-      affinity:
-        podAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  media-volume-group: shared
       containers:
         - name: sonarr
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

@@ -16,15 +16,7 @@ spec:
     metadata:
       labels:
         app: qbittorrent
-        media-volume-group: shared
     spec:
-      affinity:
-        podAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  media-volume-group: shared
       initContainers:
         {{- if or .Values.qbittorrent.authBypass.enabled .Values.qbittorrent.apiKey.enabled }}
         - name: configure-qbittorrent-auth

@@ -46,12 +46,14 @@ persistence:
     claimName: jellyfin-config
     size: 10Gi
     mountPath: /config
+    storageClass: truenas-iscsi-db
   media:
     enabled: true
     create: false
     claimName: media-library
     mountPath: /media
     readOnly: true
+    storageClass: truenas-nfs-media
 
 app:
   host: jellyfin.schober.dev
