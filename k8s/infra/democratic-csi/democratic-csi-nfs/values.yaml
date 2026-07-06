@@ -13,6 +13,7 @@ democratic-csi:
     existingConfigSecret: truenas-nfs-config
     config:
       driver: freenas-api-nfs
+      nameTemplate: "{{ .pvc.metadata.name }}-{{ .pvc.metadata.uid | trunc 6 }}"
 
   storageClasses:
     - name: truenas-nfs-media

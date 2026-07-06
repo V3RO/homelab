@@ -17,6 +17,7 @@ democratic-csi:
     existingConfigSecret: truenas-iscsi-config
     config:
       driver: freenas-api-iscsi
+      nameTemplate: "{{ .pvc.metadata.name }}-{{ .pvc.metadata.uid | trunc 6 }}"
 
   storageClasses:
     - name: truenas-iscsi-db
