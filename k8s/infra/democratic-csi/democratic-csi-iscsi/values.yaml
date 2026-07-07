@@ -52,9 +52,6 @@ democratic-csi:
   controller:
     externalSnapshotter:
       enabled: true
-    externalProvisioner:
-      extraArgs:
-        - --extra-create-metadata
     tolerations:
       - key: node-role.kubernetes.io/control-plane
         effect: NoSchedule
