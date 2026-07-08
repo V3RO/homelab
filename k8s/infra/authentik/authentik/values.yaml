@@ -85,7 +85,6 @@ authentik:
 
   blueprints:
     configMaps:
-      - blueprint-demo-app
       - blueprint-argocd
       - blueprint-grafana
       - blueprint-outpost-service-connections
@@ -144,16 +143,6 @@ authentik:
           - httproute
 
     data:
-      - name: demo-app
-        provider:
-          name: Demo App
-          externalHost: https://demo.schober.dev
-          mode: forward_single
-        application:
-          name: Demo App
-          slug: demo-app
-          metaLaunchUrl: https://demo.schober.dev
-          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/nginx.svg
       - name: argocd
         provider:
           kind: oauth2
