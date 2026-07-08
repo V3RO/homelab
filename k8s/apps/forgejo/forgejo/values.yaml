@@ -101,9 +101,9 @@ postgres:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: longhorn-static
+    class: truenas-iscsi-db
     size: 5Gi
-    volumeName: longhorn-forgejo-postgres  # pre-created PV → volume forgejo-postgres
+
   database: forgejo
   owner: forgejo
   restore: false
@@ -111,8 +111,7 @@ postgres:
 pvc:
   enabled: true
   claimName: forgejo-data
-  storageClass: longhorn-static
-  volumeName: longhorn-forgejo  # pre-created PV → volume forgejo
+  storageClass: truenas-iscsi-block
   size: 10Gi
 
 app:

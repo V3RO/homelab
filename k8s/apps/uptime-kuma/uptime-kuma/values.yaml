@@ -53,9 +53,7 @@ home-ops-chart:
       size: 2Gi
       mountPath: /app/data
 
-# PVC pre-created to bind to the static Longhorn PV (longhorn-uptime-kuma)
 pvc:
   name: uptime-kuma-data
-  storageClass: longhorn-static
-  volumeName: longhorn-uptime-kuma
+  storageClass: truenas-iscsi-db
   size: 2Gi

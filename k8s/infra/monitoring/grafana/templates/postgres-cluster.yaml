@@ -13,8 +13,7 @@ spec:
       resources:
         requests:
           storage: 5Gi
-      storageClassName: longhorn-static
-      volumeName: longhorn-grafana-postgres
+      storageClassName: truenas-iscsi-db
   managed:
     roles:
       - name: grafana

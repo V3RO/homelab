@@ -18,38 +18,25 @@ variable "cluster" {
 variable "nodes" {
   description = "Configuration for cluster nodes"
   type = map(object({
-    host_node          = string
-    machine_type       = string
-    datastore_id       = optional(string, "local-lvm")
-    ip                 = string
-    vlan_id            = optional(number)
-    mac_address        = string
-    vm_id              = number
-    cpu                = number
-    ram_dedicated      = number
-    update             = optional(bool, false)
-    igpu               = optional(bool, false)
-    # Size in GB of the dedicated Longhorn storage disk (scsi1).
-    # Set to 0 (default) to skip disk creation for nodes without Longhorn.
-    longhorn_disk_size = optional(number, 0)
+    host_node     = string
+    machine_type  = string
+    datastore_id  = optional(string, "local-lvm")
+    ip            = string
+    vlan_id       = optional(number)
+    mac_address   = string
+    vm_id         = number
+    cpu           = number
+    ram_dedicated = number
+    update        = optional(bool, false)
+    igpu          = optional(bool, false)
+    # Size in GB of the dedicated data disk (scsi1).
+    # Set to 0 (default) to skip disk creation for nodes without data storage.
+    data_disk_size = optional(number, 0)
   }))
-}
-
-variable "longhorn_disks" {
-  description = <<-EOT
-    Disk attachment metadata produced by the longhorn-storage module, keyed by
-    node name. Only nodes that have a Longhorn data VM are present in the map.
-    When a node key is absent the virtual-machines module skips attaching a
-    Longhorn disk for that node (longhorn_disk_size must also be 0).
-  EOT
-  type = map(object({
-    datastore_id      = string
-    path_in_datastore = string
-    file_format       = string
-    size              = number
-    serial            = string
-  }))
-  default = {}
+  validation {
+    condition     = alltrue([for n in values(var.nodes) : n.data_disk_size >= 0])
+    error_message = "Node data_disk_size must be greater than or equal to 0."
+  }
 }
 
 variable "image" {

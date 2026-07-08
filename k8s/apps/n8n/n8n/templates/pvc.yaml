@@ -7,7 +7,9 @@ spec:
   accessModes:
     - ReadWriteOnce
   storageClassName: {{ .Values.pvc.storageClass }}
-  volumeName: {{ .Values.pvc.volumeName }}
+  {{- with .Values.pvc.volumeName }}
+  volumeName: {{ . }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.pvc.size }}

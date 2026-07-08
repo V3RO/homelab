@@ -28,12 +28,9 @@ valkey:
         cpu: 250m
         memory: 256Mi
 
-# PVC pre-created to bind to the static Longhorn PV (longhorn-valkey)
 pvc:
   name: valkey-data
-  storageClass: longhorn-static
-  volumeName: longhorn-valkey
+  storageClass: truenas-iscsi-db
   size: 2Gi
-
 
 

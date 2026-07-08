@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       storage: {{ $pvc.size }}
-  storageClassName: {{ $pvc.storageClass | default "longhorn-static" }}
+  storageClassName: {{ $pvc.storageClass | default "truenas-iscsi-db" }}
   {{- with $pvc.volumeName }}
   volumeName: {{ . }}
   {{- end }}

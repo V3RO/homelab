@@ -23,7 +23,7 @@ democratic-csi:
       allowVolumeExpansion: true
       parameters:
         fsType: nfs
-        namePrefix: nfs-media-
+        namePrefix: nfs-
       mountOptions:
         - noatime
         - nfsvers=4

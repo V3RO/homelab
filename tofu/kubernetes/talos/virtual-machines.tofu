@@ -44,32 +44,18 @@ resource "proxmox_virtual_environment_vm" "this" {
     file_id      = proxmox_virtual_environment_download_file.this["${each.value.host_node}_${each.value.update == true ? local.static_update_image_key : local.static_image_key}"].id
   }
 
-  # Longhorn storage disk (scsi1 → /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_lh-{vm_id}).
-  #
-  # This disk is NOT created by this resource. It is owned by the companion
-  # "data holder" VM (vm_id + 100) managed by the longhorn-storage module.
-  # We attach it here via path_in_datastore (Experimental bpg/proxmox feature).
-  #
-  # Because the disk is owned by the data VM, destroying and recreating this
-  # node VM leaves the disk — and all Longhorn volume data — intact.
-  # On rebuild, tofu re-attaches the existing disk automatically.
-  #
-  # The serial (e.g. "lh-800") is carried through from the data VM so that
-  # QEMU presents the device with the same serial inside the guest, keeping
-  # the /dev/disk/by-id path stable across VM recreations.
+  # Dedicated data disk (scsi1) mounted by Talos at /var/lib/longhorn.
   dynamic "disk" {
-    for_each = each.value.longhorn_disk_size > 0 ? [var.longhorn_disks[each.key]] : []
+    for_each = each.value.data_disk_size > 0 ? [each.value.data_disk_size] : []
     content {
-      datastore_id      = disk.value.datastore_id
-      path_in_datastore = disk.value.path_in_datastore
-      file_format       = disk.value.file_format
-      size              = disk.value.size
-      interface         = "scsi1"
-      serial            = disk.value.serial
-      iothread          = true
-      cache             = "none"
-      discard           = "on"
-      ssd               = true
+      datastore_id = each.value.datastore_id
+      interface    = "scsi1"
+      iothread     = true
+      cache        = "none"
+      discard      = "on"
+      ssd          = true
+      file_format  = "raw"
+      size         = disk.value
     }
   }
 

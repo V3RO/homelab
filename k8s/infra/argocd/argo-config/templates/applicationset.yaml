@@ -41,18 +41,22 @@ spec:
                 - bitwarden-issuer
                 - cloudflare-issuer
                 - external-secrets
-        # Wave 4: Platform services
+        # Wave 4: Storage
+        - matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - local-path-provisioner
+                - snapshot-controller
+                - democratic-csi-nfs
+                - democratic-csi-iscsi
+        # Wave 5: Platform services
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
               values:
                 - gateway
                 - cnpg-operator
-                - longhorn
-                - longhorn-volumes
-                - snapshot-controller
-                - democratic-csi-nfs
-                - democratic-csi-iscsi
                 - valkey
                 - garage
                 - node-feature-discovery
@@ -61,7 +65,7 @@ spec:
                 - intel-device-plugins-gpu
                 - headlamp
                 - authentik
-        # Wave 5: ArgoCD self-management
+        # Wave 6: ArgoCD self-management
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
@@ -69,7 +73,7 @@ spec:
                 - argo
                 - argo-config
                 - argo-secrets
-        # Wave 6: Observability
+        # Wave 7: Observability
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
@@ -79,7 +83,7 @@ spec:
                 - tempo
                 - alloy
                 - grafana
-        # Wave 7: Apps ApplicationSet
+        # Wave 8: Apps ApplicationSet
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In

@@ -71,7 +71,7 @@ namespaces:
   - name: kiali
     labels:
       istio.io/dataplane-mode: ambient
-  - name: longhorn-system
+  - name: rancher
     labels:
       istio.io/dataplane-mode: ambient
       pod-security.kubernetes.io/enforce: privileged

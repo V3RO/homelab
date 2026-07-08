@@ -49,7 +49,7 @@ loki:
     replicas: 1
     persistence:
       enabled: true
-      storageClass: longhorn-static
+      storageClass: truenas-iscsi-block
       size: 10Gi
 
   # Disable all caches to save memory

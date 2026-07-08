@@ -52,8 +52,7 @@ persistence:
   enabled: true
   claimName: mealie-data
   accessMode: ReadWriteOnce
-  storageClass: longhorn-static
-  volumeName: longhorn-mealie  # pre-created PV → volume mealie
+  storageClass: truenas-iscsi-db
   size: 5Gi
   mountPath: /app/data
 
@@ -63,9 +62,8 @@ postgres:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: longhorn-static
+    class: truenas-iscsi-db
     size: 10Gi
-    volumeName: longhorn-mealie-postgres  # pre-created PV → volume mealie-postgres
   database: mealie
   owner: mealie
   restore: false

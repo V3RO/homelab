@@ -99,9 +99,7 @@ home-ops-chart:
             key: authentik-actual-client-secret
       injectAsEnv: false
 
-# PVC pre-created to bind to the static Longhorn PV (longhorn-actual)
 pvc:
   name: actual-data
-  storageClass: longhorn-static
-  volumeName: longhorn-actual
+  storageClass: truenas-iscsi-db
   size: 2Gi

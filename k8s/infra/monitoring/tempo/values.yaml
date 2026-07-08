@@ -1,5 +1,5 @@
 tempo:
   persistence:
     enabled: true
-    storageClassName: longhorn-static
+    storageClassName: truenas-iscsi-block
     size: 10Gi

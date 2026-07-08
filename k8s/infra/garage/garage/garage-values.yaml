@@ -13,11 +13,11 @@ garage:
 persistence:
   enabled: true
   meta:
-    storageClass: longhorn-static
-    size: 1Gi
+    storageClass: truenas-iscsi-db
+    size: 2Gi
   data:
-    storageClass: longhorn-static
-    size: 20Gi
+    storageClass: truenas-iscsi-block
+    size: 50Gi
 
 deployment:
   kind: StatefulSet

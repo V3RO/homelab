@@ -57,6 +57,7 @@ persistence:
     enabled: true
     create: true
     claimName: media-downloads
+    accessMode: ReadWriteMany
     size: 100Gi
     mountPath: /downloads
     storageClass: truenas-nfs-media
@@ -64,6 +65,7 @@ persistence:
     enabled: true
     create: true
     claimName: media-library
+    accessMode: ReadWriteMany
     size: 100Gi
     mountPath: /media
     storageClass: truenas-nfs-media

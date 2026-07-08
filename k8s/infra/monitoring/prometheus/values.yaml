@@ -6,7 +6,7 @@ prometheus:
       enabled: true
     persistentVolume:
       enabled: true
-      storageClass: longhorn-static
+      storageClass: truenas-iscsi-db
       size: 10Gi
 
   # Disable alertmanager HA

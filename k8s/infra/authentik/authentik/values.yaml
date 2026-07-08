@@ -384,9 +384,8 @@ authentik:
 postgres:
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: longhorn-static
+    class: truenas-iscsi-db
     size: 5Gi
-    volumeName: longhorn-authentik-postgres
   restore: false
 
 externalSecret:

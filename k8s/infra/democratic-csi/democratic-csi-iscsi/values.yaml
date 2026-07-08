@@ -31,14 +31,14 @@ democratic-csi:
           zfs:
             zvolBlocksize: "16K"
 
-    - name: truenas-iscsi-object
+    - name: truenas-iscsi-block
       defaultClass: false
       reclaimPolicy: Retain
       volumeBindingMode: Immediate
       allowVolumeExpansion: true
       parameters:
         fsType: xfs
-        namePrefix: iscsi-object-
+        namePrefix: iscsi-block-
         config: |
           zfs:
             zvolBlocksize: "128K"

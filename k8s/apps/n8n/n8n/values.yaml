@@ -53,16 +53,14 @@ postgres:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: longhorn-static
+    class: truenas-iscsi-db
     size: 10Gi
-    volumeName: longhorn-n8n-postgres  # pre-created PV → volume n8n-postgres
   database: n8n
   owner: n8n
   restore: false
 
 pvc:
-  storageClass: longhorn-static
-  volumeName: longhorn-n8n  # pre-created PV → volume n8n
+  storageClass: truenas-iscsi-db
   size: 5Gi
 
 app:

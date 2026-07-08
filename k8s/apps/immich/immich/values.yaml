@@ -66,8 +66,7 @@ immich:
         size: 10Gi
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
-        storageClass: longhorn-static
-        # Binds to pre-created PV longhorn-immich-ml → volume immich-ml
+        storageClass: truenas-iscsi-db
         existingClaim: immich-ml-cache
 
 # --- Custom template values (platform integration) ---
@@ -79,9 +78,8 @@ postgres:
   instances: 1
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17.5-0.4.3
   storage:
-    class: longhorn-static
+    class: truenas-iscsi-db
     size: 20Gi
-    volumeName: longhorn-immich-postgres  # pre-created PV → volume immich-postgres
   database: immich
   owner: immich
   sharedPreloadLibraries:
@@ -105,16 +103,14 @@ app:
 persistence:
   immich-library:
     enabled: true
-    accessMode: ReadWriteOnce
+    accessMode: ReadWriteMany
     size: 100Gi
-    storageClass: longhorn-static
-    volumeName: longhorn-immich-library  # pre-created PV → volume immich-library
+    storageClass: truenas-nfs-media
   immich-ml-cache:
     enabled: true
     accessMode: ReadWriteOnce
     size: 10Gi
-    storageClass: longhorn-static
-    volumeName: longhorn-immich-ml  # pre-created PV → volume immich-ml
+    storageClass: truenas-iscsi-db
 
 # External Secrets (Bitwarden)
 externalSecret:
