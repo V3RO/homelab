@@ -5,7 +5,7 @@ application:
     server: https://kubernetes.default.svc
     namespace: garage
   source:
-    repoURL: https://git.deuxfleurs.fr/Deuxfleurs/garage
+    repoURL: https://git.deuxfleurs.fr/Deuxfleurs/garage.git
     targetRevision: main
     path: script/helm/garage
     releaseName: garage
