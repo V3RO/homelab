@@ -6,7 +6,7 @@ application:
     namespace: garage
   source:
     repoURL: https://git.deuxfleurs.fr/Deuxfleurs/garage.git
-    targetRevision: main
+    targetRevision: main-v2
     path: script/helm/garage
     releaseName: garage
     valuesFile: k8s/infra/garage/garage/garage-values.yaml
