@@ -42,6 +42,21 @@ immich:
     ingress:
       main:
         enabled: false  # using Gateway API HTTPRoute instead
+    controllers:
+      main:
+        containers:
+          main:
+            env:
+              NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+    persistence:
+      ca-bundle:
+        enabled: true
+        type: configMap
+        name: ca-bundle
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca-bundle.crt
+            readOnly: true
 
   # Machine Learning component (Intel OpenVINO for iGPU acceleration)
   machine-learning:
@@ -68,6 +83,14 @@ immich:
         accessMode: ReadWriteOnce
         storageClass: truenas-iscsi-db
         existingClaim: immich-ml-cache
+      ca-bundle:
+        enabled: true
+        type: configMap
+        name: ca-bundle
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca-bundle.crt
+            readOnly: true
 
 # --- Custom template values (platform integration) ---
 

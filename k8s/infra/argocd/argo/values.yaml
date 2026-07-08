@@ -52,6 +52,17 @@ argo-cd:
         g, ArgoCD Admins, role:admin
         g, ArgoCD Viewers, role:readonly
 
+  dex:
+    volumes:
+      - name: ca-bundle
+        configMap:
+          name: ca-bundle
+    volumeMounts:
+      - name: ca-bundle
+        mountPath: /etc/ssl/certs/ca-certificates.crt
+        subPath: ca-bundle.crt
+        readOnly: true
+
   redis:
     enabled: false
 
