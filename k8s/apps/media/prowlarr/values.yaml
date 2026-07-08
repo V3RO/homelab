@@ -44,7 +44,7 @@ app:
 
 externalSecret:
   enabled: true
-  refreshInterval: 1h
+  refreshInterval: 1h0m0s
   secretStoreRef:
     name: bitwarden-app-secrets
     kind: ClusterSecretStore

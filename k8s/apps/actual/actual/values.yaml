@@ -89,7 +89,7 @@ home-ops-chart:
   externalSecrets:
     secrets:
       enabled: true
-      refreshInterval: 1h
+      refreshInterval: 1h0m0s
       secretStoreRef:
         kind: ClusterSecretStore
         name: bitwarden-app-secrets
