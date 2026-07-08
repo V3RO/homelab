@@ -1,5 +1,5 @@
 truenas:
-  host: 10.1.10.20
+  host: truenas.schober.dev
   port: 443
   allowInsecure: false
   datasetParentName: hdd/k8s/n/v

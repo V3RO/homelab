@@ -1,5 +1,5 @@
 truenas:
-  host: 10.1.10.20
+  host: truenas.schober.dev
   ip: 10.1.10.20
   port: 80
 

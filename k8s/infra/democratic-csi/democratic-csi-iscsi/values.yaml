@@ -1,11 +1,11 @@
 truenas:
-  host: 10.1.10.20
+  host: truenas.schober.dev
   port: 443
   allowInsecure: false
   datasetParentName: hdd/k8s/b/v
   detachedSnapshotsDatasetParentName: hdd/k8s/b/s
 
-  targetPortal: "10.1.10.20:3260"
+  targetPortal: "truenas.schober.dev:3260"
   targetGroupPortalGroup: 1
   targetGroupInitiatorGroup: 1
 
