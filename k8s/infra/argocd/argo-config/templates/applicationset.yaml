@@ -41,13 +41,11 @@ spec:
                 - bitwarden-issuer
                 - cloudflare-issuer
                 - external-secrets
-        # Wave 4: Storage & External Routes
+        # Wave 4: Storage
         - matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
               values:
-                - proxmox
-                - truenas
                 - local-path-provisioner
                 - snapshot-controller
                 - democratic-csi-nfs
