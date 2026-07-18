@@ -1,0 +1,9 @@
+apiVersion: v2
+name: volsync
+description: A Helm chart for VolSync
+type: application
+version: 0.1.0
+dependencies:
+  - name: volsync
+    version: 0.16.0
+    repository: https://backube.github.io/helm-charts/

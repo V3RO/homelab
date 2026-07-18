@@ -50,6 +50,7 @@ spec:
                 - snapshot-controller
                 - democratic-csi-nfs
                 - democratic-csi-iscsi
+                - volsync
         # Wave 5: Platform services
         - matchExpressions:
             - key: app.kubernetes.io/name
