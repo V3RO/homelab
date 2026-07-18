@@ -60,9 +60,6 @@ data "talos_machine_configuration" "this" {
       kubernetes_version = var.cluster.kubernetes_version
       hostname           = each.key
       kubelet            = var.cluster.kubelet
-      # Pass true when the node has a dedicated data disk (scsi1) so the
-      # template emits the disk partition + kubelet extraMounts config.
-      data_disk_enabled = coalesce(each.value.data_disk_size, 0) > 0
     }), each.value.machine_type == "controlplane" ?
     templatefile("${path.module}/machine-config/control-plane.yaml.tftpl", {
       ip               = each.value.ip

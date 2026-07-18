@@ -40,23 +40,8 @@ resource "proxmox_virtual_environment_vm" "this" {
     discard      = "on"
     ssd          = true
     file_format  = "raw"
-    size         = 50
+    size         = each.value.disk_size
     file_id      = proxmox_virtual_environment_download_file.this["${each.value.host_node}_${each.value.update == true ? local.static_update_image_key : local.static_image_key}"].id
-  }
-
-  # Dedicated data disk (scsi1) mounted by Talos at /var/lib/longhorn.
-  dynamic "disk" {
-    for_each = each.value.data_disk_size > 0 ? [each.value.data_disk_size] : []
-    content {
-      datastore_id = each.value.datastore_id
-      interface    = "scsi1"
-      iothread     = true
-      cache        = "none"
-      discard      = "on"
-      ssd          = true
-      file_format  = "raw"
-      size         = disk.value
-    }
   }
 
   boot_order = ["scsi0"]

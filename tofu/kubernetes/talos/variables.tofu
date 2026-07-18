@@ -27,15 +27,13 @@ variable "nodes" {
     vm_id         = number
     cpu           = number
     ram_dedicated = number
+    disk_size     = optional(number, 50)
     update        = optional(bool, false)
     igpu          = optional(bool, false)
-    # Size in GB of the dedicated data disk (scsi1).
-    # Set to 0 (default) to skip disk creation for nodes without data storage.
-    data_disk_size = optional(number, 0)
   }))
   validation {
-    condition     = alltrue([for n in values(var.nodes) : n.data_disk_size >= 0])
-    error_message = "Node data_disk_size must be greater than or equal to 0."
+    condition     = alltrue([for n in values(var.nodes) : n.disk_size > 0])
+    error_message = "Node disk_size must be greater than 0."
   }
 }
 

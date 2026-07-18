@@ -49,19 +49,19 @@ variable "talos_cluster_config" {
 variable "talos_nodes" {
   type = map(
     object({
-      host_node      = string
-      machine_type   = string
-      ip             = string
-      vlan_id        = optional(number)
-      dns            = optional(list(string))
-      mac_address    = string
-      vm_id          = number
-      cpu            = number
-      ram_dedicated  = number
-      datastore_id   = optional(string, "local-lvm")
-      update         = optional(bool, false)
-      igpu           = optional(bool, false)
-      data_disk_size = optional(number, 0)
+      host_node     = string
+      machine_type  = string
+      ip            = string
+      vlan_id       = optional(number)
+      dns           = optional(list(string))
+      mac_address   = string
+      vm_id         = number
+      cpu           = number
+      ram_dedicated = number
+      datastore_id  = optional(string, "local-lvm")
+      disk_size     = optional(number, 50)
+      update        = optional(bool, false)
+      igpu          = optional(bool, false)
     })
   )
   validation {
@@ -71,8 +71,8 @@ variable "talos_nodes" {
     // @formatter:on
   }
   validation {
-    condition     = alltrue([for n in values(var.talos_nodes) : n.data_disk_size >= 0])
-    error_message = "Node data_disk_size must be greater than or equal to 0."
+    condition     = alltrue([for n in values(var.talos_nodes) : n.disk_size > 0])
+    error_message = "Node disk_size must be greater than 0."
   }
 }
 
