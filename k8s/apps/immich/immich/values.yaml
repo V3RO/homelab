@@ -81,7 +81,7 @@ immich:
         size: 10Gi
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
-        storageClass: truenas-iscsi-db
+        storageClass: local-path
         existingClaim: immich-ml-cache
       ca-bundle:
         enabled: true
@@ -101,7 +101,7 @@ postgres:
   instances: 1
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17.5-0.4.3
   storage:
-    class: truenas-iscsi-db
+    class: local-path
     size: 20Gi
   database: immich
   owner: immich
@@ -133,7 +133,7 @@ persistence:
     enabled: true
     accessMode: ReadWriteOnce
     size: 10Gi
-    storageClass: truenas-iscsi-db
+    storageClass: local-path
 
 # External Secrets (Bitwarden)
 externalSecret:

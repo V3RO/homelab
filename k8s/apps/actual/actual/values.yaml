@@ -101,5 +101,5 @@ home-ops-chart:
 
 pvc:
   name: actual-data
-  storageClass: truenas-iscsi-db
+  storageClass: local-path
   size: 2Gi

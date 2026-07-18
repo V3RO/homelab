@@ -30,7 +30,7 @@ valkey:
 
 pvc:
   name: valkey-data
-  storageClass: truenas-iscsi-db
+  storageClass: local-path
   size: 2Gi
 
 

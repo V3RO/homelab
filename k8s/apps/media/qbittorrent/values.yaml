@@ -52,7 +52,7 @@ persistence:
     claimName: qbittorrent-config
     size: 2Gi
     mountPath: /config
-    storageClass: truenas-iscsi-db
+    storageClass: local-path
   downloads:
     enabled: true
     create: true

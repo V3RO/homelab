@@ -13,10 +13,10 @@ garage:
 persistence:
   enabled: true
   meta:
-    storageClass: truenas-iscsi-db
+    storageClass: local-path
     size: 2Gi
   data:
-    storageClass: truenas-iscsi-block
+    storageClass: local-path
     size: 50Gi
 
 deployment:

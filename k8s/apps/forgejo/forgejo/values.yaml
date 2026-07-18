@@ -111,7 +111,7 @@ postgres:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: truenas-iscsi-db
+    class: local-path
     size: 5Gi
 
   database: forgejo
@@ -121,7 +121,7 @@ postgres:
 pvc:
   enabled: true
   claimName: forgejo-data
-  storageClass: truenas-iscsi-block
+  storageClass: local-path
   size: 10Gi
 
 app:

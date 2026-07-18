@@ -5,7 +5,7 @@ zot:
   pvc:
     create: true
     storage: 10Gi
-    storageClassName: truenas-iscsi-block
+    storageClassName: local-path
   mountConfig: true
   configFiles:
     config.json: |-

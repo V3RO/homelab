@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       storage: {{ $pvc.size }}
-  storageClassName: {{ $pvc.storageClass | default "truenas-iscsi-db" }}
+  storageClassName: {{ $pvc.storageClass | default "local-path" }}
   {{- with $pvc.volumeName }}
   volumeName: {{ . }}
   {{- end }}

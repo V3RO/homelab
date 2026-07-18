@@ -1,5 +1,5 @@
 tempo:
   persistence:
     enabled: true
-    storageClassName: truenas-iscsi-block
+    storageClassName: local-path
     size: 10Gi

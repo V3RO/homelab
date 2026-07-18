@@ -384,7 +384,7 @@ authentik:
 postgres:
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: truenas-iscsi-db
+    class: local-path
     size: 5Gi
   restore: false
 

@@ -53,14 +53,14 @@ postgres:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: truenas-iscsi-db
+    class: local-path
     size: 10Gi
   database: n8n
   owner: n8n
   restore: false
 
 pvc:
-  storageClass: truenas-iscsi-db
+  storageClass: local-path
   size: 5Gi
 
 app:

@@ -24,7 +24,7 @@ persistence:
     claimName: prowlarr-config
     size: 2Gi
     mountPath: /config
-    storageClass: truenas-iscsi-db
+    storageClass: local-path
 
 app:
   host: prowlarr.schober.dev

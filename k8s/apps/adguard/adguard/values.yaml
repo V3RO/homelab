@@ -101,7 +101,7 @@ home-ops-chart:
 
 pvc:
   name: adguard-data
-  storageClass: truenas-iscsi-db
+  storageClass: local-path
   size: 1Gi
 
 # Values for the custom DNS LoadBalancer service template

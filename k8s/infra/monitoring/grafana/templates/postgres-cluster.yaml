@@ -13,7 +13,7 @@ spec:
       resources:
         requests:
           storage: 5Gi
-      storageClassName: truenas-iscsi-db
+      storageClassName: local-path
   managed:
     roles:
       - name: grafana

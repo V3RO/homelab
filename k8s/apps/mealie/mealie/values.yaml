@@ -52,7 +52,7 @@ persistence:
   enabled: true
   claimName: mealie-data
   accessMode: ReadWriteOnce
-  storageClass: truenas-iscsi-db
+  storageClass: local-path
   size: 5Gi
   mountPath: /app/data
 
@@ -62,7 +62,7 @@ postgres:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: truenas-iscsi-db
+    class: local-path
     size: 10Gi
   database: mealie
   owner: mealie
