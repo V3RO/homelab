@@ -16,12 +16,12 @@ persistence:
     storageClass: local-path
     size: 2Gi
   data:
-    storageClass: local-path
+    storageClass: truenas-nfs-media
     size: 50Gi
 
 deployment:
   kind: StatefulSet
-  replicaCount: 3
+  replicaCount: 1
 
 service:
   type: ClusterIP
