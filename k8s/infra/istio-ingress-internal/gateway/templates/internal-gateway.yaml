@@ -22,3 +22,17 @@ spec:
             kind: Secret
             namespace: {{ .Release.Namespace }}
             group: ""
+    - hostname: "*.versitygw.schober.dev"
+      name: versitygw-https
+      protocol: HTTPS
+      port: 443
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: versitygw-schober-dev-tls
+            kind: Secret
+            namespace: {{ .Release.Namespace }}
+            group: ""

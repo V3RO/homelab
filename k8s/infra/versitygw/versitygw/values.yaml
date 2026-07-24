@@ -15,7 +15,7 @@ versitygw:
     parentRefs:
       - name: internal-gateway
         namespace: istio-ingress-internal
-        sectionName: https
+        sectionName: versitygw-https
     hostnames:
       - s3.versitygw.schober.dev
 
@@ -26,7 +26,7 @@ versitygw:
       parentRefs:
         - name: internal-gateway
           namespace: istio-ingress-internal
-          sectionName: https
+          sectionName: versitygw-https
       hostnames:
         - admin.versitygw.schober.dev
 
@@ -41,7 +41,7 @@ versitygw:
       parentRefs:
         - name: internal-gateway
           namespace: istio-ingress-internal
-          sectionName: https
+          sectionName: versitygw-https
       hostnames:
         - web.versitygw.schober.dev
 
