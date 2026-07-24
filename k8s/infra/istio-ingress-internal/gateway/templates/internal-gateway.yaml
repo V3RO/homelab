@@ -8,20 +8,6 @@ metadata:
 spec:
   gatewayClassName: istio
   listeners:
-    - hostname: "*.schober.dev"
-      name: https
-      protocol: HTTPS
-      port: 443
-      allowedRoutes:
-        namespaces:
-          from: All
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: schober-dev-tls
-            kind: Secret
-            namespace: {{ .Release.Namespace }}
-            group: ""
     - hostname: "*.versitygw.schober.dev"
       name: versitygw-https
       protocol: HTTPS
@@ -33,6 +19,20 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: versitygw-schober-dev-tls
+            kind: Secret
+            namespace: {{ .Release.Namespace }}
+            group: ""
+    - hostname: "*.schober.dev"
+      name: https
+      protocol: HTTPS
+      port: 443
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: schober-dev-tls
             kind: Secret
             namespace: {{ .Release.Namespace }}
             group: ""
