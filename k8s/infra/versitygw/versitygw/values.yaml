@@ -33,9 +33,9 @@ versitygw:
   webui:
     enabled: true
     apiGateways:
-      - s3.versitygw.schober.dev
+      - https://s3.versitygw.schober.dev
     adminGateways:
-      - admin.versitygw.schober.dev
+      - https://admin.versitygw.schober.dev
     httpRoute:
       enabled: true
       parentRefs:

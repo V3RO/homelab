@@ -24,6 +24,8 @@ namespaces:
       pod-security.kubernetes.io/enforce: privileged
   - name: valkey
   - name: versitygw
+    labels:
+      istio.io/dataplane-mode: ambient
   - name: n8n
     labels:
       istio.io/dataplane-mode: ambient
