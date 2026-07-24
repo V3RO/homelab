@@ -59,7 +59,7 @@ spec:
                 - gateway
                 - cnpg-operator
                 - valkey
-                - garage
+                - versitygw
                 - node-feature-discovery
                 - external-dns-unifi
                 - intel-device-plugins-operator

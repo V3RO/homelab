@@ -1,0 +1,56 @@
+versitygw:
+  replicaCount: 3
+
+  auth:
+    existingSecret: versitygw-credentials
+
+  persistence:
+    enabled: true
+    size: 50Gi
+    storageClassName: truenas-nfs-media
+    accessMode: ReadWriteMany
+
+  httpRoute:
+    enabled: true
+    parentRefs:
+      - name: internal-gateway
+        namespace: istio-ingress-internal
+        sectionName: https
+    hostnames:
+      - s3.versitygw.schober.dev
+
+  admin:
+    enabled: true
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: internal-gateway
+          namespace: istio-ingress-internal
+          sectionName: https
+      hostnames:
+        - admin.versitygw.schober.dev
+
+  webui:
+    enabled: true
+    apiGateways:
+      - s3.versitygw.schober.dev
+    adminGateways:
+      - admin.versitygw.schober.dev
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: internal-gateway
+          namespace: istio-ingress-internal
+          sectionName: https
+      hostnames:
+        - web.versitygw.schober.dev
+
+  # Spread the 3 replicas across 3 distinct nodes since they share one RWX
+  # PVC and posix backend directory — colocating replicas defeats the point.
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: versitygw
