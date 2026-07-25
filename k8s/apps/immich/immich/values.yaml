@@ -15,7 +15,7 @@ immich:
                 secretKeyRef:
                   name: cnpg-immich-credentials
                   key: password
-            REDIS_HOSTNAME: valkey-primary.valkey.svc.cluster.local
+            REDIS_HOSTNAME: valkey.valkey.svc.cluster.local
             REDIS_PORT: "6379"
             REDIS_DBINDEX: "3"
             REDIS_PASSWORD:

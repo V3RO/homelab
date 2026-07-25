@@ -101,6 +101,7 @@ authentik:
       - blueprint-actual
       - blueprint-immich
       - blueprint-kiali
+      - blueprint-valkey-admin
       - blueprint-proxy-outpost
       - blueprint-users
       - blueprint-enrollment
@@ -231,6 +232,16 @@ authentik:
           slug: qbittorrent
           metaLaunchUrl: https://qbit.schober.dev
           icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/qbittorrent.svg
+      - name: valkey-admin
+        provider:
+          name: Valkey Admin
+          externalHost: https://valkey-admin.schober.dev
+          mode: forward_single
+        application:
+          name: Valkey Admin
+          slug: valkey-admin
+          metaLaunchUrl: https://valkey-admin.schober.dev
+          icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/valkey.svg
       - name: jellyfin
         provider:
           kind: ldap
