@@ -22,6 +22,8 @@ spec:
           env:
             - name: DEPLOYMENT_MODE
               value: "Web"
+            - name: VALKEY_ENDPOINT_TYPE
+              value: "discovery"
             - name: PORT
               value: {{ .Values.service.targetPort | quote }}
             - name: VALKEY_HOST
