@@ -1,5 +1,10 @@
 versitygw:
   replicaCount: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
 
   auth:
     existingSecret: versitygw-credentials
