@@ -87,5 +87,5 @@ versitygw:
       cpu: 500m
       memory: 512Mi
     requests:
-      cpu: 100m
+      cpu: 150m
       memory: 128Mi
