@@ -21,7 +21,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: DEPLOYMENT_MODE
-              value: "Electron"
+              value: "K8"
             - name: PORT
               value: {{ .Values.service.targetPort | quote }}
             - name: VALKEY_HOST
