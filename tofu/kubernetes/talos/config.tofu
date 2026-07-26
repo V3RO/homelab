@@ -2,7 +2,6 @@ locals {
   first_control_plane_node_ip = [for k, v in var.nodes : v.ip if v.machine_type == "controlplane"][0]
   kubernetes_endpoint         = coalesce(var.cluster.vip, local.first_control_plane_node_ip)
   extra_manifests = concat(var.cluster.extra_manifests, [
-    "https://github.com/kubernetes-sigs/gateway-api/releases/download/${var.cluster.gateway_api_version}/standard-install.yaml",
     "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml",
     "https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml"
   ])

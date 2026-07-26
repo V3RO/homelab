@@ -22,6 +22,7 @@ spec:
               values:
                 - namespaces
                 - cilium
+                - gateway-api
         # Wave 2: Istio mesh
         - matchExpressions:
             - key: app.kubernetes.io/name
@@ -103,8 +104,6 @@ spec:
         repoURL: https://github.com/V3RO/homelab.git
         targetRevision: main
         path: '{{`{{ .path.path }}`}}'
-        helm:
-          releaseName: '{{`{{ .path.basename }}`}}'
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{`{{ index .path.segments 2 }}`}}'
