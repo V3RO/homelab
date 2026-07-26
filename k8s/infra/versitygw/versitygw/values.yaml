@@ -18,6 +18,12 @@ versitygw:
         name: internal-gateway
         namespace: istio-ingress-internal
         sectionName: versitygw-https
+    rules:
+      - backendRefs:
+          - group: ''
+            kind: Service
+            name: versitygw
+            port: 7070
     hostnames:
       - s3.versitygw.schober.dev
 
@@ -31,6 +37,12 @@ versitygw:
           name: internal-gateway
           namespace: istio-ingress-internal
           sectionName: versitygw-https
+      rules:
+        - backendRefs:
+            - group: ''
+              kind: Service
+              name: versitygw
+              port: 7070
       hostnames:
         - admin.versitygw.schober.dev
 
@@ -48,6 +60,12 @@ versitygw:
           name: internal-gateway
           namespace: istio-ingress-internal
           sectionName: versitygw-https
+      rules:
+        - backendRefs:
+            - group: ''
+              kind: Service
+              name: versitygw
+              port: 7070
       hostnames:
         - web.versitygw.schober.dev
 
