@@ -34,23 +34,7 @@ versitygw:
           sectionName: versitygw-https
       hostnames:
         - admin.versitygw.schober.dev
-      rules:
-        - matches:
-            - path:
-                type: PathPrefix
-                value: /
-          corsPolicy:
-            allowOrigins:
-              - exact: "https://web.versitygw.schober.dev"
-            allowMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowHeaders:
-              - "*"
-            allowCredentials: true
+
   iam:
     enabled: true
 
@@ -70,7 +54,7 @@ versitygw:
         - web.versitygw.schober.dev
 
   gateway:
-    corsAllowOrigin: "https://web.versitygw.schober.dev"
+    corsAllowOrigin: "*"
 
   # Spread the 3 replicas across 3 distinct nodes since they share one RWX
   # PVC and posix backend directory — colocating replicas defeats the point.
@@ -87,5 +71,5 @@ versitygw:
       cpu: 500m
       memory: 512Mi
     requests:
-      cpu: 150m
+      cpu: 100m
       memory: 128Mi
