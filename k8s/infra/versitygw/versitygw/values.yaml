@@ -25,7 +25,7 @@ versitygw:
       - s3.versitygw.schober.dev
 
   admin:
-    enabled: false
+    enabled: true
     httpRoute:
       enabled: true
       parentRefs:
