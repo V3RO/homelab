@@ -1,5 +1,18 @@
 authentik:
   global:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: authentik
+    deploymentStrategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+
     env:
       - name: AUTHENTIK_POSTGRESQL__HOST
         valueFrom:
@@ -79,6 +92,11 @@ authentik:
   authentik:
     existingSecret:
       secretName: authentik-secret
+
+  server:
+    replicas: 3
+  worker:
+    replicas: 3
 
   postgresql:
     enabled: false
