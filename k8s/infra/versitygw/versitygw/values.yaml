@@ -13,7 +13,9 @@ versitygw:
   httpRoute:
     enabled: true
     parentRefs:
-      - name: internal-gateway
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: internal-gateway
         namespace: istio-ingress-internal
         sectionName: versitygw-https
     hostnames:
@@ -24,7 +26,9 @@ versitygw:
     httpRoute:
       enabled: true
       parentRefs:
-        - name: internal-gateway
+        - group: gateway.networking.k8s.io
+          kind: Gateway
+          name: internal-gateway
           namespace: istio-ingress-internal
           sectionName: versitygw-https
       hostnames:
@@ -39,7 +43,9 @@ versitygw:
     httpRoute:
       enabled: true
       parentRefs:
-        - name: internal-gateway
+        - group: gateway.networking.k8s.io
+          kind: Gateway
+          name: internal-gateway
           namespace: istio-ingress-internal
           sectionName: versitygw-https
       hostnames:
