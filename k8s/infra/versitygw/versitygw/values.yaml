@@ -30,6 +30,9 @@ versitygw:
       hostnames:
         - admin.versitygw.schober.dev
 
+  iam:
+    enabled: true
+
   webui:
     enabled: true
     apiGateways:
