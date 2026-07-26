@@ -1,5 +1,4 @@
 forgejo:
-  # Rootless image is the default - runs as non-root user (uid 1000)
   image:
     rootless: true
 
@@ -13,21 +12,9 @@ forgejo:
       subPath: ca-bundle.crt
       readOnly: true
 
-  # Disable all bundled DB/cache sub-charts - using external CNPG + shared Valkey
-  redis-cluster:
-    enabled: false
-  redis:
-    enabled: false
-  postgresql-ha:
-    enabled: false
-  postgresql:
-    enabled: false
-
-  # Disable built-in ingress; HTTPRoute is managed by templates/route.yaml
   ingress:
     enabled: false
 
-  # SSH exposed via LoadBalancer (same as prior Gitea setup)
   service:
     http:
       type: ClusterIP
@@ -36,7 +23,6 @@ forgejo:
       type: LoadBalancer
       port: 22
 
-  # Data persistence - PVC is pre-created by templates/pvc.yaml bound to pv-forgejo (OpenTofu)
   persistence:
     enabled: true
     create: false
@@ -54,7 +40,7 @@ forgejo:
         HTTP_PORT: 3000
         SSH_DOMAIN: git.schober.dev
         SSH_PORT: 22
-        SSH_LISTEN_PORT: 2222  # rootless default; built-in SSH server listens here
+        SSH_LISTEN_PORT: 2222
         START_SSH_SERVER: true
         LFS_START_SERVER: true
 
@@ -94,7 +80,6 @@ forgejo:
       - secret:
           secretName: forgejo-ini-config
 
-    # Authentik OAuth2 via OpenID Connect
     oauth:
       - name: "authentik"
         provider: "openidConnect"
@@ -140,7 +125,7 @@ externalSecret:
     name: bitwarden-app-secrets
     kind: ClusterSecretStore
   keys:
-    secretKey: forgejo-secret-key                     # Bitwarden item name
-    valkeyPassword: valkey-password                   # Bitwarden item name
-    oauthClientSecret: authentik-forgejo-client-secret  # Bitwarden item name
-    cnpgPassword: cnpg-forgejo                        # Bitwarden item name
+    secretKey: forgejo-secret-key
+    valkeyPassword: valkey-password
+    oauthClientSecret: authentik-forgejo-client-secret
+    cnpgPassword: cnpg-forgejo
