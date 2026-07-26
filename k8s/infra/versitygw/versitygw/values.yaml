@@ -34,7 +34,23 @@ versitygw:
           sectionName: versitygw-https
       hostnames:
         - admin.versitygw.schober.dev
-
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          corsPolicy:
+            allowOrigins:
+              - exact: "https://web.versitygw.schober.dev"
+            allowMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowHeaders:
+              - "*"
+            allowCredentials: true
   iam:
     enabled: true
 
