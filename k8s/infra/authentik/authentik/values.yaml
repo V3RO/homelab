@@ -1,12 +1,7 @@
 authentik:
   global:
     affinity:
-      podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          - topologyKey: kubernetes.io/hostname
-            labelSelector:
-              matchLabels:
-                app.kubernetes.io/name: authentik
+      podAntiAffinity: soft
     deploymentStrategy:
       type: RollingUpdate
       rollingUpdate:
