@@ -3,8 +3,8 @@ versitygw:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
+      maxSurge: 0
+      maxUnavailable: 1
 
   auth:
     existingSecret: versitygw-credentials
