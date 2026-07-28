@@ -36,4 +36,20 @@ spec:
       owner: {{ .Values.postgres.owner }}
       postInitApplicationSQL:
         {{- toYaml .Values.postgres.postInitSQL | nindent 8 }}
+  backup:
+    schedule: "0 4 * * *"
+    retentionPolicy: "30d"
+    barmanObjectStore:
+      destinationPath: "s3://cnpg-backups/immich/"
+      endpointURL: "https://s3.versitygw.schober.dev"
+      s3Credentials:
+        accessKeyId:
+          name: cnpg-immich-backup-credentials
+          key: AWS_ACCESS_KEY_ID
+        secretAccessKey:
+          name: cnpg-immich-backup-credentials
+          key: AWS_SECRET_ACCESS_KEY
+      wal:
+        compression: "gzip"
+        maxParallel: 8
 {{- end }}
