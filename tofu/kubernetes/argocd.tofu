@@ -88,8 +88,8 @@ resource "null_resource" "argocd" {
         --set argo-cd.redis.enabled=true \
         --set argo-cd.externalRedis.host="" \
         --set argo-cd.externalRedis.existingSecret="" \
-        --set "argo-cd.dex.volumes=null" \
-        --set "argo-cd.dex.volumeMounts=null" \
+        --set-json "argo-cd.dex.volumes=[]" \
+        --set-json "argo-cd.dex.volumeMounts=[]" \
         --timeout 600s \
         --wait \
         --atomic \
