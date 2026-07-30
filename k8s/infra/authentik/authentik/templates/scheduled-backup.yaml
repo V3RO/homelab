@@ -23,7 +23,7 @@ metadata:
   name: backup-authentik-postgres
   namespace: {{ .Release.Namespace }}
 spec:
-  schedule: "0 11 * * *"
+  schedule: "30 12 * * *"
   backupOwnerReference: self
   method: plugin
   pluginConfiguration:
