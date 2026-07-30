@@ -59,6 +59,7 @@ spec:
               values:
                 - gateway
                 - cnpg-operator
+                - barman-cloud
                 - valkey
                 - versitygw
                 - node-feature-discovery
