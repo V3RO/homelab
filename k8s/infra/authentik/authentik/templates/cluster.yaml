@@ -30,7 +30,6 @@ spec:
       database: authentik
       owner: authentik
   backup:
-    schedule: "0 4 * * *"
     retentionPolicy: "30d"
     barmanObjectStore:
       destinationPath: "s3://cnpg-backups/authentik/"

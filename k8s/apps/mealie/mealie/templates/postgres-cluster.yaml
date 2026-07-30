@@ -33,7 +33,6 @@ spec:
       database: {{ default "mealie" (get $postgres "database") }}
       owner: {{ default "mealie" (get $postgres "owner") }}
   backup:
-    schedule: "0 4 * * *"
     retentionPolicy: "30d"
     barmanObjectStore:
       destinationPath: "s3://cnpg-backups/mealie/"
