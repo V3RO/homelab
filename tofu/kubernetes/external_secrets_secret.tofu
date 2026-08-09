@@ -3,7 +3,7 @@ locals {
 }
 
 resource "null_resource" "wait_for_external_secrets_ns" {
-  count = var.enable_argocd && var.bitwarden_access_token != "" ? 1 : 0
+  count = var.enable_gitops && var.bitwarden_access_token != "" ? 1 : 0
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
     command = <<-EOT
@@ -22,12 +22,12 @@ resource "null_resource" "wait_for_external_secrets_ns" {
     EOT
   }
   depends_on = [
-    null_resource.argo_config,
+    null_resource.flux_bootstrap,
   ]
 }
 
 resource "kubernetes_secret" "bitwarden_access_token" {
-  count = var.enable_argocd && var.bitwarden_access_token != "" ? 1 : 0
+  count = var.enable_gitops && var.bitwarden_access_token != "" ? 1 : 0
   metadata {
     name      = "bitwarden-access-token"
     namespace = local.external_secrets_namespace
@@ -40,7 +40,7 @@ resource "kubernetes_secret" "bitwarden_access_token" {
 }
 
 output "bitwarden_secret_created" {
-  value       = var.enable_argocd && var.bitwarden_access_token != "" ? true : false
+  value       = var.enable_gitops && var.bitwarden_access_token != "" ? true : false
   description = "True if Bitwarden access token secret was created"
   sensitive   = true
 }

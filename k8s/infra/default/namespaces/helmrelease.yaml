@@ -1,0 +1,110 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: namespaces
+  namespace: flux-system
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: ./k8s/infra/default/namespaces
+      sourceRef:
+        kind: GitRepository
+        name: homelab
+        namespace: flux-system
+  releaseName: namespaces
+  targetNamespace: default
+  install:
+    createNamespace: true
+  values:
+    namespaces:
+      - name: default
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: istio-system
+        labels:
+          pod-security.kubernetes.io/enforce: privileged
+      - name: istio-ingress-internal
+      - name: argocd
+      - name: external-dns
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: cert-manager
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: external-secrets
+      - name: authentik
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: cnpg
+      - name: monitoring
+        labels:
+          istio.io/dataplane-mode: ambient
+          pod-security.kubernetes.io/enforce: privileged
+      - name: valkey
+      - name: versitygw
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: n8n
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: mealie
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: homepage
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: paperless
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: zot
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: forgejo
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: external-services
+      - name: intel
+        labels:
+          istio.io/dataplane-mode: ambient
+          pod-security.kubernetes.io/enforce: privileged
+      - name: node-feature-discovery
+        labels:
+          pod-security.kubernetes.io/enforce: privileged
+      - name: adguard
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: actual
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: immich
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: media
+        labels:
+          pod-security.kubernetes.io/enforce: privileged
+      - name: it-tools
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: uptime-kuma
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: kiali
+        labels:
+          istio.io/dataplane-mode: ambient
+      - name: rancher
+        labels:
+          istio.io/dataplane-mode: ambient
+          pod-security.kubernetes.io/enforce: privileged
+          pod-security.kubernetes.io/audit: privileged
+          pod-security.kubernetes.io/warn: privileged
+      - name: democratic-csi
+        labels:
+          istio.io/dataplane-mode: ambient
+          pod-security.kubernetes.io/enforce: privileged
+          pod-security.kubernetes.io/audit: privileged
+          pod-security.kubernetes.io/warn: privileged
+      - name: volsync-system
+        labels:
+          istio.io/dataplane-mode: ambient
+

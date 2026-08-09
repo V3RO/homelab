@@ -1,0 +1,105 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: versitygw
+  namespace: flux-system
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: ./k8s/infra/versitygw/versitygw
+      sourceRef:
+        kind: GitRepository
+        name: homelab
+        namespace: flux-system
+  releaseName: versitygw
+  targetNamespace: versitygw
+  install:
+    createNamespace: true
+  dependsOn:
+    - name: local-path-provisioner
+      namespace: flux-system
+    - name: snapshot-controller
+      namespace: flux-system
+    - name: democratic-csi-nfs
+      namespace: flux-system
+    - name: democratic-csi-iscsi
+      namespace: flux-system
+    - name: volsync
+      namespace: flux-system
+  values:
+    versitygw:
+      replicaCount: 3
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 0
+          maxUnavailable: 1
+
+      auth:
+        existingSecret: versitygw-credentials
+
+      persistence:
+        enabled: true
+        size: 50Gi
+        storageClassName: truenas-nfs-media
+        accessMode: ReadWriteMany
+
+      httpRoute:
+        enabled: true
+        parentRefs:
+          - name: internal-gateway
+            namespace: istio-ingress-internal
+            sectionName: versitygw-https
+        hostnames:
+          - s3.versitygw.schober.dev
+
+      admin:
+        enabled: true
+        httpRoute:
+          enabled: true
+          parentRefs:
+            - name: internal-gateway
+              namespace: istio-ingress-internal
+              sectionName: versitygw-https
+          hostnames:
+            - admin.versitygw.schober.dev
+
+      iam:
+        enabled: true
+
+      webui:
+        enabled: true
+        apiGateways:
+          - https://s3.versitygw.schober.dev
+        adminGateways:
+          - https://admin.versitygw.schober.dev
+        httpRoute:
+          enabled: true
+          parentRefs:
+            - name: internal-gateway
+              namespace: istio-ingress-internal
+              sectionName: versitygw-https
+          hostnames:
+            - web.versitygw.schober.dev
+
+      gateway:
+        corsAllowOrigin: "*"
+
+      # Spread the 3 replicas across 3 distinct nodes since they share one RWX
+      # PVC and posix backend directory — colocating replicas defeats the point.
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: versitygw
+
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi

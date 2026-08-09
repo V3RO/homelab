@@ -1,0 +1,31 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: gateway
+  namespace: flux-system
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: ./k8s/infra/istio-ingress-internal/gateway
+      sourceRef:
+        kind: GitRepository
+        name: homelab
+        namespace: flux-system
+  releaseName: gateway
+  targetNamespace: istio-ingress-internal
+  install:
+    createNamespace: true
+  dependsOn:
+    - name: local-path-provisioner
+      namespace: flux-system
+    - name: snapshot-controller
+      namespace: flux-system
+    - name: democratic-csi-nfs
+      namespace: flux-system
+    - name: democratic-csi-iscsi
+      namespace: flux-system
+    - name: volsync
+      namespace: flux-system
+  values:
+

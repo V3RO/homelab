@@ -1,0 +1,60 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: istiod
+  namespace: flux-system
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: ./k8s/infra/istio-system/istiod
+      sourceRef:
+        kind: GitRepository
+        name: homelab
+        namespace: flux-system
+  releaseName: istiod
+  targetNamespace: istio-system
+  install:
+    createNamespace: true
+  dependsOn:
+    - name: namespaces
+      namespace: flux-system
+    - name: base
+      namespace: flux-system
+  values:
+    istiod:
+      profile: ambient
+      meshConfig:
+        enableTracing: true
+        enablePrometheusMerge: true
+        extensionProviders:
+          - name: alloy-otlp
+            opentelemetry:
+              service: alloy.monitoring.svc.cluster.local
+              port: 4317
+          - name: alloy-otlp-logs
+            envoyOtelAls:
+              service: alloy.monitoring.svc.cluster.local
+              port: 4317
+          - name: authentik
+            envoyExtAuthzHttp:
+              service: ak-outpost-proxy.authentik.svc.cluster.local
+              port: 9000
+              pathPrefix: /outpost.goauthentik.io/auth/envoy
+              headersToDownstreamOnAllow:
+                - cookie
+              headersToUpstreamOnAllow:
+                - set-cookie
+                - x-authentik-*
+              includeRequestHeadersInCheck:
+                - cookie
+      telemetry:
+        enabled: true
+        v2:
+          enabled: true
+          prometheus:
+            enabled: true
+      pilot:
+        env:
+          PILOT_ENABLE_TELEMETRY: "true"
+

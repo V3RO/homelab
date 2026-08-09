@@ -1,7 +1,7 @@
 apiVersion: v2
 name: alloy
 version: 0.1.0
-description: "Grafana Alloy deployment for monitoring"
+description: "Grafana Alloy deployment"
 type: application
 dependencies:
   - name: alloy

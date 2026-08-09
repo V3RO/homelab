@@ -75,8 +75,8 @@ variable "talos_nodes" {
   }
 }
 
-variable "enable_argocd" {
-  description = "Whether to deploy Argo CD via Helm after cluster becomes healthy"
+variable "enable_gitops" {
+  description = "Whether to deploy GitOps tools (Flux) via Helm after cluster becomes healthy"
   type        = bool
   default     = true
 }

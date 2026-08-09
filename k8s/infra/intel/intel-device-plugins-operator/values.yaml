@@ -1,4 +1,0 @@
-intel-device-plugins-operator:
-  manager:
-    devices:
-      gpu: true
