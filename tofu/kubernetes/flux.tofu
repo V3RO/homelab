@@ -94,6 +94,10 @@ resource "null_resource" "flux_bootstrap" {
     interpreter = ["/bin/bash", "-c"]
     command = <<-EOT
       set -euo pipefail
+      # Label the built-in default namespace for the ambient mesh (not managed
+      # by Helm, so it cannot accidentally be pruned/uninstalled).
+      kubectl label --overwrite namespace default istio.io/dataplane-mode=ambient \
+        --kubeconfig ${path.module}/output/kube-config.yaml
       kubectl apply -k ${path.root}/../../k8s/bootstrap/flux \
         --kubeconfig ${path.module}/output/kube-config.yaml
     EOT
