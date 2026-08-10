@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 5m
   chart:
     spec:
       chart: cloudnative-pg
@@ -16,17 +17,12 @@ spec:
   releaseName: cnpg-operator
   targetNamespace: cnpg
   install:
-    createNamespace: true
-  dependsOn:
-    - name: local-path-provisioner
-      namespace: flux-system
-    - name: snapshot-controller
-      namespace: flux-system
-    - name: democratic-csi-nfs
-      namespace: flux-system
-    - name: democratic-csi-iscsi
-      namespace: flux-system
-    - name: volsync
-      namespace: flux-system
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    crds: CreateReplace
   values:
 

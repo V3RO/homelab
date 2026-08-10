@@ -2,4 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - gitrepository.yaml
-  - infra-sync.yaml
+  - root-sync.yaml
+  - 00-namespaces-sync.yaml
+  - 10-network-sync.yaml
+  - 20-controllers-sync.yaml
+  - 30-issuers-sync.yaml
+  - 40-storage-sync.yaml
+  - 50-platform-infra-sync.yaml
+  - 60-platform-services-sync.yaml
+  - 70-argo-sync.yaml

@@ -84,9 +84,10 @@ resource "null_resource" "flux_bootstrap" {
 
   triggers = {
     # Re-apply whenever any bootstrap object changes.
-    gitrepository_hash = filesha256("${path.root}/../../k8s/bootstrap/flux/gitrepository.yaml")
-    infra_sync_hash    = filesha256("${path.root}/../../k8s/bootstrap/flux/infra-sync.yaml")
-    kustomization_hash = filesha256("${path.root}/../../k8s/bootstrap/flux/kustomization.yaml")
+    bootstrap_hash = sha256(join("", [
+      for f in sort(fileset("${path.root}/../../k8s/bootstrap/flux", "**/*.yaml")) :
+      filesha256("${path.root}/../../k8s/bootstrap/flux/${f}")
+    ]))
   }
 
   provisioner "local-exec" {

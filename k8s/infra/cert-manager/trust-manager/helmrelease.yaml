@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 5m
   chart:
     spec:
       chart: trust-manager
@@ -16,15 +17,14 @@ spec:
   releaseName: trust-manager
   targetNamespace: cert-manager
   install:
-    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
   dependsOn:
-    - name: base
-      namespace: flux-system
-    - name: istiod
-      namespace: flux-system
-    - name: cni
-      namespace: flux-system
-    - name: ztunnel
+    - name: cert-manager
       namespace: flux-system
   values:
     crds:

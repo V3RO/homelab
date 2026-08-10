@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 10m
   chart:
     spec:
       chart: cni
@@ -16,10 +17,14 @@ spec:
   releaseName: cni
   targetNamespace: istio-system
   install:
-    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    crds: CreateReplace
   dependsOn:
-    - name: namespaces
-      namespace: flux-system
     - name: base
       namespace: flux-system
   values:

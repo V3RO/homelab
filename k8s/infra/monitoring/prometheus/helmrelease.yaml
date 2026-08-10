@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 10m
   chart:
     spec:
       chart: ./k8s/infra/monitoring/prometheus
@@ -12,13 +13,17 @@ spec:
         kind: GitRepository
         name: homelab
         namespace: flux-system
+      reconcileStrategy: Revision
   releaseName: prometheus
   targetNamespace: monitoring
   install:
-    createNamespace: true
-  dependsOn:
-    - name: argo
-      namespace: flux-system
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    crds: CreateReplace
   values:
     prometheus:
       # Disable high availability mode for homelab

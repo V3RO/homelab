@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 10m
   chart:
     spec:
       chart: ./k8s/infra/monitoring/alloy
@@ -12,12 +13,18 @@ spec:
         kind: GitRepository
         name: homelab
         namespace: flux-system
+      reconcileStrategy: Revision
   releaseName: alloy
   targetNamespace: monitoring
   install:
-    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
   dependsOn:
-    - name: argo
+    - name: prometheus
       namespace: flux-system
   values:
     alloy:

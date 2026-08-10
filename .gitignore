@@ -1,6 +1,9 @@
 ### Intellij IDEA
 .idea/
 
+### macOS
+.DS_Store
+
 ### OpenTofu
 # Local .terraform directories
 **/.terraform/*

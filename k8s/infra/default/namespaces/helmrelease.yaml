@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 5m
   chart:
     spec:
       chart: ./k8s/infra/default/namespaces
@@ -12,10 +13,16 @@ spec:
         kind: GitRepository
         name: homelab
         namespace: flux-system
+      reconcileStrategy: Revision
   releaseName: namespaces
   targetNamespace: default
   install:
-    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
   values:
     namespaces:
       - name: default

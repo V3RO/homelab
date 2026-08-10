@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 5m
   chart:
     spec:
       chart: ./k8s/infra/istio-ingress-internal/gateway
@@ -12,20 +13,15 @@ spec:
         kind: GitRepository
         name: homelab
         namespace: flux-system
+      reconcileStrategy: Revision
   releaseName: gateway
   targetNamespace: istio-ingress-internal
   install:
-    createNamespace: true
-  dependsOn:
-    - name: local-path-provisioner
-      namespace: flux-system
-    - name: snapshot-controller
-      namespace: flux-system
-    - name: democratic-csi-nfs
-      namespace: flux-system
-    - name: democratic-csi-iscsi
-      namespace: flux-system
-    - name: volsync
-      namespace: flux-system
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
   values:
 

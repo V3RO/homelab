@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 10m
   chart:
     spec:
       chart: ./k8s/infra/external-secrets/external-secrets
@@ -12,22 +13,18 @@ spec:
         kind: GitRepository
         name: homelab
         namespace: flux-system
+      reconcileStrategy: Revision
   releaseName: external-secrets
   targetNamespace: external-secrets
   install:
-    createNamespace: true
+    remediation:
+      retries: 3
     crds: CreateReplace
   upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
     crds: CreateReplace
-  dependsOn:
-    - name: base
-      namespace: flux-system
-    - name: istiod
-      namespace: flux-system
-    - name: cni
-      namespace: flux-system
-    - name: ztunnel
-      namespace: flux-system
   values:
     external-secrets:
       bitwarden-sdk-server:

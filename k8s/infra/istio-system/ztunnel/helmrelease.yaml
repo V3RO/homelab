@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 10m
   chart:
     spec:
       chart: ztunnel
@@ -16,10 +17,13 @@ spec:
   releaseName: ztunnel
   targetNamespace: istio-system
   install:
-    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
   dependsOn:
-    - name: namespaces
-      namespace: flux-system
     - name: base
       namespace: flux-system
     - name: istiod

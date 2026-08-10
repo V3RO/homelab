@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 5m
   chart:
     spec:
       chart: volsync
@@ -16,17 +17,12 @@ spec:
   releaseName: volsync
   targetNamespace: volsync-system
   install:
-    createNamespace: true
-  dependsOn:
-    - name: cert-manager
-      namespace: flux-system
-    - name: trust-manager
-      namespace: flux-system
-    - name: bitwarden-issuer
-      namespace: flux-system
-    - name: cloudflare-issuer
-      namespace: flux-system
-    - name: external-secrets
-      namespace: flux-system
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    crds: CreateReplace
   values:
 

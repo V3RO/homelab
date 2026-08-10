@@ -8,3 +8,6 @@ spec:
   url: https://github.com/V3RO/homelab.git
   ref:
     branch: main
+  ignore: |
+    /*
+    !/k8s

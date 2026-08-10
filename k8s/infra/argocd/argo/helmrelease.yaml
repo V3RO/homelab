@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  timeout: 15m
   chart:
     spec:
       chart: ./k8s/infra/argocd/argo
@@ -12,31 +13,16 @@ spec:
         kind: GitRepository
         name: homelab
         namespace: flux-system
+      reconcileStrategy: Revision
   releaseName: argo
   targetNamespace: argocd
   install:
-    createNamespace: true
-  dependsOn:
-    - name: gateway
-      namespace: flux-system
-    - name: cnpg-operator
-      namespace: flux-system
-    - name: valkey
-      namespace: flux-system
-    - name: versitygw
-      namespace: flux-system
-    - name: node-feature-discovery
-      namespace: flux-system
-    - name: external-dns-unifi
-      namespace: flux-system
-    - name: intel-device-plugins-operator
-      namespace: flux-system
-    - name: intel-device-plugins-gpu
-      namespace: flux-system
-    - name: headlamp
-      namespace: flux-system
-    - name: authentik
-      namespace: flux-system
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
   values:
     argo-cd:
       global:
