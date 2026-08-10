@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ../cert-manager/bitwarden-issuer
   - ../cert-manager/cloudflare-issuer
+  - ../external-secrets/config
