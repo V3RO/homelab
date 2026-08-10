@@ -20,11 +20,15 @@ spec:
     remediation:
       retries: 3
     crds: CreateReplace
+    # The bitwarden-sdk-server pod needs the TLS certificate issued via the
+    # issuers tier, which depends on this release - waiting would deadlock.
+    disableWait: true
   upgrade:
     remediation:
       retries: 3
       remediateLastFailure: true
     crds: CreateReplace
+    disableWait: true
   values:
     external-secrets:
       bitwarden-sdk-server:
