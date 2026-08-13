@@ -2,10 +2,39 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - 00-roots.yaml
-  - 10-network.yaml
-  - 20-security.yaml
-  - 40-storage.yaml
-  - 50-platform.yaml
-  - 60-services.yaml
-  - 70-argo.yaml
+  - alloy.yaml
+  - argo.yaml
+  - authentik.yaml
+  - barman-cloud.yaml
+  - base.yaml
+  - bitwarden-issuer.yaml
+  - cert-manager.yaml
+  - cilium.yaml
+  - cloudflare-issuer.yaml
+  - cni.yaml
+  - cnpg-operator.yaml
+  - democratic-csi-iscsi.yaml
+  - democratic-csi-nfs.yaml
+  - external-dns-unifi.yaml
+  - external-secrets-config.yaml
+  - external-secrets.yaml
+  - gateway-api.yaml
+  - gateway.yaml
+  - grafana.yaml
+  - headlamp.yaml
+  - intel-device-plugins-gpu.yaml
+  - intel-device-plugins-operator.yaml
+  - istiod.yaml
+  - local-path-provisioner.yaml
+  - loki.yaml
+  - namespaces.yaml
+  - node-feature-discovery.yaml
+  - prometheus.yaml
+  - snapshot-controller.yaml
+  - sources.yaml
+  - tempo.yaml
+  - trust-manager.yaml
+  - valkey.yaml
+  - versitygw.yaml
+  - volsync.yaml
+  - ztunnel.yaml
