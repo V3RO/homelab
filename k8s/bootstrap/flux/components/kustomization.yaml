@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - 00-roots.yaml
+  - 10-network.yaml
+  - 20-security.yaml
+  - 40-storage.yaml
+  - 50-platform.yaml
+  - 60-services.yaml
+  - 70-argo.yaml

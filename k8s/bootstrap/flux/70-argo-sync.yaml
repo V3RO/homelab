@@ -12,7 +12,7 @@ spec:
     name: homelab
     namespace: flux-system
   path: ./k8s/infra/70-argo
-  prune: true
+  prune: false
   wait: true
   dependsOn:
     - name: infra-platform-services

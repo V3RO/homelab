@@ -12,7 +12,7 @@ spec:
     name: homelab
     namespace: flux-system
   path: ./k8s/infra/30-issuers
-  prune: true
+  prune: false
   wait: true
   dependsOn:
     - name: infra-controllers

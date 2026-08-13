@@ -12,5 +12,5 @@ spec:
     name: homelab
     namespace: flux-system
   path: ./k8s/infra/00-namespaces
-  prune: true
+  prune: false
   wait: true

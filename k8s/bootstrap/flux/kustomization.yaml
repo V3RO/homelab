@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - gitrepository.yaml
   - root-sync.yaml
+  - components
   - 00-namespaces-sync.yaml
   - 10-network-sync.yaml
   - 20-controllers-sync.yaml
