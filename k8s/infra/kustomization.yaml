@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Entry point reconciled by the root 'infra' Flux Kustomization.
+# Only references the per-component ks.yaml files (via the namespace
+# aggregators); component content is built by the component Kustomizations.
+resources:
+  - ./sources/ks.yaml
+  - ./argocd
+  - ./authentik
+  - ./cert-manager
+  - ./cnpg
+  - ./default
+  - ./democratic-csi
+  - ./external-dns
+  - ./external-secrets
+  - ./intel
+  - ./istio-ingress-internal
+  - ./istio-system
+  - ./kube-system
+  - ./monitoring
+  - ./node-feature-discovery
+  - ./rancher
+  - ./valkey
+  - ./versitygw
+  - ./volsync-system
