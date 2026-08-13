@@ -14,9 +14,11 @@ kubectl --kubeconfig tofu/kubernetes/output/kube-config.yaml get pods
 ```
 
 ### Deployment
-The k8s cluster is deployed using argocd and the applications are managed using two argocd applicationsets (infra and apps). Therefore, don't use kubectl (or Helm) to deploy applications to the cluster.
-- Infrastructure services are defined in the [k8s/infra](./k8s/infra) directory following the structure `k8s/infra/[namespace]/[application]`. The infra ApplicationSet uses progressive sync (RollingSync) to ensure correct deployment ordering.
-- User-facing applications are defined in the [k8s/apps](./k8s/apps) directory following the structure `k8s/apps/[namespace]/[application]`.
+The cluster is bootstrapped by open tofu ([flux.tofu](./tofu/kubernetes/flux.tofu)) which installs Flux and applies [k8s/bootstrap/flux](./k8s/bootstrap/flux). From there deployment is split:
+- Infrastructure services are defined in [k8s/infra](./k8s/infra) following the structure `k8s/infra/[namespace]/[application]` and are reconciled by Flux. Each component has its own Flux `Kustomization` in [k8s/bootstrap/flux/components](./k8s/bootstrap/flux/components) with `dependsOn` edges forming the deployment-order DAG (health-gated on the component's HelmRelease). When adding an infra component, add a Kustomization there with the correct edges.
+- User-facing applications are defined in [k8s/apps](./k8s/apps) following the structure `k8s/apps/[namespace]/[application]` and are managed by ArgoCD via the `apps` ApplicationSet (deployed by Flux as the last infra component in `70-argo.yaml`).
+
+Don't use kubectl (or Helm) to deploy applications to the cluster.
 
 ### Platform Services
 The cluster already provides services for caching, database, DNS, and secret handling that can and should be used by other the applications if they need it (e.g. for caching or database).
