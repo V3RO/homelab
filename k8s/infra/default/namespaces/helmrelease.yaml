@@ -3,6 +3,10 @@ kind: HelmRelease
 metadata:
   name: namespaces
   namespace: flux-system
+  annotations:
+    # Never garbage-collect this release: helm uninstalling it would delete
+    # every namespace and cascade into all cluster workloads.
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   interval: 5m
   timeout: 5m
@@ -24,91 +28,70 @@ spec:
       retries: 3
       remediateLastFailure: true
   values:
+    # Ambient mesh enrollment is default-on cluster-wide (see the cni
+    # component's ambient.enablementSelectors). Namespaces labeled
+    # istio.io/dataplane-mode: none opt out; everything unlabeled is enrolled.
     namespaces:
       - name: istio-system
         labels:
           pod-security.kubernetes.io/enforce: privileged
       - name: istio-ingress-internal
+        labels:
+          istio.io/dataplane-mode: none
       - name: argocd
+        labels:
+          istio.io/dataplane-mode: none
       - name: external-dns
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: cert-manager
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: external-secrets
-      - name: authentik
         labels:
-          istio.io/dataplane-mode: ambient
+          istio.io/dataplane-mode: none
+      - name: authentik
       - name: cnpg
+        labels:
+          istio.io/dataplane-mode: none
       - name: monitoring
         labels:
-          istio.io/dataplane-mode: ambient
           pod-security.kubernetes.io/enforce: privileged
       - name: valkey
+        labels:
+          istio.io/dataplane-mode: none
       - name: versitygw
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: n8n
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: mealie
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: homepage
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: paperless
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: zot
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: forgejo
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: external-services
+        labels:
+          istio.io/dataplane-mode: none
       - name: intel
         labels:
-          istio.io/dataplane-mode: ambient
           pod-security.kubernetes.io/enforce: privileged
       - name: node-feature-discovery
         labels:
+          istio.io/dataplane-mode: none
           pod-security.kubernetes.io/enforce: privileged
       - name: adguard
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: actual
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: immich
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: media
         labels:
+          istio.io/dataplane-mode: none
           pod-security.kubernetes.io/enforce: privileged
       - name: it-tools
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: uptime-kuma
-        labels:
-          istio.io/dataplane-mode: ambient
       - name: kiali
-        labels:
-          istio.io/dataplane-mode: ambient
+      - name: vert-sh
       - name: rancher
         labels:
-          istio.io/dataplane-mode: ambient
           pod-security.kubernetes.io/enforce: privileged
           pod-security.kubernetes.io/audit: privileged
           pod-security.kubernetes.io/warn: privileged
       - name: democratic-csi
         labels:
-          istio.io/dataplane-mode: ambient
           pod-security.kubernetes.io/enforce: privileged
           pod-security.kubernetes.io/audit: privileged
           pod-security.kubernetes.io/warn: privileged
       - name: volsync-system
-        labels:
-          istio.io/dataplane-mode: ambient
-
