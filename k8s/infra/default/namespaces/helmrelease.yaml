@@ -15,7 +15,7 @@ spec:
       chart: ./k8s/infra/default/namespaces
       sourceRef:
         kind: GitRepository
-        name: homelab
+        name: flux-system
         namespace: flux-system
       reconcileStrategy: Revision
   releaseName: namespaces

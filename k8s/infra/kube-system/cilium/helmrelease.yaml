@@ -11,7 +11,7 @@ spec:
       chart: ./k8s/infra/kube-system/cilium
       sourceRef:
         kind: GitRepository
-        name: homelab
+        name: flux-system
         namespace: flux-system
       reconcileStrategy: Revision
   releaseName: cilium

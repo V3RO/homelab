@@ -9,7 +9,7 @@ spec:
   timeout: 5m
   sourceRef:
     kind: GitRepository
-    name: homelab
+    name: flux-system
     namespace: flux-system
   path: ./k8s/infra/external-dns/external-dns-unifi
   prune: true

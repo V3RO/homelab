@@ -11,7 +11,7 @@ spec:
       chart: ./k8s/infra/versitygw/versitygw
       sourceRef:
         kind: GitRepository
-        name: homelab
+        name: flux-system
         namespace: flux-system
       reconcileStrategy: Revision
   releaseName: versitygw

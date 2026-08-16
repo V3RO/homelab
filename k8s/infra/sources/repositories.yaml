@@ -90,3 +90,13 @@ spec:
   interval: 10m
   url: https://kubernetes-sigs.github.io/node-feature-discovery/charts
 
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: controlplaneio-fluxcd
+  namespace: flux-system
+spec:
+  type: oci
+  interval: 10m
+  url: oci://ghcr.io/controlplaneio-fluxcd/charts

@@ -5,7 +5,7 @@ resource "null_resource" "wait_for_cluster" {
   }
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command = <<-EOT
+    command     = <<-EOT
       set -euo pipefail
       echo "Waiting for Talos cluster health..."
       KUBECONFIG="${path.module}/output/kube-config.yaml"
@@ -52,23 +52,30 @@ resource "null_resource" "wait_for_cluster" {
   ]
 }
 
-resource "null_resource" "flux_install" {
+locals {
+  # Keep in sync with the self-managing HelmRelease in
+  # k8s/infra/flux-system/flux-operator, which adopts this release.
+  flux_operator_chart_version = "0.58.0"
+}
+
+resource "null_resource" "flux_operator" {
   count = var.enable_gitops ? 1 : 0
 
   triggers = {
-    install_version = "1"
+    # Re-install when the pinned operator chart version changes. The
+    # self-managing HelmRelease takes over upgrades once Flux is up; this
+    # trigger keeps fresh-cluster bootstrap on the same version.
+    chart_version = local.flux_operator_chart_version
   }
 
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command = <<-EOT
+    command     = <<-EOT
       set -euo pipefail
-      helm repo add fluxcd-community https://fluxcd-community.github.io/helm-charts || true
-      helm repo update fluxcd-community
-      helm upgrade --install flux2 fluxcd-community/flux2 \
+      helm upgrade --install flux-operator oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator \
         --namespace flux-system \
         --create-namespace \
-        --version 2.13.0 \
+        --version ${local.flux_operator_chart_version} \
         --timeout 600s \
         --wait \
         --atomic \
@@ -92,12 +99,22 @@ resource "null_resource" "flux_bootstrap" {
 
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
+    # Retry: the FluxInstance CRD is registered by the operator install above,
+    # but API discovery can lag briefly after helm reports ready.
     command = <<-EOT
       set -euo pipefail
-      kubectl apply -k ${path.root}/../../k8s/bootstrap/flux \
-        --kubeconfig ${path.module}/output/kube-config.yaml
+      for i in $(seq 1 12); do
+        if kubectl apply --server-side -k ${path.root}/../../k8s/bootstrap/flux \
+          --kubeconfig ${path.module}/output/kube-config.yaml; then
+          exit 0
+        fi
+        echo "kubectl apply attempt $i failed, retrying in 5s..." >&2
+        sleep 5
+      done
+      echo "Bootstrap apply failed after 12 attempts" >&2
+      exit 1
     EOT
   }
 
-  depends_on = [null_resource.flux_install]
+  depends_on = [null_resource.flux_operator]
 }

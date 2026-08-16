@@ -14,6 +14,7 @@ resources:
   - ./democratic-csi
   - ./external-dns
   - ./external-secrets
+  - ./flux-system
   - ./intel
   - ./istio-ingress-internal
   - ./istio-system

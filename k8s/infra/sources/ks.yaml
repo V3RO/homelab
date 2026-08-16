@@ -9,7 +9,7 @@ spec:
   timeout: 5m
   sourceRef:
     kind: GitRepository
-    name: homelab
+    name: flux-system
     namespace: flux-system
   path: ./k8s/infra/sources
   prune: true
@@ -53,4 +53,8 @@ spec:
     - apiVersion: source.toolkit.fluxcd.io/v1
       kind: HelmRepository
       name: node-feature-discovery-repo
+      namespace: flux-system
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: HelmRepository
+      name: controlplaneio-fluxcd
       namespace: flux-system

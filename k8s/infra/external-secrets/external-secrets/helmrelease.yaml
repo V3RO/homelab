@@ -11,7 +11,7 @@ spec:
       chart: ./k8s/infra/external-secrets/external-secrets
       sourceRef:
         kind: GitRepository
-        name: homelab
+        name: flux-system
         namespace: flux-system
       reconcileStrategy: Revision
   releaseName: external-secrets
