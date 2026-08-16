@@ -3,6 +3,3 @@ kind: Kustomization
 
 resources:
   - applicationset.yaml
-  - external-secret.yaml
-  - oci-repository-external-secret.yaml
-  - valkey-external-secret.yaml
