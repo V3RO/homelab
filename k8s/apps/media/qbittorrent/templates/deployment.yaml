@@ -17,6 +17,10 @@ spec:
       labels:
         app: qbittorrent
     spec:
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - "127.0.0.1"
       initContainers:
         {{- if or .Values.qbittorrent.authBypass.enabled .Values.qbittorrent.apiKey.enabled }}
         - name: configure-qbittorrent-auth

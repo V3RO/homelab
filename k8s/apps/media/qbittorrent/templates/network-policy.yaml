@@ -20,7 +20,6 @@ spec:
     - to:
         - podSelector: {}
 ---
-# Gluetun/qBittorrent pod is the ONLY pod allowed unrestricted egress
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -33,7 +32,17 @@ spec:
   policyTypes:
     - Egress
   egress:
-    - {}
+    - to:
+        - podSelector: {}
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              - 169.254.0.0/16
+              - 100.64.0.0/10
 ---
 # Allow ingress from istio-ingress-internal (for HTTPRoutes) and intra-namespace
 apiVersion: networking.k8s.io/v1
