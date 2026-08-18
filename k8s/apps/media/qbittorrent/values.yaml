@@ -9,11 +9,7 @@ gluetun:
     SERVER_COUNTRIES: Romania
     VPN_PORT_FORWARDING: "on"
     PORT_FORWARD_ONLY: "on"
-    # ProtonVPN assigns the forwarded port dynamically; push it into
-    # qBittorrent's listen port via the WebUI API (shared netns; 127.0.0.1
-    # explicitly since localhost may resolve to ::1 which the auth bypass
-    # doesn't cover; setPreferences is POST-only) on every (re)assignment.
-    VPN_PORT_FORWARDING_UP_COMMAND: 'wget -qO- --header="Referer: http://127.0.0.1:8080" --post-data "json={\"listen_port\":{{PORTS}}}" "http://127.0.0.1:8080/api/v2/app/setPreferences"'
+    VPN_PORT_FORWARDING_UP_COMMAND: 'for i in 1 2 3 4 5 6 7 8 9 10 11 12; do wget -qO- --header="Referer: http://127.0.0.1:8080" --post-data "json={\"listen_port\":{{PORTS}}}" "http://127.0.0.1:8080/api/v2/app/setPreferences" && exit 0; sleep 5; done; exit 1'
     HTTPPROXY: "on"
     HTTPPROXY_LISTENING_ADDRESS: ":8888"
     FIREWALL_OUTBOUND_SUBNETS: "10.244.0.0/16,10.96.0.0/12"
@@ -41,7 +37,7 @@ qbittorrent:
   authBypass:
     enabled: true
     trustedReverseProxies: 10.244.0.0/16
-    authSubnetWhitelist: 10.244.0.0/16
+    authSubnetWhitelist: 10.244.0.0/16, 127.0.0.1/32, 10.1.20.0/24
   service:
     port: 80
     targetPort: 8080
