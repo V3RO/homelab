@@ -67,7 +67,7 @@ persistence:
     create: true
     claimName: media-library
     accessMode: ReadWriteMany
-    size: 100Gi
+    size: 500Gi
     mountPath: /media
     storageClass: truenas-nfs-media
 
