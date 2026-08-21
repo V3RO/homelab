@@ -16,6 +16,20 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
+    # Allow Kubernetes API access (required by cnpg instance pods). Cilium
+    # translates the kubernetes.default ClusterIP to the control-plane
+    # endpoints before egress policy evaluation, so the node IPs must be
+    # listed here (update if control-plane nodes change).
+    - to:
+        - ipBlock:
+            cidr: 10.1.40.10/32
+        - ipBlock:
+            cidr: 10.1.40.11/32
+        - ipBlock:
+            cidr: 10.1.40.12/32
+      ports:
+        - protocol: TCP
+          port: 6443
     # Allow intra-namespace communication
     - to:
         - podSelector: {}
