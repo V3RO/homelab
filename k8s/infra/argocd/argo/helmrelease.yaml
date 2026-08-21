@@ -86,16 +86,10 @@ spec:
         existingSecret: argocd-valkey
 
       server:
-        replicas: 3
         metrics:
           enabled: true
           serviceMonitor:
             enabled: true
-        pdb:
-          minAvailable: 1
-        env:
-          - name: ARGOCD_API_SERVER_REPLICAS
-            value: "3"
         httproute:
           enabled: true
           hostnames:
@@ -108,28 +102,19 @@ spec:
               sectionName: https
 
       repoServer:
-        replicas: 3
         metrics:
           enabled: true
           serviceMonitor:
             enabled: true
-        pdb:
-          minAvailable: 1
 
       controller:
-        replicas: 3
         metrics:
           enabled: true
           serviceMonitor:
             enabled: true
-        pdb:
-          minAvailable: 1
 
       applicationSet:
-        replicas: 3
         metrics:
           enabled: true
           serviceMonitor:
             enabled: true
-        pdb:
-          minAvailable: 1
