@@ -26,6 +26,17 @@ persistence:
     mountPath: /config
     storageClass: local-path
 
+postgres:
+  clusterName: prowlarr-postgres
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1
+  storage:
+    class: local-path
+    size: 2Gi
+  database: prowlarr_main
+  logDatabase: prowlarr_log
+  owner: prowlarr
+
 app:
   host: prowlarr.schober.dev
   gateway:
@@ -50,3 +61,4 @@ externalSecret:
     kind: ClusterSecretStore
   keys:
     apiKey: prowlarr-api-key
+    cnpgPassword: cnpg-prowlarr

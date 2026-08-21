@@ -25,18 +25,23 @@ persistence:
     size: 5Gi
     mountPath: /config
     storageClass: local-path
-  media:
+  data:
     enabled: true
     create: false
-    claimName: media-library
-    mountPath: /media
+    claimName: media-data
+    mountPath: /data
     storageClass: truenas-nfs-media
-  downloads:
-    enabled: true
-    create: false
-    claimName: media-downloads
-    mountPath: /downloads
-    storageClass: truenas-nfs-media
+
+postgres:
+  clusterName: radarr-postgres
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1
+  storage:
+    class: local-path
+    size: 2Gi
+  database: radarr_main
+  logDatabase: radarr_log
+  owner: radarr
 
 app:
   host: radarr.schober.dev
@@ -62,3 +67,4 @@ externalSecret:
     kind: ClusterSecretStore
   keys:
     apiKey: radarr-api-key
+    cnpgPassword: cnpg-radarr

@@ -1,59 +1,129 @@
-image:
-  repository: jellyfin/jellyfin
-  tag: "10.11.6"
-  pullPolicy: IfNotPresent
+# --- Upstream jellyfin chart values (nested under `jellyfin:` dependency key) ---
+jellyfin:
+  deploymentStrategy:
+    type: Recreate
+  service:
+    port: 80
+  persistence:
+    config:
+      existingClaim: jellyfin-config
+    media:
+      enabled: false
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: media-data
+  volumeMounts:
+    - name: data
+      mountPath: /data
+      readOnly: true
+  jellyfin:
+    env:
+      - name: JELLYFIN_PublishedServerUrl
+        value: https://jellyfin.schober.dev
+  extraInitContainers:
+    - name: install-ldap-plugin
+      image: alpine:3.21
+      command:
+        - /bin/sh
+        - -ec
+        - |
+          version="22.0.0.0"
+          dest="/config/plugins/LDAP Authentication"
+          mkdir -p "${dest}"
+          wget -qO /tmp/ldap.zip "https://repo.jellyfin.org/files/plugin/ldap-authentication/ldap-authentication_${version}.zip"
+          unzip -o /tmp/ldap.zip -d "${dest}"
+          rm /tmp/ldap.zip
+      volumeMounts:
+        - name: config
+          mountPath: /config
+    - name: ldap-auth-config
+      image: python:3.12-alpine
+      env:
+        - name: LDAP_BIND_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: jellyfin-secret
+              key: ldapBindPassword
+      command:
+        - python3
+        - -c
+        - |
+          import os
+          import xml.etree.ElementTree as ET
 
-env:
-  JELLYFIN_PublishedServerUrl: https://jellyfin.schober.dev
+          path = "/config/plugins/configurations/LDAP-Auth.xml"
+          os.makedirs(os.path.dirname(path), exist_ok=True)
 
-ldapAuth:
-  enabled: true
-  server: ak-outpost-jellyfin-ldap.authentik.svc.cluster.local
-  port: 389
-  useSsl: false
-  useStartTls: false
-  skipSslVerify: false
-  bindUser: cn=jellyfin-ldap,ou=users,dc=ldap,dc=schober,dc=dev
-  baseDn: dc=ldap,dc=schober,dc=dev
-  searchFilter: (|(memberOf=cn=jellyfin-users,ou=groups,dc=ldap,dc=schober,dc=dev)(memberOf=cn=jellyfin-admins,ou=groups,dc=ldap,dc=schober,dc=dev))
-  adminBaseDn: ou=users,dc=ldap,dc=schober,dc=dev
-  adminFilter: (memberOf=cn=jellyfin-admins,ou=groups,dc=ldap,dc=schober,dc=dev)
-  enableAdminFilterMemberUid: false
-  searchAttributes: cn,mail
-  clientCertPath: ""
-  clientKeyPath: ""
-  rootCaPath: ""
-  createUsersFromLdap: true
-  allowPassChange: false
-  uidAttribute: uid
-  usernameAttribute: cn
-  passwordAttribute: userPassword
-  enableProfileImageSync: false
-  removeImagesNotInLdap: false
-  profileImageAttribute: jpegphoto
-  profileImageFormat: Default
-  enableAllFolders: false
-  passwordResetUrl: ""
+          if os.path.exists(path):
+              tree = ET.parse(path)
+              root = tree.getroot()
+          else:
+              root = ET.Element(
+                  "PluginConfiguration",
+                  {
+                      "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                      "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                  },
+              )
+              tree = ET.ElementTree(root)
 
-service:
-  port: 80
-  targetPort: 8096
+          values = {
+              "LdapServer": "ak-outpost-jellyfin-ldap.authentik.svc.cluster.local",
+              "LdapPort": 389,
+              "UseSsl": "False",
+              "UseStartTls": "False",
+              "SkipSslVerify": "False",
+              "LdapBindUser": "cn=jellyfin-ldap,ou=users,dc=ldap,dc=schober,dc=dev",
+              "LdapBindPassword": os.environ["LDAP_BIND_PASSWORD"],
+              "LdapBaseDn": "dc=ldap,dc=schober,dc=dev",
+              "LdapSearchFilter": "(|(memberOf=cn=jellyfin-users,ou=groups,dc=ldap,dc=schober,dc=dev)(memberOf=cn=jellyfin-admins,ou=groups,dc=ldap,dc=schober,dc=dev))",
+              "LdapAdminBaseDn": "ou=users,dc=ldap,dc=schober,dc=dev",
+              "LdapAdminFilter": "(memberOf=cn=jellyfin-admins,ou=groups,dc=ldap,dc=schober,dc=dev)",
+              "EnableLdapAdminFilterMemberUid": "False",
+              "LdapSearchAttributes": "cn,mail",
+              "LdapClientCertPath": "",
+              "LdapClientKeyPath": "",
+              "LdapRootCaPath": "",
+              "CreateUsersFromLdap": "True",
+              "AllowPassChange": "False",
+              "LdapUidAttribute": "uid",
+              "LdapUsernameAttribute": "cn",
+              "LdapPasswordAttribute": "userPassword",
+              "EnableLdapProfileImageSync": "False",
+              "RemoveImagesNotInLdap": "False",
+              "LdapProfileImageAttribute": "jpegPhoto",
+              "LdapProfileImageFormat": "Default",
+              "EnableAllFolders": "False",
+              "PasswordResetUrl": "",
+          }
 
+          for key, value in values.items():
+              node = root.find(key)
+              if node is None:
+                  node = ET.SubElement(root, key)
+              node.text = str(value)
+
+          for key in ("EnabledFolders", "LdapUsers"):
+              if root.find(key) is None:
+                  ET.SubElement(root, key)
+
+          ET.indent(tree, space="  ")
+          tree.write(path, encoding="utf-8", xml_declaration=True)
+      volumeMounts:
+        - name: config
+          mountPath: /config
+
+# --- Custom template values (platform integration) ---
+
+# Config PVC (managed by custom template)
 persistence:
   config:
     enabled: true
     create: true
     claimName: jellyfin-config
     size: 10Gi
-    mountPath: /config
     storageClass: local-path
-  media:
-    enabled: true
-    create: false
-    claimName: media-library
-    mountPath: /media
-    readOnly: true
-    storageClass: truenas-nfs-media
 
 app:
   host: jellyfin.schober.dev
@@ -68,7 +138,6 @@ app:
     provider: authentik
 
 externalSecret:
-  enabled: true
   refreshInterval: 1h0m0s
   secretStoreRef:
     name: bitwarden-app-secrets

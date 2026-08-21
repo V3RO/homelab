@@ -33,6 +33,21 @@ spec:
                 secretKeyRef:
                   name: sonarr-secret
                   key: apiKey
+            - name: SONARR__POSTGRES__HOST
+              value: "{{ .Values.postgres.clusterName }}-rw.{{ .Release.Namespace }}.svc.cluster.local"
+            - name: SONARR__POSTGRES__PORT
+              value: "5432"
+            - name: SONARR__POSTGRES__USER
+              value: {{ .Values.postgres.owner | quote }}
+            - name: SONARR__POSTGRES__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cnpg-{{ .Values.postgres.owner }}-credentials
+                  key: password
+            - name: SONARR__POSTGRES__MAINDB
+              value: {{ .Values.postgres.database | quote }}
+            - name: SONARR__POSTGRES__LOGDB
+              value: {{ .Values.postgres.logDatabase | quote }}
             {{- if .Values.proxy }}
             - name: HTTP_PROXY
               value: {{ .Values.proxy.HTTP_PROXY | quote }}
@@ -103,13 +118,9 @@ spec:
             - name: config
               mountPath: {{ .Values.persistence.config.mountPath }}
             {{- end }}
-            {{- if .Values.persistence.media.enabled }}
-            - name: media
-              mountPath: {{ .Values.persistence.media.mountPath }}
-            {{- end }}
-            {{- if .Values.persistence.downloads.enabled }}
-            - name: downloads
-              mountPath: {{ .Values.persistence.downloads.mountPath }}
+            {{- if .Values.persistence.data.enabled }}
+            - name: data
+              mountPath: {{ .Values.persistence.data.mountPath }}
             {{- end }}
       volumes:
         {{- if .Values.persistence.config.enabled }}
@@ -117,13 +128,8 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.config.claimName }}
         {{- end }}
-        {{- if .Values.persistence.media.enabled }}
-        - name: media
+        {{- if .Values.persistence.data.enabled }}
+        - name: data
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.media.claimName }}
-        {{- end }}
-        {{- if .Values.persistence.downloads.enabled }}
-        - name: downloads
-          persistentVolumeClaim:
-            claimName: {{ .Values.persistence.downloads.claimName }}
+            claimName: {{ .Values.persistence.data.claimName }}
         {{- end }}

@@ -27,6 +27,10 @@ data:
           update_password: true
           delete_unmanaged:
             enabled: false
+        root_folders:
+          {{- range .Values.config.sonarr.rootFolders }}
+          - {{ . | quote }}
+          {{- end }}
     radarr:
       instance1:
         base_url: {{ .Values.config.radarr.baseUrl | quote }}
@@ -49,3 +53,7 @@ data:
           update_password: true
           delete_unmanaged:
             enabled: false
+        root_folders:
+          {{- range .Values.config.radarr.rootFolders }}
+          - {{ . | quote }}
+          {{- end }}

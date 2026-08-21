@@ -9,7 +9,7 @@ gluetun:
     SERVER_COUNTRIES: Romania
     VPN_PORT_FORWARDING: "on"
     PORT_FORWARD_ONLY: "on"
-    VPN_PORT_FORWARDING_UP_COMMAND: 'for i in 1 2 3 4 5 6 7 8 9 10 11 12; do wget -qO- --header="Referer: http://127.0.0.1:8080" --post-data "json={\"listen_port\":{{PORTS}}}" "http://127.0.0.1:8080/api/v2/app/setPreferences" && exit 0; sleep 5; done; exit 1'
+    VPN_PORT_FORWARDING_UP_COMMAND: 'wget -qO- --tries=12 --retry-connrefused --waitretry=5 --timeout=5 --header="Referer: http://127.0.0.1:8080" --post-data "json={\"listen_port\":{{PORTS}}}" "http://127.0.0.1:8080/api/v2/app/setPreferences"'
     HTTPPROXY: "on"
     HTTPPROXY_LISTENING_ADDRESS: ":8888"
     FIREWALL_OUTBOUND_SUBNETS: "10.244.0.0/16,10.96.0.0/12"
@@ -41,6 +41,16 @@ qbittorrent:
   service:
     port: 80
     targetPort: 8080
+  downloads:
+    savePath: /data/downloads
+    tempPath: /data/downloads/incomplete
+    categories:
+      tv: /data/downloads/tv
+      movies: /data/downloads/movies
+  # Directories created (and chowned to PUID:PGID) by the init container
+  mediaDirs:
+    - /data/media/tv
+    - /data/media/movies
 
 proxy:
   service:
@@ -54,21 +64,12 @@ persistence:
     size: 2Gi
     mountPath: /config
     storageClass: local-path
-  downloads:
+  data:
     enabled: true
-    create: true
-    claimName: media-downloads
+    create: false
+    claimName: media-data
     accessMode: ReadWriteMany
-    size: 100Gi
-    mountPath: /downloads
-    storageClass: truenas-nfs-media
-  library:
-    enabled: true
-    create: true
-    claimName: media-library
-    accessMode: ReadWriteMany
-    size: 500Gi
-    mountPath: /media
+    mountPath: /data
     storageClass: truenas-nfs-media
 
 app:
