@@ -26,7 +26,7 @@ spec:
   values:
     versitygw:
       image:
-        tag: "1.7.0"
+        tag: "v1.7.0"
 
       replicaCount: 3
       strategy:
