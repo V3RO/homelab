@@ -94,6 +94,13 @@ spec:
         - protocol: TCP
           port: {{ .Values.qbittorrent.service.targetPort }}
     - from:
+        - podSelector:
+            matchLabels:
+              app: prowlarr
+      ports:
+        - protocol: TCP
+          port: {{ .Values.qbittorrent.service.targetPort }}
+    - from:
         - podSelector: {}
       ports:
         - protocol: TCP
