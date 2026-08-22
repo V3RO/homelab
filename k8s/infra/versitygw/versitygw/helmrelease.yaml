@@ -24,6 +24,8 @@ spec:
       retries: 3
       remediateLastFailure: true
   values:
+    image:
+      tag: "1.7.0"
     versitygw:
       replicaCount: 3
       strategy:
