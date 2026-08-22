@@ -6,7 +6,7 @@ metadata:
 spec:
   configuration:
     destinationPath: s3://cnpg-backups/authentik/
-    endpointURL: http://versitygw.versitygw.svc.cluster.local
+    endpointURL: http://versitygw.versitygw.svc.cluster.local:7070
     s3Credentials:
       accessKeyId:
         name: cnpg-authentik-backup-credentials
