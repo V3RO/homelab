@@ -20,12 +20,6 @@ data:
         identifiers:
           name: {{ .name }}
       {{- end }}
-      {{- range .Values.authentik.blueprints.deprecatedGroups }}
-      - model: authentik_core.group
-        state: absent
-        identifiers:
-          name: {{ . }}
-      {{- end }}
       {{- range .Values.authentik.blueprints.users }}
       - model: authentik_core.user
         state: present

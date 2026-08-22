@@ -163,25 +163,6 @@ spec:
         groups:
           - name: homelab-users
           - name: homelab-admins
-        deprecatedGroups:
-          - ArgoCD Admins
-          - ArgoCD Viewers
-          - Grafana Admins
-          - Grafana Editors
-          - Grafana Viewers
-          - jellyfin-users
-          - jellyfin-admins
-          - mealie-users
-          - mealie-admins
-          - zot-users
-          - zot-admins
-          - forgejo-users
-          - forgejo-admins
-          - actual-users
-          - adguard-admins
-          - immich-users
-          - immich-admins
-          - kiali-admins
 
         outposts:
           serviceConnections:
