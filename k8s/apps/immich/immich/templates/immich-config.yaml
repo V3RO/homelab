@@ -185,7 +185,7 @@ spec:
               "mobileRedirectUri": "",
               "profileSigningAlgorithm": "none",
               "roleClaim": "immich_role",
-              "scope": "openid email profile",
+              "scope": "openid email profile immich_role",
               "signingAlgorithm": "RS256",
               "storageLabelClaim": "preferred_username",
               "storageQuotaClaim": "immich_quota",

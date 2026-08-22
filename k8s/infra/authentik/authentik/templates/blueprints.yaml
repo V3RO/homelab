@@ -14,6 +14,12 @@ data:
       labels:
         blueprints.goauthentik.io/description: "Blueprint for {{ .application.name }}"
     entries:
+      {{- range $.Values.authentik.blueprints.groups }}
+      - model: authentik_core.group
+        id: global-group-{{ .name | lower | replace " " "-" }}
+        identifiers:
+          name: {{ .name }}
+      {{- end }}
       {{- if .groups }}
       {{- $blueprint := . }}
       {{- range .groups }}
@@ -167,6 +173,18 @@ data:
           expression: |
             return {"groups": [group.name for group in user.ak_groups.all()]}
       {{- end }}
+      {{- if (default false .provider.immichRoleClaim) }}
+      - model: authentik_providers_oauth2.scopemapping
+        id: {{ .name }}-scope-immich-role
+        identifiers:
+          scope_name: immich_role
+        attrs:
+          name: Immich role
+          scope_name: immich_role
+          expression: |
+            groups = [group.name for group in user.ak_groups.all()]
+            return {"immich_role": "admin" if "homelab-admins" in groups else "user"}
+      {{- end }}
       - model: authentik_providers_oauth2.oauth2provider
         id: {{ .name }}-provider
         identifiers:
@@ -195,6 +213,9 @@ data:
             {{- if (default false .provider.includeGroups) }}
             - !KeyOf {{ .name }}-scope-groups
             {{- end }}
+            {{- if (default false .provider.immichRoleClaim) }}
+            - !KeyOf {{ .name }}-scope-immich-role
+            {{- end }}
             - !Find [authentik_providers_oauth2.scopemapping, [scope_name, offline_access]]
       - model: authentik_core.application
         id: {{ .name }}-application
@@ -208,8 +229,29 @@ data:
           policy_engine_mode: any
           {{- with .application.icon }}
           icon: {{ . }}
-          {{- end }}
       {{- end }}
+      {{- if eq .access "user" }}
+      - model: authentik_policies.policybinding
+        identifiers:
+          target: !Find [authentik_core.application, [slug, {{ .application.slug | quote }}]]
+          order: 0
+        attrs:
+          group: !Find [authentik_core.group, [name, "homelab-users"]]
+      - model: authentik_policies.policybinding
+        identifiers:
+          target: !Find [authentik_core.application, [slug, {{ .application.slug | quote }}]]
+          order: 1
+        attrs:
+          group: !Find [authentik_core.group, [name, "homelab-admins"]]
+      {{- else if eq .access "admin" }}
+      - model: authentik_policies.policybinding
+        identifiers:
+          target: !Find [authentik_core.application, [slug, {{ .application.slug | quote }}]]
+          order: 0
+        attrs:
+          group: !Find [authentik_core.group, [name, "homelab-admins"]]
+      {{- end }}
+{{- end }}
 {{- end }}
 
 {{- $proxyOutpost := .Values.authentik.blueprints.outposts.proxy }}

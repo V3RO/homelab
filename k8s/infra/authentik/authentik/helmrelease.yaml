@@ -128,6 +128,7 @@ spec:
           - blueprint-grafana
           - blueprint-outpost-service-connections
           - blueprint-n8n
+          - blueprint-jellyseerr
           - blueprint-sonarr
           - blueprint-radarr
           - blueprint-prowlarr
@@ -152,19 +153,35 @@ spec:
             passwordEnv: AUTHENTIK_USER_PASSWORD_V3RO
             groups:
               - authentik Admins
-              - ArgoCD Admins
-              - Grafana Admins
-              - mealie-admins
-              - zot-admins
-              - forgejo-admins
-              - actual-users
-              - adguard-admins
-              - immich-admins
-              - kiali-admins
+              - homelab-users
+              - homelab-admins
           - username: jellyfin-ldap
             name: Jellyfin LDAP
             email: jellyfin-ldap@schober.dev
             passwordEnv: AUTHENTIK_USER_PASSWORD_JELLYFIN_LDAP
+
+        groups:
+          - name: homelab-users
+          - name: homelab-admins
+        deprecatedGroups:
+          - ArgoCD Admins
+          - ArgoCD Viewers
+          - Grafana Admins
+          - Grafana Editors
+          - Grafana Viewers
+          - jellyfin-users
+          - jellyfin-admins
+          - mealie-users
+          - mealie-admins
+          - zot-users
+          - zot-admins
+          - forgejo-users
+          - forgejo-admins
+          - actual-users
+          - adguard-admins
+          - immich-users
+          - immich-admins
+          - kiali-admins
 
         outposts:
           serviceConnections:
@@ -189,6 +206,7 @@ spec:
               name: ArgoCD
               clientId: argocd
               clientSecretEnv: AUTHENTIK_ARGOCD_CLIENT_SECRET
+              includeGroups: true
               redirectUris:
                 - url: https://argo.schober.dev/api/dex/callback
                   matchingMode: strict
@@ -199,9 +217,7 @@ spec:
               slug: argocd
               metaLaunchUrl: https://argo.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/argo-cd.svg
-            groups:
-              - name: ArgoCD Admins
-              - name: ArgoCD Viewers
+            access: admin
           - name: grafana
             provider:
               kind: oauth2
@@ -217,10 +233,7 @@ spec:
               slug: grafana
               metaLaunchUrl: https://grafana.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/grafana.svg
-            groups:
-              - name: Grafana Admins
-              - name: Grafana Editors
-              - name: Grafana Viewers
+            access: admin
           - name: n8n
             provider:
               name: n8n
@@ -231,6 +244,18 @@ spec:
               slug: n8n
               metaLaunchUrl: https://n8n.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/n8n.svg
+            access: admin
+          - name: jellyseerr
+            provider:
+              name: Jellyseerr
+              externalHost: https://seerr.schober.dev
+              mode: forward_single
+            application:
+              name: Jellyseerr
+              slug: jellyseerr
+              metaLaunchUrl: https://seerr.schober.dev
+              icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/jellyseerr.svg
+            access: admin
           - name: sonarr
             provider:
               name: Sonarr
@@ -241,6 +266,7 @@ spec:
               slug: sonarr
               metaLaunchUrl: https://sonarr.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/sonarr.svg
+            access: admin
           - name: radarr
             provider:
               name: Radarr
@@ -251,6 +277,7 @@ spec:
               slug: radarr
               metaLaunchUrl: https://radarr.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/radarr.svg
+            access: admin
           - name: prowlarr
             provider:
               name: Prowlarr
@@ -261,6 +288,7 @@ spec:
               slug: prowlarr
               metaLaunchUrl: https://prowlarr.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/prowlarr.svg
+            access: admin
           - name: qbittorrent
             provider:
               name: qBittorrent
@@ -271,6 +299,7 @@ spec:
               slug: qbittorrent
               metaLaunchUrl: https://qbit.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/qbittorrent.svg
+            access: admin
           - name: valkey-admin
             provider:
               name: Valkey Admin
@@ -281,6 +310,7 @@ spec:
               slug: valkey-admin
               metaLaunchUrl: https://valkey-admin.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/valkey.svg
+            access: admin
           - name: jellyfin
             provider:
               kind: ldap
@@ -299,9 +329,7 @@ spec:
               slug: jellyfin
               metaLaunchUrl: https://jellyfin.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/jellyfin.svg
-            groups:
-              - name: jellyfin-users
-              - name: jellyfin-admins
+            access: user
           - name: mealie
             provider:
               kind: oauth2
@@ -319,9 +347,7 @@ spec:
               slug: mealie
               metaLaunchUrl: https://mealie.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/mealie.svg
-            groups:
-              - name: mealie-admins
-              - name: mealie-users
+            access: user
           - name: zot
             provider:
               kind: oauth2
@@ -337,9 +363,7 @@ spec:
               slug: zot
               metaLaunchUrl: https://zot.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/zot-registry.svg
-            groups:
-              - name: zot-admins
-              - name: zot-users
+            access: admin
           - name: forgejo
             provider:
               kind: oauth2
@@ -354,9 +378,7 @@ spec:
               slug: forgejo
               metaLaunchUrl: https://git.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/forgejo.svg
-            groups:
-              - name: forgejo-admins
-              - name: forgejo-users
+            access: user
           - name: adguard
             provider:
               name: AdGuard Home
@@ -369,8 +391,7 @@ spec:
               slug: adguard
               metaLaunchUrl: https://adguard.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/adguard-home.svg
-            groups:
-              - name: adguard-admins
+            access: admin
           - name: actual
             provider:
               kind: oauth2
@@ -385,14 +406,14 @@ spec:
               slug: actual
               metaLaunchUrl: https://actual.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/actual-budget.svg
-            groups:
-              - name: actual-users
+            access: user
           - name: immich
             provider:
               kind: oauth2
               name: Immich
               clientId: immich
               clientSecretEnv: AUTHENTIK_IMMICH_CLIENT_SECRET
+              immichRoleClaim: true
               redirectUris:
                 - url: https://immich.schober.dev/auth/login
                   matchingMode: strict
@@ -405,9 +426,7 @@ spec:
               slug: immich
               metaLaunchUrl: https://immich.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/immich.svg
-            groups:
-              - name: immich-admins
-              - name: immich-users
+            access: user
           - name: kiali
             provider:
               kind: oauth2
@@ -428,8 +447,7 @@ spec:
               slug: kiali
               metaLaunchUrl: https://kiali.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/kiali.svg
-            groups:
-              - name: kiali-admins
+            access: admin
 
     postgres:
       imageName: ghcr.io/cloudnative-pg/postgresql:18.1
@@ -471,4 +489,3 @@ spec:
       gatewaySectionName: https
       serviceName: authentik-server
       servicePort: 80
-

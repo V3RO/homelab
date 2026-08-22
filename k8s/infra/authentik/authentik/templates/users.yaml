@@ -14,6 +14,18 @@ data:
       labels:
         blueprints.goauthentik.io/description: "Blueprint for user management"
     entries:
+      {{- range .Values.authentik.blueprints.groups }}
+      - model: authentik_core.group
+        state: present
+        identifiers:
+          name: {{ .name }}
+      {{- end }}
+      {{- range .Values.authentik.blueprints.deprecatedGroups }}
+      - model: authentik_core.group
+        state: absent
+        identifiers:
+          name: {{ . }}
+      {{- end }}
       {{- range .Values.authentik.blueprints.users }}
       - model: authentik_core.user
         state: present

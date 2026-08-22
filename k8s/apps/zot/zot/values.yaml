@@ -31,7 +31,7 @@ zot:
                               "credentialsFile": "/secrets/zot/oidc-credentials.json",
                               "issuer": "https://auth.schober.dev/application/o/zot/",
                               "keypath": "",
-                              "scopes": ["openid", "profile", "email"]
+                              "scopes": ["openid", "profile", "email", "groups"]
                           }
                       }
                   }
@@ -41,7 +41,7 @@ zot:
                       "**": {
                           "policies": [
                               {
-                                  "groups": ["zot-users"],
+                                  "groups": ["homelab-admins"],
                                   "actions": ["read", "create"]
                               }
                           ],
@@ -49,7 +49,7 @@ zot:
                      }
                   },
                   "adminPolicy": {
-                      "groups": ["zot-admins"],
+                      "groups": ["homelab-admins"],
                       "actions": ["read", "create", "update", "delete"]
                   }
               }

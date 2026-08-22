@@ -56,10 +56,10 @@ spec:
                     - openid
                     - profile
                     - email
+                    - groups
         rbac:
           policy.csv: |
-            g, ArgoCD Admins, role:admin
-            g, ArgoCD Viewers, role:readonly
+            g, homelab-admins, role:admin
 
       dex:
         metrics:

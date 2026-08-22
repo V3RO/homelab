@@ -116,7 +116,7 @@ spec:
               {{- if .Values.qbittorrent.downloads.categories }}
               {{- $cats := dict }}
               {{- range $name, $path := .Values.qbittorrent.downloads.categories }}
-              {{- $_ := set $cats $name (dict "savePath" $path) }}
+              {{- $_ := set $cats $name (dict "save_path" $path) }}
               {{- end }}
               categories_file=${config_dir}/categories.json
               [ -f "${categories_file}" ] || echo '{}' > "${categories_file}"

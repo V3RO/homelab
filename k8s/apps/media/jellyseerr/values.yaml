@@ -28,5 +28,5 @@ app:
   backendServiceName: jellyseerr
   servicePort: 80
   authentik:
-    enabled: false
+    enabled: true
     provider: authentik

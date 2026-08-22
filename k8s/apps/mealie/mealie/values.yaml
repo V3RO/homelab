@@ -45,8 +45,8 @@ authentik:
   autoRedirect: true
   rememberMe: true
   groups:
-    users: mealie-users
-    admins: mealie-admins
+    users: homelab-users
+    admins: homelab-admins
 
 persistence:
   enabled: true
