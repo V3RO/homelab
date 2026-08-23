@@ -58,3 +58,7 @@ spec:
       kind: HelmRepository
       name: controlplaneio-fluxcd
       namespace: flux-system
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: HelmRepository
+      name: openbao-repo
+      namespace: flux-system

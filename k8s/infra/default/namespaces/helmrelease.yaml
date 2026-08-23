@@ -95,3 +95,4 @@ spec:
           pod-security.kubernetes.io/audit: privileged
           pod-security.kubernetes.io/warn: privileged
       - name: volsync-system
+      - name: openbao
