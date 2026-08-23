@@ -19,6 +19,34 @@ spec:
         namespace: flux-system
   releaseName: flux-operator
   targetNamespace: flux-system
+  valuesFrom:
+    - kind: Secret
+      name: flux-authentik-oidc
+      valuesKey: client-secret
+      targetPath: web.config.authentication.oauth2.clientSecret
+  values:
+    web:
+      config:
+        baseURL: https://flux.schober.dev
+        authentication:
+          type: OAuth2
+          oauth2:
+            provider: OIDC
+            clientID: flux-web
+            issuerURL: https://auth.schober.dev/application/o/flux/
+            scopes:
+              - openid
+              - profile
+              - email
+              - groups
+      httpRoute:
+        enabled: true
+        hostnames:
+          - flux.schober.dev
+        parentRefs:
+          - name: internal-gateway
+            namespace: istio-ingress-internal
+            sectionName: https
   install:
     remediation:
       retries: 3

@@ -105,6 +105,11 @@ spec:
               secretKeyRef:
                 name: authentik-secret
                 key: openbaoClientSecret
+          - name: AUTHENTIK_FLUX_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: authentik-secret
+                key: fluxClientSecret
           - name: AUTHENTIK_USER_PASSWORD_V3RO
             valueFrom:
               secretKeyRef:
@@ -456,6 +461,22 @@ spec:
             # secret in this cluster, unlike most apps here which also allow
             # homelab-users.
             access: admin
+          - name: flux
+            provider:
+              kind: oauth2
+              name: Flux
+              clientId: flux-web
+              clientSecretEnv: AUTHENTIK_FLUX_CLIENT_SECRET
+              includeGroups: true
+              redirectUris:
+                - url: https://flux.schober.dev/oauth2/callback
+                  matchingMode: strict
+            application:
+              name: Flux
+              slug: flux
+              metaLaunchUrl: https://flux.schober.dev
+              icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/flux-cd.svg
+            access: admin
 
     postgres:
       imageName: ghcr.io/cloudnative-pg/postgresql:18.1
@@ -482,6 +503,7 @@ spec:
         actualClientSecret: authentik-actual-client-secret
         immichClientSecret: authentik-immich-client-secret
         kialiClientSecret: authentik-kiali-client-secret
+        fluxClientSecret: authentik-flux-client-secret
         openbaoClientSecret: authentik-openbao-client-secret
         userPasswords:
           - username: V3RO
