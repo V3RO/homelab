@@ -25,5 +25,5 @@ spec:
       remediateLastFailure: true
   values:
     staging:
-      enabled: true
+      enabled: false
 
