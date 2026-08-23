@@ -100,6 +100,11 @@ spec:
               secretKeyRef:
                 name: authentik-secret
                 key: kialiClientSecret
+          - name: AUTHENTIK_OPENBAO_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: authentik-secret
+                key: openbaoClientSecret
           - name: AUTHENTIK_USER_PASSWORD_V3RO
             valueFrom:
               secretKeyRef:
@@ -141,6 +146,7 @@ spec:
           - blueprint-actual
           - blueprint-immich
           - blueprint-kiali
+          - blueprint-openbao
           - blueprint-valkey-admin
           - blueprint-proxy-outpost
           - blueprint-users
@@ -429,6 +435,27 @@ spec:
               metaLaunchUrl: https://kiali.schober.dev
               icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/kiali.svg
             access: admin
+          - name: openbao
+            provider:
+              kind: oauth2
+              name: OpenBao
+              clientId: openbao
+              clientSecretEnv: AUTHENTIK_OPENBAO_CLIENT_SECRET
+              includeGroups: true
+              redirectUris:
+                - url: https://openbao.schober.dev/ui/vault/auth/oidc/oidc/callback
+                  matchingMode: strict
+                - url: http://localhost:8250/oidc/callback
+                  matchingMode: strict
+            application:
+              name: OpenBao
+              slug: openbao
+              metaLaunchUrl: https://openbao.schober.dev
+              icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/openbao.svg
+            # Restricted to homelab-admins only — OpenBao holds every other
+            # secret in this cluster, unlike most apps here which also allow
+            # homelab-users.
+            access: admin
 
     postgres:
       imageName: ghcr.io/cloudnative-pg/postgresql:18.1
@@ -455,6 +482,7 @@ spec:
         actualClientSecret: authentik-actual-client-secret
         immichClientSecret: authentik-immich-client-secret
         kialiClientSecret: authentik-kiali-client-secret
+        openbaoClientSecret: authentik-openbao-client-secret
         userPasswords:
           - username: V3RO
             bitwardenItem: authentik-user-v3ro-password

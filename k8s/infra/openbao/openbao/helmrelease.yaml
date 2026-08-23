@@ -68,9 +68,21 @@ spec:
                 disable_hostname = true
               }
 
+              audit "file" "openbao-audit" {
+                description = "Default audit device"
+                options = {
+                  file_path = "/openbao/audit/audit.log"
+                }
+              }
+
         dataStorage:
           enabled: true
           size: 5Gi
+          storageClass: local-path
+
+        auditStorage:
+          enabled: true
+          size: 2Gi
           storageClass: local-path
 
         resources:
