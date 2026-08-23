@@ -152,6 +152,7 @@ spec:
           - blueprint-immich
           - blueprint-kiali
           - blueprint-openbao
+          - blueprint-flux
           - blueprint-valkey-admin
           - blueprint-proxy-outpost
           - blueprint-users
