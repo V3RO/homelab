@@ -25,10 +25,30 @@ spec:
         login: true
         passwordSecret:
           name: cnpg-authentik-credentials
+      # Lets OpenBao rotate authentik's password without holding the real
+      # Postgres superuser (enableSuperuserAccess is false on this cluster).
+      # CREATEROLE + the ADMIN OPTION grant below is the minimum privilege
+      # needed to ALTER ROLE authentik's password on PG16+ semantics.
+      - name: openbao-admin
+        ensure: present
+        login: true
+        createrole: true
+        passwordSecret:
+          name: cnpg-openbao-admin-credentials
   bootstrap:
     initdb:
       database: authentik
       owner: authentik
+      # NOTE: postInitSQL/postInitApplicationSQL only run once, at initial
+      # cluster creation — they're a no-op on this already-bootstrapped
+      # cluster. The equivalent one-time GRANT for THIS cluster had to be
+      # applied manually (see BOOTSTRAP.md in the openbao chart). These
+      # stay here so a future from-scratch recreation of this cluster (or
+      # any new app cluster copying this template) gets it automatically.
+      postInitSQL:
+        - "CREATE ROLE \"openbao-admin\" LOGIN CREATEROLE;"
+      postInitApplicationSQL:
+        - "GRANT \"authentik\" TO \"openbao-admin\" WITH ADMIN OPTION;"
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       enabled: true

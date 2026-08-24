@@ -512,6 +512,7 @@ spec:
           - username: jellyfin-ldap
             bitwardenItem: authentik-user-jellyfin-ldap-password
         cnpgPassword: cnpg-authentik
+        openbaoAdminPassword: cnpg-authentik-openbao-admin
 
     route:
       enabled: true
