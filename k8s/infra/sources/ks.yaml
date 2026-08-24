@@ -66,3 +66,7 @@ spec:
       kind: HelmRepository
       name: vault-config-operator-repo
       namespace: flux-system
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: HelmRepository
+      name: stakater-repo
+      namespace: flux-system

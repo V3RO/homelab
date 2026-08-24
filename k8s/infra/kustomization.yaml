@@ -23,6 +23,7 @@ resources:
   - ./node-feature-discovery
   - ./openbao
   - ./rancher
+  - ./reloader
   - ./valkey
   - ./vault-config-operator
   - ./versitygw

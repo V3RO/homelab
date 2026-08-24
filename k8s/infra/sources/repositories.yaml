@@ -118,3 +118,12 @@ metadata:
 spec:
   interval: 10m
   url: https://redhat-cop.github.io/vault-config-operator
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: stakater-repo
+  namespace: flux-system
+spec:
+  interval: 10m
+  url: https://stakater.github.io/stakater-charts

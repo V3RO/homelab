@@ -97,3 +97,4 @@ spec:
       - name: volsync-system
       - name: openbao
       - name: vault-config-operator
+      - name: reloader
