@@ -25,14 +25,32 @@ spec:
         login: true
         passwordSecret:
           name: cnpg-authentik-credentials
-      # Lets OpenBao rotate authentik's password without holding the real
-      # Postgres superuser (enableSuperuserAccess is false on this cluster).
-      # CREATEROLE + the ADMIN OPTION grant below is the minimum privilege
-      # needed to ALTER ROLE authentik's password on PG16+ semantics.
+      # Lets OpenBao mint short-lived dev credentials without holding the
+      # real Postgres superuser (enableSuperuserAccess is false here).
+      # CREATEROLE alone is enough to CREATE/DROP its own ephemeral roles;
+      # granting those roles membership in dev_ro/dev_rw additionally needs
+      # ADMIN OPTION on those two group roles (PG16+ tightened CREATEROLE:
+      # plain membership is NOT sufficient — verified, it errors with
+      # "Only roles with the ADMIN option on role X may grant this role").
+      #
+      # inRoles below is load-bearing, not documentation. CNPG revokes any
+      # role membership it does not find declared here — verified on the
+      # live cluster, where a manually applied GRANT was stripped in under
+      # 10 seconds. Declaring dev_ro/dev_rw is precisely what makes the
+      # one-time "WITH ADMIN OPTION" grant durable: CNPG issues plain
+      # membership and then leaves the admin flag alone (verified stable
+      # across a 120s reconcile window on a disposable test cluster).
+      #
+      # This is also the missed root cause of the 2026-08-24 incident: the
+      # GRANT that DatabaseSecretEngineStaticRole depended on had already
+      # been silently revoked by CNPG, because nothing declared it.
       - name: openbao-admin
         ensure: present
         login: true
         createrole: true
+        inRoles:
+          - dev_ro
+          - dev_rw
         passwordSecret:
           name: cnpg-openbao-admin-credentials
   bootstrap:
@@ -41,14 +59,53 @@ spec:
       owner: authentik
       # NOTE: postInitSQL/postInitApplicationSQL only run once, at initial
       # cluster creation — they're a no-op on this already-bootstrapped
-      # cluster. The equivalent one-time GRANT for THIS cluster had to be
-      # applied manually (see BOOTSTRAP.md in the openbao chart). These
-      # stay here so a future from-scratch recreation of this cluster (or
-      # any new app cluster copying this template) gets it automatically.
+      # cluster. The equivalent statements for THIS cluster have to be
+      # applied by hand, once (see BOOTSTRAP.md step 6 in the openbao
+      # chart). They stay here so a from-scratch recreation of this
+      # cluster, or any new app cluster copying this template, needs no
+      # manual step at all.
+      #
+      # dev_ro/dev_rw are deliberately generic (not authentik_ro/_rw):
+      # Postgres roles are scoped to their own cluster, and every app has
+      # its own CNPG cluster, so the same two names work identically in
+      # every database. Only the OpenBao *role* names have to be unique,
+      # since all apps share the one "database" mount.
+      #
+      # postInitSQL runs against the postgres database, so it is the right
+      # place for cluster-wide catalog changes (CREATE ROLE, and the
+      # role-to-role GRANT). Per-database privileges have to go in
+      # postInitApplicationSQL instead, which runs inside "authentik".
       postInitSQL:
         - "CREATE ROLE \"openbao-admin\" LOGIN CREATEROLE;"
+        - "CREATE ROLE dev_ro NOLOGIN;"
+        - "CREATE ROLE dev_rw NOLOGIN;"
+        - "GRANT dev_ro, dev_rw TO \"openbao-admin\" WITH ADMIN OPTION;"
+      # USAGE (not CREATE) on the schema is the whole safety property of
+      # this design: the ephemeral roles can never own an object, so the
+      # lease-expiry failure mode where DROP ROLE fails with
+      # "cannot be dropped because some objects depend on it" — leaving an
+      # irrevocable lease and an orphaned login — cannot occur. Verified
+      # both ways on a disposable cluster.
+      #
+      # ALTER DEFAULT PRIVILEGES is what covers tables created LATER; a
+      # plain "GRANT ... ON ALL TABLES" is a one-shot snapshot of the
+      # tables existing at that instant, not a standing rule. Note these
+      # are keyed on the creating role (authentik), because default
+      # privileges are not inherited through role membership.
+      #
+      # The SEQUENCES grant is easy to miss and INSERT fails without it on
+      # any serial/identity column.
+      #
+      # NB: no "GRANT authentik TO openbao-admin" here. Part 1 does not
+      # need ADMIN OPTION on the application role, and adding it without a
+      # matching inRoles entry would just be revoked by CNPG within
+      # seconds. It belongs to the (not yet done) Part 2 cutover, together
+      # with adding authentik to openbao-admin's inRoles.
       postInitApplicationSQL:
-        - "GRANT \"authentik\" TO \"openbao-admin\" WITH ADMIN OPTION;"
+        - "GRANT USAGE ON SCHEMA public TO dev_ro, dev_rw;"
+        - "ALTER DEFAULT PRIVILEGES FOR ROLE authentik IN SCHEMA public GRANT SELECT ON TABLES TO dev_ro;"
+        - "ALTER DEFAULT PRIVILEGES FOR ROLE authentik IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO dev_rw;"
+        - "ALTER DEFAULT PRIVILEGES FOR ROLE authentik IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO dev_rw;"
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       enabled: true
