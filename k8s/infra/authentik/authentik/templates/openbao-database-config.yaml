@@ -4,15 +4,63 @@
 # DatabaseSecretEngineConfig's rootCredentials secret must be namespace-local
 # to the CR (verified against the CRD schema), so this needs its own
 # ServiceAccount + Kubernetes-auth role/policy in OpenBao, scoped to exactly
-# these two paths — a small, one-time bootstrap step (see BOOTSTRAP.md in
-# the openbao chart), separate from the shared vault-config-operator role
-# used for cluster-wide config.
+# these two paths.
+#
+# The Policy and KubernetesAuthEngineRole below are created using the
+# shared vault-config-operator bootstrap ServiceAccount (its policy already
+# covers auth/kubernetes/role/* and sys/policy/*), which is why they're in
+# the vault-config-operator namespace rather than {{ .Release.Namespace }} —
+# authentication.serviceAccount is looked up in the CR's own namespace, so
+# it has to live where that ServiceAccount actually exists. No manual `bao
+# write`/`bao policy write` needed for this part; only the CNPG-side GRANT
+# (see BOOTSTRAP.md) remains manual, since that's a raw Postgres privilege
+# no OpenBao credential holds until this very GRANT is applied.
 #
 # NOT WIRED UP YET: authentik-secret still reads AUTHENTIK_POSTGRESQL__PASSWORD
 # from cnpg-authentik-credentials (Bitwarden). Cutting Authentik over to the
 # OpenBao-issued credential, and deciding how it picks up future rotations
 # (Reloader vs. long rotation_period + manual restart), are separate,
 # deliberate steps — not done by this file existing.
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: authentik-db-config
+  namespace: vault-config-operator
+spec:
+  authentication:
+    path: kubernetes
+    role: vault-config-operator
+    serviceAccount:
+      name: vault-config-operator-controller-manager
+  policy: |
+    path "database/config/authentik-postgres" {
+      capabilities = ["create", "read", "update", "delete"]
+    }
+    path "database/static-roles/authentik-static" {
+      capabilities = ["create", "read", "update", "delete"]
+    }
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: authentik-db-config
+  namespace: vault-config-operator
+spec:
+  authentication:
+    path: kubernetes
+    role: vault-config-operator
+    serviceAccount:
+      name: vault-config-operator-controller-manager
+  path: kubernetes
+  targetServiceAccounts:
+    - authentik-openbao
+  targetNamespaces:
+    targetNamespaces:
+      - {{ .Release.Namespace }}
+  policies:
+    - authentik-db-config
+  tokenTTL: 900
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
