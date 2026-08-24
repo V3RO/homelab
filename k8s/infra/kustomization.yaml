@@ -24,5 +24,6 @@ resources:
   - ./openbao
   - ./rancher
   - ./valkey
+  - ./vault-config-operator
   - ./versitygw
   - ./volsync-system
