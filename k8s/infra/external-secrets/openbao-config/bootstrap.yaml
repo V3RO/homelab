@@ -1,0 +1,40 @@
+# Scoped to kv/data/cnpg/* (read-only) rather than per-app: ESO is a shared,
+# cluster-wide component, so every future app's OpenBao-generated database
+# credential (via a RandomSecret under this prefix) is covered automatically
+# once this exists — no new bootstrap needed per app for this piece.
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: external-secrets-openbao-kv
+  namespace: vault-config-operator
+spec:
+  authentication:
+    path: kubernetes
+    role: vault-config-operator
+    serviceAccount:
+      name: vault-config-operator-controller-manager
+  policy: |
+    path "kv/data/cnpg/*" {
+      capabilities = ["read"]
+    }
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: external-secrets
+  namespace: vault-config-operator
+spec:
+  authentication:
+    path: kubernetes
+    role: vault-config-operator
+    serviceAccount:
+      name: vault-config-operator-controller-manager
+  path: kubernetes
+  targetServiceAccounts:
+    - external-secrets
+  targetNamespaces:
+    targetNamespaces:
+      - external-secrets
+  policies:
+    - external-secrets-openbao-kv
+  tokenTTL: 900
