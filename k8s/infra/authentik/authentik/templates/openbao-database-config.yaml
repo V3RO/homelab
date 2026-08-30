@@ -103,7 +103,6 @@ spec:
   path: database
   dBName: authentik-postgres
   username: authentik
-  credentialType: password
   # Conservative default pending the Reloader-vs-manual-restart decision —
   # see openbao's BOOTSTRAP.md. Kubernetes env vars from secretKeyRef don't
   # hot-reload, so raising this without also solving that problem turns
