@@ -104,10 +104,6 @@ spec:
   dBName: authentik-postgres
   username: authentik
   credentialType: password
-  # Required even empty: the CRD's validator counts this and
-  # rsaPrivateKeyCredentialConfig and rejects unless exactly one is
-  # non-nil - zero fails the same "only one" check as two would.
-  passwordCredentialConfig: {}
   # Conservative default pending the Reloader-vs-manual-restart decision —
   # see openbao's BOOTSTRAP.md. Kubernetes env vars from secretKeyRef don't
   # hot-reload, so raising this without also solving that problem turns
