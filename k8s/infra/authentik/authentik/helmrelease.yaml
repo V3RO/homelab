@@ -26,19 +26,6 @@ spec:
   values:
     authentik:
       global:
-        # Roll server AND worker when the DB password Secret changes.
-        # AUTHENTIK_POSTGRESQL__PASSWORD comes from a secretKeyRef, and a
-        # running process cannot re-read an env var — so a rotation without
-        # a restart leaves the pods presenting the old password while CNPG
-        # has already changed it in Postgres. Authentik will not self-heal
-        # from that: its liveness probe always returns 200 while readiness
-        # 503s on a dead database, so the kubelet never restarts the pod.
-        #
-        # Scoped to this one Secret rather than reloader.stakater.com/auto,
-        # which would also roll the SSO whenever any other referenced Secret
-        # changes (authentik-secret, the OIDC client secrets, ...).
-        deploymentAnnotations:
-          secret.reloader.stakater.com/reload: "cnpg-authentik-credentials"
         affinity:
           podAntiAffinity: soft
         deploymentStrategy:
@@ -524,11 +511,7 @@ spec:
             bitwardenItem: authentik-user-v3ro-password
           - username: jellyfin-ldap
             bitwardenItem: authentik-user-jellyfin-ldap-password
-        # cnpgPassword removed: authentik's DB password now comes from the
-        # OpenBao-generated RandomSecret "application-secret", not from the
-        # Bitwarden cnpg-authentik item. The Bitwarden item itself is now
-        # unused and can be deleted from Bitwarden Secrets Manager once
-        # this has been verified in the cluster.
+        cnpgPassword: cnpg-authentik
 
     route:
       enabled: true

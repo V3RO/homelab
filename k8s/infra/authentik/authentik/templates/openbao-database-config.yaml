@@ -65,23 +65,10 @@ spec:
     path "database/roles/authentik-dev-rw" {
       capabilities = ["create", "read", "update", "delete"]
     }
-    # KV layout is cnpg/<app>/<credential> so every app's secrets sit under
-    # one prefix. The ESO bootstrap policy is kv/data/cnpg/* which already
-    # covers these nested paths — a trailing * in an OpenBao policy matches
-    # across "/" — so no change is needed there.
-    #
-    # "delete" on the metadata path is what honours kvSecretRetainPolicy when
-    # a RandomSecret is removed.
-    path "kv/data/cnpg/authentik/openbao-admin" {
+    path "kv/data/cnpg/authentik-openbao-admin" {
       capabilities = ["create", "read", "update"]
     }
-    path "kv/metadata/cnpg/authentik/openbao-admin" {
-      capabilities = ["delete"]
-    }
-    path "kv/data/cnpg/authentik/application-secret" {
-      capabilities = ["create", "read", "update"]
-    }
-    path "kv/metadata/cnpg/authentik/application-secret" {
+    path "kv/metadata/cnpg/authentik-openbao-admin" {
       capabilities = ["delete"]
     }
 ---
@@ -112,30 +99,12 @@ metadata:
   name: authentik-openbao
   namespace: {{ .Release.Namespace }}
 ---
-# Both credentials below are generated and owned by OpenBao — nothing to
-# seed in Bitwarden for either.
-#
-# The KV path is spec.path + "/" + (spec.name or metadata.name), so these
-# land at kv/data/cnpg/authentik/{openbao-admin,application-secret}.
-#
-# NOTE ON RENAMES: spec.path is IMMUTABLE — the webhook rejects any update
-# with "spec.path cannot be updated". So a path change must be done by
-# renaming the resource (Helm creates the new one and prunes the old),
-# never by editing spec.path in place, which would fail the Helm upgrade.
-# That is why this is "openbao-admin" and not the former
-# "authentik-openbao-admin". Pruning the old resource also deletes its KV
-# entry, since kvSecretRetainPolicy defaults to Delete — no orphan left at
-# the old path.
-#
-# secret zero: this is the standing credential OpenBao uses to log into
-# Postgres as openbao-admin in order to mint the ephemeral dev roles. CNPG
-# writes it into Postgres (via ESO -> managed.roles), OpenBao reads the same
-# KV value to authenticate. Both sides must agree, which is exactly why it
-# has to live somewhere both can reach.
+# OpenBao generates and owns this password entirely — nothing to seed in
+# Bitwarden. Stored at kv/data/cnpg/authentik-openbao-admin.
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: RandomSecret
 metadata:
-  name: openbao-admin
+  name: authentik-openbao-admin
   namespace: {{ .Release.Namespace }}
 spec:
   authentication:
@@ -143,43 +112,7 @@ spec:
     role: authentik-db-config
     serviceAccount:
       name: authentik-openbao
-  path: kv/data/cnpg/authentik
-  isKVSecretsEngineV2: true
-  secretKey: password
-  secretFormat:
-    inlinePasswordPolicy: |
-      length = 32
-      rule "charset" {
-        charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        min-chars = 1
-      }
----
-# Authentik's OWN database password, replacing the Bitwarden-sourced
-# cnpg-authentik item. Same relay shape as openbao-admin above: OpenBao
-# generates it, ESO copies it into cnpg-authentik-credentials, CNPG applies
-# it to the "authentik" Postgres role, and authentik reads it from the
-# Secret.
-#
-# Deliberately NO refreshPeriod. Authentik reads this via secretKeyRef (an
-# env var), which a running process cannot re-read, so every rotation costs
-# a pod restart — handled here by Reloader, but not something to trigger on
-# a timer unnecessarily. Setting refreshPeriod only makes sense once the
-# env vars move to file:// URIs, which authentik re-resolves on each
-# connection open (its custom DB backend calls CONFIG.refresh(), and the
-# docs list host/port/user/password as hot-reloadable). Until then a
-# refresh would mean a rolling restart of the whole SSO on a schedule.
-apiVersion: redhatcop.redhat.io/v1alpha1
-kind: RandomSecret
-metadata:
-  name: application-secret
-  namespace: {{ .Release.Namespace }}
-spec:
-  authentication:
-    path: kubernetes
-    role: authentik-db-config
-    serviceAccount:
-      name: authentik-openbao
-  path: kv/data/cnpg/authentik
+  path: kv/data/cnpg
   isKVSecretsEngineV2: true
   secretKey: password
   secretFormat:
@@ -213,11 +146,9 @@ spec:
     - authentik-dev-rw
   connectionURL: "postgresql://{{ `{{username}}` }}:{{ `{{password}}` }}@authentik-postgres-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/authentik?sslmode=require"
   username: openbao-admin
-  # References the Kubernetes RandomSecret resource, not the KV path — the
-  # operator resolves the path from that resource's own spec.
   rootCredentials:
     randomSecret:
-      name: openbao-admin
+      name: authentik-openbao-admin
 ---
 # Dynamic dev credentials, generated on demand from the OpenBao UI
 # ("Generate credentials" on the role page) or `bao read
