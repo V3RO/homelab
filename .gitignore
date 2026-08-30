@@ -10,6 +10,8 @@
 
 # Output files
 tofu/**/output
+talos/generated/*
+!talos/generated/.gitkeep
 
 # .tfstate files
 *.tfstate

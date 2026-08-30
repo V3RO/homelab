@@ -3,18 +3,21 @@ Repository containing my complete homelab setup
 
 ## Structure
 - [k8s](./k8s) containing all homelab cluster deployments
-- [tofu](./tofu/kubernetes) containing the open tofu projects for the talos kubernetes cluster
-- [tofu](./tofu/home-assistant) containing the open tofu projects my Home Assistant VM
+- [talos](./talos) containing the bare-metal Talos Kubernetes cluster config (plain `talosctl` config/patches + Makefile, no Tofu)
+- [tofu](./tofu/home-assistant) containing the open tofu project for my Home Assistant VM
 
 ### Kubernetes Cluster
 
-To interact with the k8s cluster use the kubeconfig output from open tofu project
+The Kubernetes cluster runs Talos directly on bare metal (3 hosts,
+all-control-plane) — see [talos/README.md](./talos/README.md) for the
+full bring-up runbook. To interact with the cluster use the kubeconfig
+it produces:
 ```bash
-kubectl --kubeconfig tofu/kubernetes/output/kube-config.yaml get pods
+kubectl --kubeconfig talos/generated/kubeconfig get pods
 ```
 
 ### Deployment
-The cluster is bootstrapped by open tofu ([flux.tofu](./tofu/kubernetes/flux.tofu)) which helm-installs the Flux Operator and applies [k8s/bootstrap/flux](./k8s/bootstrap/flux). The FluxInstance there defines the Flux distribution (auto-upgraded within the pinned semver range) and its git sync; the operator itself is adopted and kept up to date by the self-managing HelmRelease in [k8s/infra/flux-system/flux-operator](./k8s/infra/flux-system/flux-operator). Manual bootstrap (e.g. bare-metal Talos without tofu) is just:
+The cluster is bootstrapped from [talos/](./talos) (`make cluster`, or the individual `make flux`/`make bitwarden-secret` targets — see [talos/Makefile](./talos/Makefile)), which helm-installs the Flux Operator and applies [k8s/bootstrap/flux](./k8s/bootstrap/flux). The FluxInstance there defines the Flux distribution (auto-upgraded within the pinned semver range) and its git sync; the operator itself is adopted and kept up to date by the self-managing HelmRelease in [k8s/infra/flux-system/flux-operator](./k8s/infra/flux-system/flux-operator). Manual bootstrap is just:
 ```bash
 helm install flux-operator oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator -n flux-system --create-namespace
 kubectl apply --server-side -k k8s/bootstrap/flux
