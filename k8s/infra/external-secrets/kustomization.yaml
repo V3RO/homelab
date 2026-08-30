@@ -4,4 +4,3 @@ kind: Kustomization
 resources:
   - ./config/ks.yaml
   - ./external-secrets/ks.yaml
-  - ./openbao-config/ks.yaml
