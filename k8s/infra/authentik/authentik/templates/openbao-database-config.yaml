@@ -126,43 +126,28 @@ spec:
   rootCredentials:
     randomSecret:
       name: authentik-openbao-admin
-#
-# DatabaseSecretEngineStaticRole for "authentik" is DELIBERATELY NOT
-# DEPLOYED YET — this caused a live incident (2026-08-24): creating it
-# rotates the real Postgres password immediately (not just after
-# rotationPeriod elapses), while CNPG's managed.roles was still
-# independently asserting the old Bitwarden-sourced password for the same
-# role. Both "won" at different points depending on which controller's
-# reconcile fired last, and authentik-server's cached connections broke
-# when the two disagreed. The rotationPeriod comment below correctly
-# predicted this outage class but didn't prevent it, since the very act
-# of creating the resource rotates immediately.
-#
-# Do not re-add this until, in the same change:
-#   1. authentik is removed from authentik-postgres's managed.roles
-#      (cluster.yaml) — CNPG must stop being a second writer of this
-#      role's password, or they will fight again.
-#   2. authentik-secret's AUTHENTIK_POSTGRESQL__PASSWORD is switched to
-#      read from wherever this resolves to (a Secret relaying
-#      database/static-creds/authentik-static, same ExternalSecret
-#      pattern as authentik-openbao-admin above).
-#   3. The Reloader-vs-manual-restart rotation question (BOOTSTRAP.md) is
-#      resolved, so future rotations don't repeat this same outage.
-#
-# apiVersion: redhatcop.redhat.io/v1alpha1
-# kind: DatabaseSecretEngineStaticRole
-# metadata:
-#   name: authentik-static
-#   namespace: {{ .Release.Namespace }}
-# spec:
-#   authentication:
-#     path: kubernetes
-#     role: authentik-db-config
-#     serviceAccount:
-#       name: authentik-openbao
-#   path: database
-#   dBName: authentik-postgres
-#   username: authentik
-#   credentialType: password
-#   passwordCredentialConfig: {}
-#   rotationPeriod: 2592000 # 30 days
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineStaticRole
+metadata:
+  name: authentik-static
+  namespace: {{ .Release.Namespace }}
+spec:
+  authentication:
+    path: kubernetes
+    role: authentik-db-config
+    serviceAccount:
+      name: authentik-openbao
+  path: database
+  dBName: authentik-postgres
+  username: authentik
+  credentialType: password
+  # Required even empty: the CRD's validator counts this and
+  # rsaPrivateKeyCredentialConfig and rejects unless exactly one is
+  # non-nil - zero fails the same "only one" check as two would.
+  passwordCredentialConfig: {}
+  # Conservative default pending the Reloader-vs-manual-restart decision —
+  # see openbao's BOOTSTRAP.md. Kubernetes env vars from secretKeyRef don't
+  # hot-reload, so raising this without also solving that problem turns
+  # every rotation into a recurring self-inflicted outage.
+  rotationPeriod: 2592000 # 30 days
