@@ -68,20 +68,21 @@ spec:
                 disable_hostname = true
               }
 
-              # NOTE: an "audit" declarative stanza + server.auditStorage was
-              # tried here and reverted — adding a new volumeClaimTemplate to
-              # an already-running StatefulSet is a forbidden in-place update
-              # in Kubernetes (volumeClaimTemplates is immutable post-create).
-              # It also put the OrderedReady StatefulSet controller into a
-              # stuck retry loop trying to patch the existing openbao-0 pod,
-              # which blocked openbao-1 from being recreated at all —
-              # briefly leaving the raft cluster at bare quorum (2 of 3).
-              # Re-adding this needs a deliberate maintenance-window
-              # procedure (see BOOTSTRAP.md), not a plain Flux reconcile.
+              audit "file" "openbao-audit" {
+                description = "Default audit device"
+                options = {
+                  file_path = "/openbao/audit/audit.log"
+                }
+              }
 
         dataStorage:
           enabled: true
           size: 5Gi
+          storageClass: local-path
+
+        auditStorage:
+          enabled: true
+          size: 2Gi
           storageClass: local-path
 
         resources:
