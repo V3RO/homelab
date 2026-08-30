@@ -21,7 +21,6 @@ resources:
   - ./kube-system
   - ./monitoring
   - ./node-feature-discovery
-  - ./openbao
   - ./rancher
   - ./reloader
   - ./valkey

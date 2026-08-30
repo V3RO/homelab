@@ -60,9 +60,5 @@ spec:
       namespace: flux-system
     - apiVersion: source.toolkit.fluxcd.io/v1
       kind: HelmRepository
-      name: openbao-repo
-      namespace: flux-system
-    - apiVersion: source.toolkit.fluxcd.io/v1
-      kind: HelmRepository
       name: stakater-repo
       namespace: flux-system

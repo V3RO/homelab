@@ -104,15 +104,6 @@ spec:
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: openbao-repo
-  namespace: flux-system
-spec:
-  interval: 10m
-  url: https://openbao.github.io/openbao-helm
----
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
   name: stakater-repo
   namespace: flux-system
 spec:
