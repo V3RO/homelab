@@ -96,5 +96,4 @@ spec:
           pod-security.kubernetes.io/warn: privileged
       - name: volsync-system
       - name: openbao
-      - name: vault-config-operator
       - name: reloader

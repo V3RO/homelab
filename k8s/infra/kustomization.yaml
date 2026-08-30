@@ -25,6 +25,5 @@ resources:
   - ./rancher
   - ./reloader
   - ./valkey
-  - ./vault-config-operator
   - ./versitygw
   - ./volsync-system
