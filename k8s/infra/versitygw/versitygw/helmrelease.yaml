@@ -66,6 +66,11 @@ spec:
 
       iam:
         enabled: true
+        # Store IAM accounts (client access keys) as an object in the "iam"
+        # bucket instead of the internal flat-file store. See BOOTSTRAP.md
+        # for why this needs k8s/apps/external-services/versitygw-iam and
+        # gateway.virtualDomain below to be pointed at that namespace
+        # rather than this gateway's own.
         type: s3
 
       extraEnv:
@@ -84,7 +89,7 @@ spec:
         - name: VGW_S3_IAM_BUCKET
           value: "iam"
         - name: VGW_S3_IAM_ENDPOINT
-          value: "http://versitygw.svc.cluster.local:7070"
+          value: "http://external-services.svc.cluster.local:7070"
 
       webui:
         enabled: true
@@ -103,7 +108,12 @@ spec:
 
       gateway:
         corsAllowOrigin: "*"
-        virtualDomain: "versitygw.svc.cluster.local"
+        # Only for the S3 IAM backend's own bucket-prefixed requests to
+        # iam.external-services.svc.cluster.local (see templates/iam-service.yaml
+        # and BOOTSTRAP.md). Deliberately NOT this gateway's own namespace —
+        # that collided with its real Service hostname and broke CNPG
+        # backups in production; see BOOTSTRAP.md for the full story.
+        virtualDomain: "external-services.svc.cluster.local"
 
       # Spread the 3 replicas across 3 distinct nodes since they share one RWX
       # PVC and posix backend directory — colocating replicas defeats the point.
