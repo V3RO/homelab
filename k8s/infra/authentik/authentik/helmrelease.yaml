@@ -477,7 +477,7 @@ spec:
         actualClientSecret: authentik-actual-client-secret
         immichClientSecret: authentik-immich-client-secret
         kialiClientSecret: authentik-kiali-client-secret
-        openbaoClientSecret: authentik-openbao-client-secret
+        fluxClientSecret: authentik-flux-client-secret
         userPasswords:
           - username: V3RO
             bitwardenItem: authentik-user-v3ro-password
