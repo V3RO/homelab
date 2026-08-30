@@ -66,6 +66,25 @@ spec:
 
       iam:
         enabled: true
+        type: s3
+
+      extraEnv:
+        - name: VGW_S3_IAM_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: versitygw-credentials
+              key: rootAccessKeyId
+        - name: VGW_S3_IAM_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: versitygw-credentials
+              key: rootSecretAccessKey
+        - name: VGW_S3_IAM_REGION
+          value: "us-east-1"
+        - name: VGW_S3_IAM_BUCKET
+          value: "iam"
+        - name: VGW_S3_IAM_ENDPOINT
+          value: "http://versitygw.versitygw.svc.cluster.local:7070"
 
       webui:
         enabled: true
