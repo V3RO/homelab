@@ -195,21 +195,32 @@ openbao-snapshot-manual`.
 
 ## 6. Per-app database credential rotation (vault-config-operator)
 
+One-time per app, once its `DatabaseSecretEngineConfig`/`DatabaseSecretEngineStaticRole`
+CRs exist (see e.g. [authentik's openbao-database-config.yaml](../../authentik/authentik/templates/openbao-database-config.yaml)).
 `rootCredentials.secret` on `DatabaseSecretEngineConfig` must be
-namespace-local to the CR, so each app needs its own scoped ServiceAccount
-+ Kubernetes-auth role — this can't be folded into the shared
-`vault-config-operator` role from step 3. Unlike the rest of this file,
-**this part needs no manual `bao write`**: the `Policy` and
-`KubernetesAuthEngineRole` CRs in
-[authentik's openbao-database-config.yaml](../../authentik/authentik/templates/openbao-database-config.yaml)
-create the `authentik-db-config` policy and Kubernetes-auth role
-declaratively, using the already-bootstrapped `vault-config-operator`
-ServiceAccount (its policy already covers `auth/kubernetes/role/*` and
-`sys/policy/*`). Every future app onboarded the same way gets this part
-for free too.
+namespace-local to the CR, so each app needs its own scoped
+ServiceAccount + Kubernetes-auth role — this can't be folded into the
+shared `vault-config-operator` role from step 3.
 
-**The one genuinely irreducible manual step, specific to `authentik-postgres`
-being a pre-existing cluster:** `postInitSQL`/`postInitApplicationSQL` in
+```bash
+cat <<EOF | bao policy write authentik-db-config -
+path "database/config/authentik-postgres" {
+  capabilities = ["create", "read", "update", "delete"]
+}
+path "database/static-roles/authentik-static" {
+  capabilities = ["create", "read", "update", "delete"]
+}
+EOF
+
+bao write auth/kubernetes/role/authentik-db-config \
+  bound_service_account_names=authentik-openbao \
+  bound_service_account_namespaces=authentik \
+  policies=authentik-db-config \
+  ttl=15m
+```
+
+**Also a one-time manual step, specific to `authentik-postgres` being a
+pre-existing cluster:** `postInitSQL`/`postInitApplicationSQL` in
 `cluster.yaml` only run at initial cluster *creation* — they're a no-op
 here (verified against a disposable test cluster before relying on this).
 Apply the equivalent grant by hand, once:
@@ -221,10 +232,9 @@ kubectl -n authentik exec -it authentik-postgres-1 -c postgres -- \
 ```
 
 (Any *future* CNPG cluster built from a template that includes these
-bootstrap hooks gets this automatically — no manual step needed, including
-for the policy/role above.)
+bootstrap hooks gets this automatically — no manual step needed.)
 
-Once that's applied, `DatabaseSecretEngineConfig`/`DatabaseSecretEngineStaticRole`
+Once both are done, `DatabaseSecretEngineConfig`/`DatabaseSecretEngineStaticRole`
 should reconcile successfully — check with `kubectl -n authentik get
 databasesecretengineconfig,databasesecretenginestaticrole`.
 
