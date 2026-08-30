@@ -95,7 +95,7 @@ spec:
     role: authentik-db-config
     serviceAccount:
       name: authentik-openbao
-  path: kv/data/cnpg
+  path: kv/cnpg
   isKVSecretsEngineV2: true
   secretKey: password
   secretFormat:
@@ -103,7 +103,6 @@ spec:
       length = 32
       rule "charset" {
         charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        min-chars = 1
       }
 ---
 apiVersion: redhatcop.redhat.io/v1alpha1
