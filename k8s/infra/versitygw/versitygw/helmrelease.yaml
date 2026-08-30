@@ -84,7 +84,7 @@ spec:
         - name: VGW_S3_IAM_BUCKET
           value: "iam"
         - name: VGW_S3_IAM_ENDPOINT
-          value: "http://versitygw.versitygw.svc.cluster.local:7070"
+          value: "http://versitygw.svc.cluster.local:7070"
 
       webui:
         enabled: true
