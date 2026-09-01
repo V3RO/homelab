@@ -94,7 +94,7 @@ spec:
               # account existed -- not a guarantee. Retry explicitly and
               # boundedly here instead of relying on that accident.
               attempt=1
-              max_attempts=10
+              max_attempts=12
               while true; do
                 code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
                   --aws-sigv4 "aws:amz:us-east-1:s3" \
@@ -106,5 +106,5 @@ spec:
                   echo "put-bucket-policy failed"; exit 1
                 fi
                 attempt=$((attempt + 1))
-                sleep 3
+                sleep 5
               done

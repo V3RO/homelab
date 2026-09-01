@@ -19,10 +19,12 @@ spec:
   install:
     remediation:
       retries: 3
+    disableWait: true
   upgrade:
     remediation:
       retries: 3
       remediateLastFailure: true
+    disableWait: true
   values:
     cnpgClients:
       - authentik
