@@ -145,4 +145,4 @@ externalSecret:
   keys:
     redisPassword: valkey-password
     oidcClientSecret: authentik-immich-client-secret
-    cnpgPassword: cnpg-immich
+    cnpgPassword: immich-db-secret

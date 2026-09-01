@@ -29,3 +29,9 @@ spec:
       owner: {{ .Values.postgres.owner }}
       postInitApplicationSQL:
         - CREATE DATABASE {{ .Values.postgres.logDatabase }} OWNER {{ .Values.postgres.owner }};
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      enabled: true
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: radarr-versitygw-store

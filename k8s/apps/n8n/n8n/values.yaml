@@ -84,4 +84,4 @@ externalSecret:
   keys:
     encryption: n8n-encryption-key
     redisPassword: valkey-password
-    cnpgPassword: cnpg-n8n
+    cnpgPassword: n8n-db-secret

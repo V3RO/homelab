@@ -1,18 +1,20 @@
+{{- $postgres := default dict .Values.postgres -}}
+{{- if (default false (get $postgres "enabled")) }}
 apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:
-  name: authentik-versitygw-store
+  name: mealie-versitygw-store
   namespace: {{ .Release.Namespace }}
 spec:
   configuration:
-    destinationPath: s3://cnpg-backups/authentik/
+    destinationPath: s3://cnpg-backups/mealie/
     endpointURL: http://versitygw.versitygw.svc.cluster.local:7070
     s3Credentials:
       accessKeyId:
-        name: cnpg-authentik-backup-credentials
+        name: cnpg-mealie-backup-credentials
         key: AWS_ACCESS_KEY_ID
       secretAccessKey:
-        name: cnpg-authentik-backup-credentials
+        name: cnpg-mealie-backup-credentials
         key: AWS_SECRET_ACCESS_KEY
     wal:
       compression: gzip
@@ -20,15 +22,16 @@ spec:
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
-  name: backup-authentik-postgres
+  name: backup-{{ default "mealie-postgres" (get $postgres "clusterName") }}
   namespace: {{ .Release.Namespace }}
 spec:
-  schedule: "05 15 * * *"
+  schedule: "25 15 * * *"
   backupOwnerReference: self
   method: plugin
   pluginConfiguration:
     name: barman-cloud.cloudnative-pg.io
     parameters:
-      barmanObjectName: authentik-versitygw-store
+      barmanObjectName: mealie-versitygw-store
   cluster:
-    name: authentik-postgres
+    name: {{ default "mealie-postgres" (get $postgres "clusterName") }}
+{{- end }}

@@ -61,4 +61,4 @@ externalSecret:
     kind: ClusterSecretStore
   keys:
     apiKey: prowlarr-api-key
-    cnpgPassword: cnpg-prowlarr
+    cnpgPassword: prowlarr-db-secret

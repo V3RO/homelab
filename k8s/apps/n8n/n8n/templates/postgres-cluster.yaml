@@ -31,19 +31,10 @@ spec:
     initdb:
       database: {{ .Values.postgres.database }}
       owner: {{ .Values.postgres.owner }}
-  backup:
-    retentionPolicy: "30d"
-    barmanObjectStore:
-      destinationPath: "s3://cnpg-backups/n8n/"
-      endpointURL: "https://s3.versitygw.schober.dev"
-      s3Credentials:
-        accessKeyId:
-          name: cnpg-n8n-backup-credentials
-          key: AWS_ACCESS_KEY_ID
-        secretAccessKey:
-          name: cnpg-n8n-backup-credentials
-          key: AWS_SECRET_ACCESS_KEY
-      wal:
-        compression: "gzip"
-        maxParallel: 8
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      enabled: true
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: n8n-versitygw-store
 {{- end }}

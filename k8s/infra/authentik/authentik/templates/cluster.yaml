@@ -34,4 +34,4 @@ spec:
       enabled: true
       isWALArchiver: true
       parameters:
-        barmanObjectName: versitygw-store
+        barmanObjectName: authentik-versitygw-store

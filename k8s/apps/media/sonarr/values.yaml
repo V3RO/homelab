@@ -67,4 +67,4 @@ externalSecret:
     kind: ClusterSecretStore
   keys:
     apiKey: sonarr-api-key
-    cnpgPassword: cnpg-sonarr
+    cnpgPassword: sonarr-db-secret

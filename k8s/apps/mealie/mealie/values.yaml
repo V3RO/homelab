@@ -87,4 +87,4 @@ externalSecret:
   keys:
     secretKey: mealie-secret-key
     oidcClientSecret: authentik-mealie-client-secret
-    cnpgPassword: cnpg-mealie
+    cnpgPassword: mealie-db-secret

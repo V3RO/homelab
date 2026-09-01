@@ -128,4 +128,4 @@ externalSecret:
     secretKey: forgejo-secret-key
     valkeyPassword: valkey-password
     oauthClientSecret: authentik-forgejo-client-secret
-    cnpgPassword: cnpg-forgejo
+    cnpgPassword: forgejo-db-secret

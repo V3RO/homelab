@@ -67,4 +67,4 @@ externalSecret:
     kind: ClusterSecretStore
   keys:
     apiKey: radarr-api-key
-    cnpgPassword: cnpg-radarr
+    cnpgPassword: radarr-db-secret
