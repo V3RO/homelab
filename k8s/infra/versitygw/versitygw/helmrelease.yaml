@@ -24,6 +24,17 @@ spec:
       retries: 3
       remediateLastFailure: true
   values:
+    cnpgClients:
+      - authentik
+      - grafana
+      - immich
+      - n8n
+      - mealie
+      - forgejo
+      - prowlarr
+      - radarr
+      - sonarr
+
     versitygw:
       image:
         tag: "v1.7.0"

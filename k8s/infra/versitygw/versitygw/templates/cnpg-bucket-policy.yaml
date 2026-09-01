@@ -1,0 +1,110 @@
+{{- $statements := list }}
+{{- $principals := list }}
+{{- range .Values.cnpgClients }}
+{{- $app := . }}
+{{- $principals = append $principals (printf "%s-backup" $app) }}
+{{- $statements = append $statements (dict
+      "Effect" "Allow"
+      "Principal" (dict "AWS" (list (printf "%s-backup" $app)))
+      "Action" (list "s3:PutObject" "s3:GetObject" "s3:DeleteObject")
+      "Resource" (list (printf "arn:aws:s3:::cnpg-backups/%s/*" $app))
+    ) }}
+{{- end }}
+{{- $statements = append $statements (dict
+      "Effect" "Allow"
+      "Principal" (dict "AWS" $principals)
+      "Action" (list "s3:ListBucket")
+      "Resource" (list "arn:aws:s3:::cnpg-backups")
+    ) }}
+{{- $policy := dict "Version" "2012-10-17" "Statement" $statements }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cnpg-backups-bucket-setup
+  namespace: {{ .Release.Namespace }}
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 100
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bucket-setup
+          image: curlimages/curl:8.11.1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          env:
+            - name: ROOT_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: versitygw-credentials
+                  key: rootAccessKeyId
+            - name: ROOT_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: versitygw-credentials
+                  key: rootSecretAccessKey
+            - name: POLICY_JSON
+              value: {{ $policy | toJson | quote }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -eu
+              ADMIN=http://versitygw.{{ .Release.Namespace }}.svc.cluster.local:7071
+              S3=http://versitygw.{{ .Release.Namespace }}.svc.cluster.local:7070
+
+              # 1. Ensure the bucket exists first -- PutBucketPolicy on a
+              # nonexistent bucket 404s. Owner goes in a HEADER, not a
+              # query param (a query param here 500s, not 400 -- see
+              # BOOTSTRAP.md), and the bucket name is a PATH segment.
+              code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
+                --aws-sigv4 "aws:amz:us-east-1:s3" \
+                --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
+                -H "x-vgw-owner: ${ROOT_ACCESS_KEY_ID}" \
+                -X PATCH "$ADMIN/cnpg-backups/create")
+              echo "create-bucket -> HTTP $code"; cat /tmp/resp; echo
+              case "$code" in
+                201) : ;;
+                *)
+                  if ! grep -q "BucketAlreadyOwnedByYou\|BucketAlreadyExists" /tmp/resp; then
+                    echo "create-bucket failed"; exit 1
+                  fi
+                  ;;
+              esac
+
+              # 2. Re-apply the full policy document -- bucket policies are
+              # replace, not merge, so the whole thing is re-declared every
+              # run from .Values.cnpgClients. Plain S3 API, not the admin
+              # API. Always a 204 on success, no "already set" to special-case.
+              #
+              # PutBucketPolicy validates that every Principal names an
+              # EXISTING account (400 MalformedPolicy: Invalid principal)
+              # -- and this Job has no ordering guarantee relative to each
+              # app's own create-user Job (cnpg-client-credentials.yaml).
+              # Verified live: applying both at once raced and failed on
+              # the first attempt, only passing because Kubernetes' own
+              # Job-level pod-restart backoff happened to retry after the
+              # account existed -- not a guarantee. Retry explicitly and
+              # boundedly here instead of relying on that accident.
+              attempt=1
+              max_attempts=10
+              while true; do
+                code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
+                  --aws-sigv4 "aws:amz:us-east-1:s3" \
+                  --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
+                  -X PUT "$S3/cnpg-backups?policy" --data-binary "$POLICY_JSON")
+                echo "put-bucket-policy attempt $attempt -> HTTP $code"; cat /tmp/resp; echo
+                [ "$code" = "204" ] && break
+                if ! grep -q "Invalid principal" /tmp/resp || [ "$attempt" -ge "$max_attempts" ]; then
+                  echo "put-bucket-policy failed"; exit 1
+                fi
+                attempt=$((attempt + 1))
+                sleep 3
+              done

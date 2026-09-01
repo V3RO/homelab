@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: iam-bucket-setup
+  namespace: {{ .Release.Namespace }}
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 100
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bucket-setup
+          image: curlimages/curl:8.11.1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          env:
+            - name: ROOT_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: versitygw-credentials
+                  key: rootAccessKeyId
+            - name: ROOT_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: versitygw-credentials
+                  key: rootSecretAccessKey
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -eu
+              ADMIN=http://versitygw.{{ .Release.Namespace }}.svc.cluster.local:7071
+
+              # Owner goes in a HEADER, not a query param (a query param
+              # here 500s, not 400 -- see BOOTSTRAP.md), and the bucket
+              # name is a PATH segment.
+              code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
+                --aws-sigv4 "aws:amz:us-east-1:s3" \
+                --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
+                -H "x-vgw-owner: ${ROOT_ACCESS_KEY_ID}" \
+                -X PATCH "$ADMIN/iam/create")
+              echo "create-bucket iam -> HTTP $code"; cat /tmp/resp; echo
+              case "$code" in
+                201) : ;;
+                *)
+                  if ! grep -q "BucketAlreadyOwnedByYou\|BucketAlreadyExists" /tmp/resp; then
+                    echo "create-bucket failed"; exit 1
+                  fi
+                  ;;
+              esac
