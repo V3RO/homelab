@@ -6,6 +6,10 @@ metadata:
   name: mealie-versitygw-store
   namespace: {{ .Release.Namespace }}
 spec:
+  instanceSidecarConfiguration:
+    env:
+      - name: AWS_DEFAULT_REGION
+        value: homelab
   configuration:
     destinationPath: s3://cnpg-backups/mealie/
     endpointURL: http://versitygw.versitygw.svc.cluster.local:7070

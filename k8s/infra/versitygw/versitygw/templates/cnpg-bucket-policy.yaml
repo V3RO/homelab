@@ -65,7 +65,7 @@ spec:
               # query param (a query param here 500s, not 400 -- see
               # BOOTSTRAP.md), and the bucket name is a PATH segment.
               code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
-                --aws-sigv4 "aws:amz:us-east-1:s3" \
+                --aws-sigv4 "aws:amz:{{ .Values.versitygw.gateway.region }}:s3" \
                 --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
                 -H "x-vgw-owner: ${ROOT_ACCESS_KEY_ID}" \
                 -X PATCH "$ADMIN/cnpg-backups/create")
@@ -97,7 +97,7 @@ spec:
               max_attempts=12
               while true; do
                 code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
-                  --aws-sigv4 "aws:amz:us-east-1:s3" \
+                  --aws-sigv4 "aws:amz:{{ .Values.versitygw.gateway.region }}:s3" \
                   --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
                   -X PUT "$S3/cnpg-backups?policy" --data-binary "$POLICY_JSON")
                 echo "put-bucket-policy attempt $attempt -> HTTP $code"; cat /tmp/resp; echo

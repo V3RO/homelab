@@ -98,7 +98,7 @@ spec:
               name: versitygw-credentials
               key: rootSecretAccessKey
         - name: VGW_S3_IAM_REGION
-          value: "us-east-1"
+          value: "homelab"
         - name: VGW_S3_IAM_BUCKET
           value: "iam"
         - name: VGW_S3_IAM_ENDPOINT
@@ -120,6 +120,7 @@ spec:
             - web.versitygw.schober.dev
 
       gateway:
+        region: "homelab"
         corsAllowOrigin: "*"
         # Only for the S3 IAM backend's own bucket-prefixed requests to
         # iam.external-services.svc.cluster.local (see templates/iam-service.yaml
