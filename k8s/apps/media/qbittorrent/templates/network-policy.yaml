@@ -59,6 +59,29 @@ spec:
               - 169.254.0.0/16
               - 100.64.0.0/10
 ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cnpg-allow-egress-versitygw
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/managed-by: cloudnative-pg
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: versitygw
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: versitygw
+      ports:
+        - protocol: TCP
+          port: 7070
+---
 # Allow ingress from istio-ingress-internal (for HTTPRoutes) and intra-namespace
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
