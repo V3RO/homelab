@@ -1,0 +1,27 @@
+# Runtime-enforced Longhorn Setting CRs (NOT a Helm template).
+#
+# These are NOT part of the longhorn HelmRelease on purpose: the
+# helm-controller fails mapping CR kinds (Setting/RecurringJob/...) whose
+# CRDs are installed by that very release ("no matches for kind Setting"
+# at install build time, looping forever). They're applied by the separate
+# Flux Kustomization `longhorn-settings`, which dependsOn + health-checks
+# the longhorn HelmRelease, so the CRDs are established first.
+---
+# All nodes are control-plane; without this toleration the replica scheduler
+# filters them out ("no available disk candidates" for every new volume)
+# if the taint is (re)applied.
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: taint-toleration
+  namespace: longhorn-system
+value: "node-role.kubernetes.io/control-plane:NoSchedule"
+---
+# Never auto-delete orphaned replica data (survives a cluster rebuild where
+# CRs are gone but replica directories on disk remain).
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: orphan-resource-auto-deletion
+  namespace: longhorn-system
+value: "false"
