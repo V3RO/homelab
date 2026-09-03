@@ -63,7 +63,7 @@ persistence:
     claimName: qbittorrent-config
     size: 2Gi
     mountPath: /config
-    storageClass: local-path
+    storageClass: longhorn
   data:
     enabled: true
     create: false

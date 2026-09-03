@@ -19,6 +19,7 @@ resources:
   - ./istio-ingress-internal
   - ./istio-system
   - ./kube-system
+  - ./longhorn-system
   - ./monitoring
   - ./node-feature-discovery
   - ./rancher

@@ -1,0 +1,15 @@
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: taint-toleration
+  namespace: {{ .Release.Namespace }}
+value: "node-role.kubernetes.io/control-plane:NoSchedule"
+---
+# Never auto-delete orphaned replica data (survives a cluster rebuild where
+# CRs are gone but replica directories on disk remain).
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: orphan-resource-auto-deletion
+  namespace: {{ .Release.Namespace }}
+value: "false"

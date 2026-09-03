@@ -36,6 +36,10 @@ spec:
       namespace: flux-system
     - apiVersion: source.toolkit.fluxcd.io/v1
       kind: HelmRepository
+      name: longhorn-repo
+      namespace: flux-system
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: HelmRepository
       name: volsync-repo
       namespace: flux-system
     - apiVersion: source.toolkit.fluxcd.io/v1

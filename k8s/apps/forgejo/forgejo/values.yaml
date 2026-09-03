@@ -106,7 +106,7 @@ postgres:
 pvc:
   enabled: true
   claimName: forgejo-data
-  storageClass: local-path
+  storageClass: longhorn
   size: 10Gi
 
 app:

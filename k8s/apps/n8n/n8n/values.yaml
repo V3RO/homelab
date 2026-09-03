@@ -60,7 +60,7 @@ postgres:
   restore: false
 
 pvc:
-  storageClass: local-path
+  storageClass: longhorn
   size: 5Gi
 
 app:

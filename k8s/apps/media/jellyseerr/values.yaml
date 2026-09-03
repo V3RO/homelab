@@ -17,7 +17,7 @@ persistence:
     claimName: jellyseerr-config
     size: 2Gi
     mountPath: /app/config
-    storageClass: local-path
+    storageClass: longhorn
 
 app:
   host: seerr.schober.dev

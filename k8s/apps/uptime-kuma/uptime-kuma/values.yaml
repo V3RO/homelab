@@ -55,5 +55,5 @@ home-ops-chart:
 
 pvc:
   name: uptime-kuma-data
-  storageClass: local-path
+  storageClass: longhorn
   size: 2Gi

@@ -52,7 +52,7 @@ persistence:
   enabled: true
   claimName: mealie-data
   accessMode: ReadWriteOnce
-  storageClass: local-path
+  storageClass: longhorn
   size: 5Gi
   mountPath: /app/data
 
