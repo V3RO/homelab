@@ -19,6 +19,9 @@ persistence:
     mountPath: /app/config
     storageClass: longhorn
 
+networkPolicy:
+  enabled: true
+
 app:
   host: seerr.schober.dev
   gateway:
