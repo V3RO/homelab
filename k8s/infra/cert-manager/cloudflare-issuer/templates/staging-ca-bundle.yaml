@@ -40,9 +40,11 @@ data:
     gN9WUwCbEMBy/YhBSrXycKA8crgGg3x1mIsopn88JKwmMBa68oS7EHM9w7C4y71M
     7DiA+/9Qdp9RBWJpTS9i/mDnJg1xvo8Xz49mrrgfmcAXTCJqXi24NatI3Oc=
     -----END CERTIFICATE-----
+{{- end }}
 ---
-# trust-manager Bundle: distributes the system CA bundle + Let's Encrypt staging
-# root CA to all namespaces as a ConfigMap named "ca-bundle".
+# trust-manager Bundle: distributes the system CA bundle (+ Let's Encrypt
+# staging root CA if staging is enabled) cluster-wide as a ConfigMap named
+# "ca-bundle".
 # Workloads can mount it via:
 #   volumes:
 #     - name: ca-bundle
@@ -61,14 +63,15 @@ spec:
   sources:
     # Include the default system CA bundle (contains all public CAs)
     - useDefaultCAs: true
+    {{- if .Values.staging.enabled }}
     # Append the Let's Encrypt staging root CA
     - configMap:
         name: letsencrypt-staging-ca
         key: root-x1.pem
+    {{- end }}
   target:
     # Distribute the merged bundle to every namespace as "ca-bundle" ConfigMap
     configMap:
       key: ca-bundle.crt
     # Empty selector matches all namespaces
     namespaceSelector: {}
-{{- end }}
