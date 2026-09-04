@@ -160,6 +160,10 @@ data:
               - {{ . | quote }}
               {{- end }}
             {{- end }}
+            {{- with .outpost.kubernetesJsonPatches }}
+            kubernetes_json_patches:
+{{ toYaml . | indent 14 }}
+            {{- end }}
       {{- end }}
       {{- else if eq .provider.kind "oauth2" }}
       {{- if (default false .provider.includeGroups) }}
@@ -322,6 +326,10 @@ data:
               {{- range . }}
               - {{ . | quote }}
               {{- end }}
+            {{- end }}
+            {{- with $proxyOutpost.kubernetesJsonPatches }}
+            kubernetes_json_patches:
+{{ toYaml . | indent 14 }}
             {{- end }}
 {{- end }}
 {{- end }}
