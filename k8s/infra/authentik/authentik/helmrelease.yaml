@@ -180,35 +180,7 @@ spec:
           proxy:
             enabled: true
             name: proxy
-            kubernetesReplicas: 2
-            # Sessions are stored per-pod only (no shared backend), so all
-            # traffic (ext-authz checks + outpost.goauthentik.io callbacks)
-            # must stick to one replica. All sources are the gateway pods
-            # anyway, so ClientIP affinity pins everything deterministically.
-            # Without this, multi-replica logins break with 400s/redirect loops.
-            kubernetesJsonPatches:
-              service:
-                - op: add
-                  path: /spec/sessionAffinity
-                  value: ClientIP
-                - op: add
-                  path: /spec/sessionAffinityConfig
-                  value:
-                    clientIP:
-                      timeoutSeconds: 10800
-              deployment:
-                - op: add
-                  path: /spec/template/spec/affinity
-                  value:
-                    podAntiAffinity:
-                      preferredDuringSchedulingIgnoredDuringExecution:
-                        - weight: 100
-                          podAffinityTerm:
-                            labelSelector:
-                              matchLabels:
-                                app: authentik-outpost
-                                app.kubernetes.io/name: authentik-outpost-proxy
-                            topologyKey: kubernetes.io/hostname
+            kubernetesReplicas: 1
             authentikHost: http://authentik-server.authentik.svc.cluster.local
             authentikHostBrowser: https://auth.schober.dev
             kubernetesDisabledComponents:
