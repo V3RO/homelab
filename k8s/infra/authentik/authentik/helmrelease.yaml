@@ -180,6 +180,7 @@ spec:
           proxy:
             enabled: true
             name: proxy
+            kubernetesReplicas: 2
             authentikHost: http://authentik-server.authentik.svc.cluster.local
             authentikHostBrowser: https://auth.schober.dev
             kubernetesDisabledComponents:
