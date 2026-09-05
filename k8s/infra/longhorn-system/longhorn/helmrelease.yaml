@@ -164,6 +164,15 @@ spec:
       ingress:
         enabled: false
 
+      # Must be disabled with Cilium: restrictInternalTraffic allows ingress
+      # to instance-manager pods only from Longhorn pods, but the iSCSI
+      # initiator (iscsiadm) runs nsenter'ed into the host network namespace
+      # -> "host" identity, which ipBlock/podSelector rules cannot match.
+      # Result: engine stuck "starting", iscsiadm sendtargets times out,
+      # CSI attach fails (FailedAttachVolume).
+      networkPolicies:
+        restrictInternalTraffic: false
+
       # Pre-upgrade checker job is disabled for GitOps-managed upgrades
       # (recommended by the chart), keep the version check.
       preUpgradeChecker:
