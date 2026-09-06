@@ -24,12 +24,26 @@ config:
     category: tv
     rootFolders:
       - /data/media/tv
+    # TRaSH-Guides quality profile: WEB-2160p
+    profile:
+      name: WEB-2160p
+      trashId: d1498e7d189fbe6c7110ceaabb7473e6
+    # Cloned profile with German language boost, assign to German-only series
+    germanProfile:
+      name: WEB-2160p (German)
   radarr:
     baseUrl: http://radarr.media.svc.cluster.local
     downloadClientName: qBittorrent
     category: movies
     rootFolders:
       - /data/media/movies
+    # TRaSH-Guides quality profile: UHD Bluray + WEB
+    profile:
+      name: UHD Bluray + WEB
+      trashId: 64fb5f9858489bdac2af690e27c8f42f
+    # Cloned profile with German language boost, assign to German-only movies
+    germanProfile:
+      name: UHD Bluray + WEB (German)
   qbittorrent:
     host: qbittorrent.media.svc.cluster.local
     port: 80
