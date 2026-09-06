@@ -3,7 +3,7 @@ image:
   tag: "1.30.2-alpine3.22"
   pullPolicy: IfNotPresent
 
-schedule: "0 * * * *"
+schedule: "0 0 * * *"
 concurrencyPolicy: Forbid
 successfulJobsHistoryLimit: 1
 failedJobsHistoryLimit: 1
@@ -24,26 +24,26 @@ config:
     category: tv
     rootFolders:
       - /data/media/tv
-    # TRaSH-Guides quality profile: WEB-2160p
+    # TRaSH-Guides quality profile: WEB-2160p (Combined) - 1080p fallback + 4K upgrade
     profile:
-      name: WEB-2160p
-      trashId: d1498e7d189fbe6c7110ceaabb7473e6
+      name: WEB-2160p (Combined)
+      trashId: c4cadd6b35b95f62c3d47a408e53e2f7
     # Cloned profile with German language boost, assign to German-only series
     germanProfile:
-      name: WEB-2160p (German)
+      name: WEB-2160p (Combined) (German)
   radarr:
     baseUrl: http://radarr.media.svc.cluster.local
     downloadClientName: qBittorrent
     category: movies
     rootFolders:
       - /data/media/movies
-    # TRaSH-Guides quality profile: UHD Bluray + WEB
+    # TRaSH-Guides quality profile: WEBDL 2160p (Combined) - WEB-only, 1080p fallback + 4K upgrade
     profile:
-      name: UHD Bluray + WEB
-      trashId: 64fb5f9858489bdac2af690e27c8f42f
+      name: WEBDL 2160p (Combined)
+      trashId: 05fbf054ac8ad0303335026cc2632f1a
     # Cloned profile with German language boost, assign to German-only movies
     germanProfile:
-      name: UHD Bluray + WEB (German)
+      name: WEBDL 2160p (Combined) (German)
   qbittorrent:
     host: qbittorrent.media.svc.cluster.local
     port: 80
