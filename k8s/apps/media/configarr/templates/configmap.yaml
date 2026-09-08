@@ -16,10 +16,15 @@ data:
             source: TRASH
         custom_format_groups:
           - trash_guide:
-              - id: d776a1ea912a117d66d83b880ff2055d # [HDR Formats] DV (w/o HDR fallback)
+              - id: 7e1724c5da59e7474803ad25be98f6a3 # [HDR Formats] HDR
               - id: 7d366c213e5c23a052b157356fac1921 # [HDR Formats] HDR10+ Boost
             assign_scores_to:
               - name: {{ .Values.config.sonarr.profile.name | quote }}
+          - trash_guide:
+              - id: d776a1ea912a117d66d83b880ff2055d # [HDR Formats] DV (w/o HDR fallback)
+            assign_scores_to:
+              - name: {{ .Values.config.sonarr.profile.name | quote }}
+                score: -10000
         cloneQualityProfiles:
           - from: {{ .Values.config.sonarr.profile.name | quote }}
             to: {{ .Values.config.sonarr.germanProfile.name | quote }}
@@ -67,10 +72,16 @@ data:
             source: TRASH
         custom_format_groups:
           - trash_guide:
-              - id: 7fc2751eef7e6bdc70b74136e5e35c76 # [HDR Formats] DV (w/o HDR fallback)
+              - id: ef20e67b95a381fb3bc6d1f06ea24f46 # [HDR Formats] HDR
               - id: b29413a7487478fe98228ce79e5689e4 # [HDR Formats] HDR10+ Boost
             assign_scores_to:
               - name: {{ .Values.config.radarr.profile.name | quote }}
+          - trash_guide:
+              # TV has no Dolby Vision support: reject DV releases without an HDR10 fallback layer
+              - id: 7fc2751eef7e6bdc70b74136e5e35c76 # [HDR Formats] DV (w/o HDR fallback)
+            assign_scores_to:
+              - name: {{ .Values.config.radarr.profile.name | quote }}
+                score: -10000
         cloneQualityProfiles:
           - from: {{ .Values.config.radarr.profile.name | quote }}
             to: {{ .Values.config.radarr.germanProfile.name | quote }}
