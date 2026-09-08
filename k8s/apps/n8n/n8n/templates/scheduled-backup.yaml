@@ -5,6 +5,7 @@ metadata:
   name: n8n-versitygw-store
   namespace: {{ .Release.Namespace }}
 spec:
+  retentionPolicy: 7d
   instanceSidecarConfiguration:
     env:
       - name: AWS_DEFAULT_REGION
