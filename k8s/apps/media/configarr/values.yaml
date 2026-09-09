@@ -24,26 +24,44 @@ config:
     category: tv
     rootFolders:
       - /data/media/tv
-    # TRaSH-Guides quality profile: WEB-2160p (Combined) - 1080p fallback + 4K upgrade
+      - /data/media/anime
+    # TRaSH-Guides quality profile: WEB-2160p (Alternative) - WEB preferred, 1080p
+    # fallback, Bluray-2160p (no remux) as fallback if no WEB release exists
     profile:
-      name: WEB-2160p (Combined)
-      trashId: c4cadd6b35b95f62c3d47a408e53e2f7
+      name: "4K"
+      trashId: dfa5eaae7894077ad6449169b6eb03e0
     # Cloned profile with German language boost, assign to German-only series
     germanProfile:
-      name: WEB-2160p (Combined) (German)
+      name: 4K - German only
+    # TRaSH-Guides anime quality profile - BD/WEB release-group tiers, dual audio, etc.
+    animeProfile:
+      name: "[Anime] Remux-1080p"
+      trashId: 20e0fc959f1f1704bed501f23bdae76f
   radarr:
     baseUrl: http://radarr.media.svc.cluster.local
     downloadClientName: qBittorrent
     category: movies
     rootFolders:
       - /data/media/movies
-    # TRaSH-Guides quality profile: WEBDL 2160p (Combined) - WEB-only, 1080p fallback + 4K upgrade
+      - /data/media/anime-movies
+    # TRaSH-Guides quality profile: UHD Bluray + WEB - Bluray-2160p preferred over
+    # WEB-2160p (no remux); 1080p HD Bluray+WEB profile not used, so no 1080p fallback
     profile:
-      name: WEBDL 2160p (Combined)
-      trashId: 05fbf054ac8ad0303335026cc2632f1a
+      name: "4K"
+      trashId: 64fb5f9858489bdac2af690e27c8f42f
     # Cloned profile with German language boost, assign to German-only movies
     germanProfile:
-      name: WEBDL 2160p (Combined) (German)
+      name: 4K - German only
+    # No stock TRaSH-Guides anime profile for Radarr, so this is cloned from the
+    # base profile and scored with the TRaSH anime custom-format groups instead.
+    animeProfile:
+      name: Anime
+    # Manual-pick fallback profile (Bluray-1080p preferred, WEB-1080p fallback, no
+    # remux) for movies with no 4K release yet - select it per-request in Seerr's
+    # advanced request options, not auto-assigned to anything.
+    hdProfile:
+      name: "HD"
+      trashId: d1d67249d3890e49bc12e275d989a7e9
   qbittorrent:
     host: qbittorrent.media.svc.cluster.local
     port: 80
