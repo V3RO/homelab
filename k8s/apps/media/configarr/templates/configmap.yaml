@@ -95,7 +95,7 @@ data:
         # Experimental: removes profiles no longer referenced in this config (e.g.
         # leftovers from renames) instead of leaving them as unused orphans.
         delete_unmanaged_quality_profiles:
-          enabled: true
+          enabled: false
         include:
           - template: {{ .Values.config.radarr.profile.trashId | quote }}
             source: TRASH
