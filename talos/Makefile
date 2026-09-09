@@ -2,18 +2,20 @@ SHELL := /usr/bin/env bash
 .SHELLFLAGS := -eu -o pipefail -c
 
 CLUSTER_NAME     ?= talos
-TALOS_VERSION    ?= v1.13.7
+TALOS_VERSION    ?= v1.14.0
 FACTORY_URL      ?= https://factory.talos.dev
 PLATFORM         ?= metal
 ARCH             ?= amd64
 
-CTRL01_IP        ?= 10.1.40.10
-CTRL02_IP        ?= 10.1.40.11
-CTRL03_IP        ?= 10.1.40.12
-CLUSTER_ENDPOINT ?= https://$(CTRL01_IP):6443
+VIP              ?= 10.1.40.10
+CTRL01_IP        ?= 10.1.40.11
+CTRL02_IP        ?= 10.1.40.12
+CTRL03_IP        ?= 10.1.40.13
+CLUSTER_ENDPOINT ?= https://$(VIP):6443
 
 GENERATED := generated
 TALOSCONFIG := $(GENERATED)/talosconfig
+SECRETS    := $(GENERATED)/secrets.yaml
 
 .DEFAULT_GOAL := help
 
@@ -35,15 +37,27 @@ iso-url: schematic-id ## Print the metal ISO URL to download and flash to a USB 
 render: schematic-id ## Render the dynamic patches (install image + Cilium inline manifests)
 	TALOS_VERSION=$(TALOS_VERSION) python3 scripts/render-patches.py
 
-genconfig: ## Generate cluster secrets + base controlplane/worker config + talosconfig
-	talosctl gen config $(CLUSTER_NAME) $(CLUSTER_ENDPOINT) --output-dir $(GENERATED) --force
+$(SECRETS): ## Persist cluster secrets ONCE (extracted from an existing controlplane.yaml if present)
+	mkdir -p $(GENERATED)
+	@if [ -f "$(GENERATED)/controlplane.yaml" ]; then \
+	  echo "Reusing secrets already embedded in $(GENERATED)/controlplane.yaml"; \
+	  talosctl gen secrets --from-controlplane-config "$(GENERATED)/controlplane.yaml" -o $@; \
+	else \
+	  echo "Generating fresh cluster secrets"; \
+	  talosctl gen secrets -o $@; \
+	fi
+
+# Always reuses $(SECRETS) — regenerating cluster CAs and applying them to a
+# bootstrapped node would rotate its identity and break the running cluster.
+genconfig: $(SECRETS) ## Generate base controlplane/worker config + talosconfig (reuses persisted secrets)
+	talosctl gen config $(CLUSTER_NAME) $(CLUSTER_ENDPOINT) --with-secrets $(SECRETS) --output-dir $(GENERATED) --force
 
 # Requires the target node to already be booted from the USB stick into
 # Talos maintenance mode and reachable at its static IP (set a DHCP
 # reservation for its MAC so maintenance mode already gets that IP).
-apply: render genconfig ## Apply config to one node: make apply NODE=ctrl-01 [IP=10.1.40.10]
+apply: render genconfig ## Apply config to one node: make apply NODE=ctrl-01 [IP=10.1.40.11]
 	@if [ -z "$(NODE)" ]; then \
-	  echo "Usage: make apply NODE=ctrl-01 [IP=10.1.40.10]" >&2; exit 1; \
+	  echo "Usage: make apply NODE=ctrl-01 [IP=10.1.40.11]" >&2; exit 1; \
 	fi
 	@ip="$(IP)"; \
 	if [ -z "$$ip" ]; then \

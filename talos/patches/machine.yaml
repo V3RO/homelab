@@ -4,6 +4,18 @@ machine:
   kubelet:
     extraArgs:
       rotate-server-certificates: true
+    extraMounts:
+      # Required by Longhorn: mounts the data path rshared into the kubelet
+      # mount namespace so volume attach/mount propagation works. The
+      # directory lives on EPHEMERAL (no dedicated data disk on these hosts).
+      # https://longhorn.io/docs/latest/deploy/install/#installing-on-talos-linux
+      - destination: /var/lib/longhorn
+        type: bind
+        source: /var/lib/longhorn
+        options:
+          - bind
+          - rshared
+          - rw
   nodeLabels:
     topology.kubernetes.io/region: talos
   sysctls:
