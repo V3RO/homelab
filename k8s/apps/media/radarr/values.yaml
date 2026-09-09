@@ -42,6 +42,8 @@ postgres:
   database: radarr_main
   logDatabase: radarr_log
   owner: radarr
+  restore:
+    enabled: false
 
 app:
   host: radarr.schober.dev

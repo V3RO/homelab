@@ -36,6 +36,8 @@ postgres:
   database: prowlarr_main
   logDatabase: prowlarr_log
   owner: prowlarr
+  restore:
+    enabled: false
 
 app:
   host: prowlarr.schober.dev

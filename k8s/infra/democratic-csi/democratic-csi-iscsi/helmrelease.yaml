@@ -71,7 +71,7 @@ spec:
 
       volumeSnapshotClasses:
         - name: truenas-iscsi
-          deletionPolicy: Retain
+          deletionPolicy: None
           parameters:
             detachedSnapshots: "true"
 

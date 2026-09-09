@@ -42,6 +42,8 @@ postgres:
   database: sonarr_main
   logDatabase: sonarr_log
   owner: sonarr
+  restore:
+    enabled: false
 
 app:
   host: sonarr.schober.dev

@@ -24,11 +24,24 @@ spec:
         passwordSecret:
           name: cnpg-{{ .Values.postgres.owner }}-credentials
   bootstrap:
+    {{- if .Values.postgres.restore.enabled }}
+    recovery:
+      source: origin
+    {{- else }}
     initdb:
       database: {{ .Values.postgres.database }}
       owner: {{ .Values.postgres.owner }}
       postInitApplicationSQL:
         - CREATE DATABASE {{ .Values.postgres.logDatabase }} OWNER {{ .Values.postgres.owner }};
+    {{- end }}
+  {{- if .Values.postgres.restore.enabled }}
+  externalClusters:
+    - name: origin
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: {{ .Values.postgres.owner }}-versitygw-store
+  {{- end }}
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       enabled: true
