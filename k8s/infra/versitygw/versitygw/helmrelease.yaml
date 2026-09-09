@@ -39,10 +39,10 @@ spec:
       - sonarr
       - seerr
 
-    adopt:
-      dataset: "pvc-6755e7ee-6100-43a8-9836-6c6190717109"
-      datasetParent: hdd/k8s/n/v
-      server: 10.1.10.20
+#    adopt:
+#      dataset: "pvc-6755e7ee-6100-43a8-9836-6c6190717109"
+#      datasetParent: hdd/k8s/n/v
+#      server: 10.1.10.20
 
     versitygw:
       image:

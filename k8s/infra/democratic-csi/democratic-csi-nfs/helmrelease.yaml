@@ -58,7 +58,7 @@ spec:
 
       volumeSnapshotClasses:
         - name: truenas-nfs
-          deletionPolicy: None
+          deletionPolicy: Retain
           parameters:
             detachedSnapshots: "true"
 
