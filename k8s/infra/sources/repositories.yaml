@@ -57,6 +57,15 @@ spec:
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
+  name: openebs-localpv-provisioner-repo
+  namespace: flux-system
+spec:
+  interval: 10m
+  url: https://openebs.github.io/dynamic-localpv-provisioner
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
   name: volsync-repo
   namespace: flux-system
 spec:

@@ -22,6 +22,7 @@ resources:
   - ./longhorn-system
   - ./monitoring
   - ./node-feature-discovery
+  - ./openebs
   - ./rancher
   - ./reloader
   - ./valkey
