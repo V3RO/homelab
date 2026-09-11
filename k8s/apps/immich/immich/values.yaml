@@ -6,6 +6,7 @@ immich:
       containers:
         main:
           env:
+            IMMICH_ALLOW_SETUP: false
             DB_HOSTNAME: immich-postgres-rw.immich.svc.cluster.local
             DB_PORT: "5432"
             DB_DATABASE_NAME: immich

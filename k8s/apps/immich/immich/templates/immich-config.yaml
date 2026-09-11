@@ -4,7 +4,7 @@ metadata:
   name: immich-config
   namespace: {{ .Release.Namespace }}
 spec:
-  refreshInterval: {{ .Values.externalSecret.refreshInterval | default "1h" }}
+  refreshInterval: {{ .Values.externalSecret.refreshInterval }}
   secretStoreRef:
     name: {{ .Values.externalSecret.secretStoreRef.name }}
     kind: {{ .Values.externalSecret.secretStoreRef.kind }}
