@@ -12,6 +12,7 @@ spec:
         value: homelab
   configuration:
     destinationPath: s3://cnpg-backups/forgejo/
+    serverName: {{ .Values.postgres.backup.serverName | default .Values.postgres.clusterName }}
     endpointURL: http://versitygw.versitygw.svc.cluster.local:7070
     s3Credentials:
       accessKeyId:
@@ -29,7 +30,7 @@ metadata:
   name: backup-{{ .Values.postgres.clusterName }}
   namespace: {{ .Release.Namespace }}
 spec:
-  schedule: "30 15 * * *"
+  schedule: "0 30 3 * * *"
   backupOwnerReference: self
   method: plugin
   pluginConfiguration:

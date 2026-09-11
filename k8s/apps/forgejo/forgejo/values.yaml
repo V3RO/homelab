@@ -141,6 +141,13 @@ postgres:
   owner: forgejo
   restore: false
 
+  backup:
+    # Bump on every from-scratch re-init of the cluster (see the comment on
+    # serverName in templates/scheduled-backup.yaml). 2026-09-11: cluster was
+    # recreated empty after the old PVCs were deleted; the previous catalog
+    # still lives under the default name "forgejo-postgres".
+    serverName: forgejo-postgres-20260911
+
 # Git repositories only -- bare repos are many small files with fsync'd refs
 # and lockfiles, so this wants POSIX semantics and NVMe, which is what
 # Longhorn on the nodes' ephemeral partition gives us. Explicitly not the
