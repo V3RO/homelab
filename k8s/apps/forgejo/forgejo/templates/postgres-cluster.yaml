@@ -37,4 +37,14 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: forgejo-versitygw-store
+        # Defaults to the cluster name, so a re-created cluster inherits the
+        # previous one's barman catalog. barman then refuses to archive,
+        # because the system identifier no longer matches, and the cluster
+        # sits at ContinuousArchivingFailing with no WAL shipped at all.
+        #
+        # Bump this whenever the cluster is initialised from scratch rather
+        # than restored. Leave the old prefix alone -- it ages out via the
+        # ObjectStore retentionPolicy, and until it does it is the only copy
+        # of the previous database.
+        serverName: {{ .Values.postgres.backup.serverName | default .Values.postgres.clusterName }}
 {{- end }}
