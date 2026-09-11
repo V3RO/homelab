@@ -11,10 +11,6 @@ spec:
       - name: AWS_DEFAULT_REGION
         value: homelab
   configuration:
-    # serverName is NOT settable here -- the barman-cloud plugin's webhook
-    # rejects it ("use the 'serverName' plugin parameter in the Cluster
-    # resource") even though the CRD schema accepts the field. It lives on
-    # the Cluster's plugins entry in postgres-cluster.yaml instead.
     destinationPath: s3://cnpg-backups/forgejo/
     endpointURL: http://versitygw.versitygw.svc.cluster.local:7070
     s3Credentials:
