@@ -62,6 +62,34 @@ forgejo:
       security:
         INSTALL_LOCK: true
 
+      # Everything Forgejo can keep in object storage goes to versitygw, which
+      # is backed by the HDD pool. That is LFS, packages, attachments,
+      # avatars, repo archives and Actions logs/artifacts -- i.e. the data
+      # that actually grows without bound, and that is written once and read
+      # rarely. It does NOT include the git repositories: those are always a
+      # POSIX filesystem and stay on the Longhorn PVC (see pvc: below).
+      #
+      # Keeping the blobs off the PVC is what lets that PVC stay small enough
+      # for 3-way Longhorn replication on the nodes' NVMe to be cheap.
+      storage:
+        STORAGE_TYPE: minio
+        # host:port, no scheme -- unlike the CNPG barman endpointURL, which
+        # wants a full URL. Getting this wrong fails at startup, not later.
+        MINIO_ENDPOINT: versitygw.versitygw.svc.cluster.local:7070
+        MINIO_BUCKET: forgejo
+        MINIO_LOCATION: homelab
+        MINIO_USE_SSL: false
+        # versitygw rejects the AWS-style trailing checksums the SDK sends by
+        # default; md5 is the compatibility mode for non-AWS gateways.
+        MINIO_CHECKSUM_ALGORITHM: md5
+
+      indexer:
+        # The bleve issue indexer writes a stream of tiny files to the PVC for
+        # no benefit at homelab scale -- Postgres handles issue search fine,
+        # and this keeps the replicated volume quiet.
+        ISSUE_INDEXER_TYPE: db
+        REPO_INDEXER_ENABLED: false
+
     # Sensitive values injected via env vars using FORGEJO__ prefix
     additionalConfigFromEnvs:
       - name: FORGEJO__DATABASE__PASSWD
@@ -74,6 +102,16 @@ forgejo:
           secretKeyRef:
             name: forgejo-secret  # created by ExternalSecret
             key: SECRET_KEY
+      - name: FORGEJO__STORAGE__MINIO_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: forgejo-s3-storage  # created by ExternalSecret
+            key: AWS_ACCESS_KEY_ID
+      - name: FORGEJO__STORAGE__MINIO_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: forgejo-s3-storage
+            key: AWS_SECRET_ACCESS_KEY
 
     # ini-formatted session/cache/queue config sourced from a secret (contains Valkey connection strings)
     additionalConfigSources:
@@ -93,21 +131,31 @@ forgejo:
 postgres:
   enabled: true
   clusterName: forgejo-postgres
-  instances: 1
+  instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: local-path
-    size: 5Gi
+    class: openebs-hostpath
+    size: 10Gi
 
   database: forgejo
   owner: forgejo
   restore: false
 
+# Git repositories only -- bare repos are many small files with fsync'd refs
+# and lockfiles, so this wants POSIX semantics and NVMe, which is what
+# Longhorn on the nodes' ephemeral partition gives us. Explicitly not the
+# NFS/HDD NAS: NFS close-to-open revalidation makes every housekeeping pass a
+# round-trip storm, and its locking is the classic source of git corruption.
+#
+# 25Gi rather than 10Gi because this now holds ONLY repos, but repos grow via
+# packfiles and Longhorn volumes cannot be shrunk -- headroom is cheaper than
+# a migration. The bulk data that used to justify a bigger volume is in S3
+# (see gitea.config.storage above).
 pvc:
   enabled: true
   claimName: forgejo-data
   storageClass: longhorn
-  size: 10Gi
+  size: 25Gi
 
 app:
   host: git.schober.dev

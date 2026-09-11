@@ -1,0 +1,102 @@
+{{- range .Values.dataClients }}
+{{- $client := . }}
+{{- $policy := dict
+      "Version" "2012-10-17"
+      "Statement" (list
+        (dict
+          "Effect" "Allow"
+          "Principal" (dict "AWS" (list $client.name))
+          "Action" (list "s3:PutObject" "s3:GetObject" "s3:DeleteObject")
+          "Resource" (list (printf "arn:aws:s3:::%s/*" $client.bucket)))
+        (dict
+          "Effect" "Allow"
+          "Principal" (dict "AWS" (list $client.name))
+          "Action" (list "s3:ListBucket")
+          "Resource" (list (printf "arn:aws:s3:::%s" $client.bucket)))) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $client.bucket }}-bucket-setup
+  namespace: {{ $.Release.Namespace }}
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 100
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bucket-setup
+          image: curlimages/curl:8.11.1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          env:
+            - name: ROOT_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: versitygw-credentials
+                  key: rootAccessKeyId
+            - name: ROOT_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: versitygw-credentials
+                  key: rootSecretAccessKey
+            - name: POLICY_JSON
+              value: {{ $policy | toJson | quote }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -eu
+              ADMIN=http://versitygw.{{ $.Release.Namespace }}.svc.cluster.local:7071
+              S3=http://versitygw.{{ $.Release.Namespace }}.svc.cluster.local:7070
+
+              # 1. Ensure the bucket exists first -- PutBucketPolicy on a
+              # nonexistent bucket 404s. Owner goes in a HEADER, not a
+              # query param (a query param here 500s, not 400 -- see
+              # BOOTSTRAP.md), and the bucket name is a PATH segment.
+              code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
+                --aws-sigv4 "aws:amz:{{ $.Values.versitygw.gateway.region }}:s3" \
+                --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
+                -H "x-vgw-owner: ${ROOT_ACCESS_KEY_ID}" \
+                -X PATCH "$ADMIN/{{ $client.bucket }}/create")
+              echo "create-bucket {{ $client.bucket }} -> HTTP $code"; cat /tmp/resp; echo
+              case "$code" in
+                201) : ;;
+                *)
+                  if ! grep -q "BucketAlreadyOwnedByYou\|BucketAlreadyExists" /tmp/resp; then
+                    echo "create-bucket failed"; exit 1
+                  fi
+                  ;;
+              esac
+
+              # 2. Re-apply the full policy document -- bucket policies are
+              # replace, not merge. Plain S3 API, not the admin API.
+              #
+              # PutBucketPolicy validates that every Principal names an
+              # EXISTING account (400 MalformedPolicy: Invalid principal), and
+              # this Job has no ordering guarantee relative to
+              # versitygw-create-users, so retry explicitly rather than relying
+              # on Kubernetes' pod-restart backoff to paper over the race.
+              attempt=1
+              max_attempts=12
+              while true; do
+                code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
+                  --aws-sigv4 "aws:amz:{{ $.Values.versitygw.gateway.region }}:s3" \
+                  --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
+                  -X PUT "$S3/{{ $client.bucket }}?policy" --data-binary "$POLICY_JSON")
+                echo "put-bucket-policy attempt $attempt -> HTTP $code"; cat /tmp/resp; echo
+                [ "$code" = "204" ] && break
+                if ! grep -q "Invalid principal" /tmp/resp || [ "$attempt" -ge "$max_attempts" ]; then
+                  echo "put-bucket-policy failed"; exit 1
+                fi
+                attempt=$((attempt + 1))
+                sleep 5
+              done
+---
+{{- end }}
