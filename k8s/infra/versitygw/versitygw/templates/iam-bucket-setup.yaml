@@ -1,11 +1,5 @@
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: iam-bucket-setup
-  namespace: {{ .Release.Namespace }}
-spec:
-  backoffLimit: 3
-  template:
+{{- define "versitygw.iamBucketPod" -}}
+{{- $root := .root -}}
     spec:
       restartPolicy: Never
       securityContext:
@@ -36,13 +30,13 @@ spec:
           args:
             - |
               set -eu
-              ADMIN=http://versitygw.{{ .Release.Namespace }}.svc.cluster.local:7071
+              ADMIN=http://versitygw.{{ $root.Release.Namespace }}.svc.cluster.local:7071
 
               # Owner goes in a HEADER, not a query param (a query param
               # here 500s, not 400 -- see BOOTSTRAP.md), and the bucket
               # name is a PATH segment.
               code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
-                --aws-sigv4 "aws:amz:{{ .Values.versitygw.gateway.region }}:s3" \
+                --aws-sigv4 "aws:amz:{{ $root.Values.versitygw.gateway.region }}:s3" \
                 --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
                 -H "x-vgw-owner: ${ROOT_ACCESS_KEY_ID}" \
                 -X PATCH "$ADMIN/iam/create")
@@ -55,3 +49,19 @@ spec:
                   fi
                   ;;
               esac
+{{- end }}
+
+{{- $pod := include "versitygw.iamBucketPod" (dict "root" .) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Hash suffix for the same reason as the other setup Jobs: a Job's
+  # spec.template is immutable, so any edit here would otherwise be
+  # rejected on apply and roll the HelmRelease back.
+  name: iam-bucket-setup-{{ $pod | sha256sum | trunc 8 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: {{ .Values.jobTTLSecondsAfterFinished | default 604800 }}
+  template:
+{{ $pod | indent 4 }}

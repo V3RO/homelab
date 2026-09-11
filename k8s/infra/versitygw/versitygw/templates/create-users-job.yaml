@@ -198,6 +198,6 @@ spec:
   backoffLimit: 3
   # Keep a completed Job around long enough to read its logs, then let it go
   # so renamed generations do not pile up.
-  ttlSecondsAfterFinished: 604800
+  ttlSecondsAfterFinished: {{ .Values.jobTTLSecondsAfterFinished | default 604800 }}
   template:
 {{ $pod | indent 4 }}

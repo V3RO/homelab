@@ -115,7 +115,7 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 spec:
   backoffLimit: 3
-  ttlSecondsAfterFinished: 604800
+  ttlSecondsAfterFinished: {{ $.Values.jobTTLSecondsAfterFinished | default 604800 }}
   template:
 {{ $pod | indent 4 }}
 ---

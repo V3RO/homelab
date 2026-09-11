@@ -27,6 +27,16 @@ spec:
       remediateLastFailure: true
     disableWait: true
   values:
+    # How long a completed setup Job is kept before Kubernetes garbage
+    # collects it. Note the side effect: once a Job object is gone, the next
+    # Helm upgrade recreates it and it RUNS AGAIN. With reconcileStrategy:
+    # Revision every commit to this repo triggers an upgrade, so this value
+    # is effectively "how often the setup Jobs re-reconcile". Keep it long
+    # (days, not minutes) -- versitygw's users.json has no cross-write
+    # locking, so re-running create-users more often than necessary is the
+    # opposite of free.
+    jobTTLSecondsAfterFinished: 604800  # 7d
+
     cnpgClients:
       - authentik
       - grafana
