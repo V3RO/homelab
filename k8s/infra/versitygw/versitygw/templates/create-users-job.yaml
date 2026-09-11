@@ -5,14 +5,9 @@
 {{- range .Values.dataClients }}
 {{- $clients = append $clients (dict "id" .name "account" .name "bucket" .bucket) }}
 {{- end }}
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: versitygw-create-users
-  namespace: {{ .Release.Namespace }}
-spec:
-  backoffLimit: 3
-  template:
+{{- define "versitygw.createUsersPod" -}}
+{{- $ := .root -}}
+{{- $clients := .clients -}}
     spec:
       restartPolicy: Never
       securityContext:
@@ -60,9 +55,9 @@ spec:
                 printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e "s/'/\&apos;/g" -e 's/"/\&quot;/g'
               }
 
-              ADMIN=http://versitygw.{{ .Release.Namespace }}.svc.cluster.local:7071
-              S3=http://versitygw.{{ .Release.Namespace }}.svc.cluster.local:7070
-              SIGV4="aws:amz:{{ .Values.versitygw.gateway.region }}:s3"
+              ADMIN=http://versitygw.{{ $.Release.Namespace }}.svc.cluster.local:7071
+              S3=http://versitygw.{{ $.Release.Namespace }}.svc.cluster.local:7070
+              SIGV4="aws:amz:{{ $.Values.versitygw.gateway.region }}:s3"
 
               # Client ids contain hyphens (forgejo-data), which are not legal
               # in env var names -- the Helm side maps them to underscores, so
@@ -183,3 +178,26 @@ spec:
                 exit 1
               fi
               echo "all clients reconciled and verified"
+{{- end }}
+
+{{- $pod := include "versitygw.createUsersPod" (dict "root" . "clients" $clients) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Name carries a hash of the pod template, because a Job's spec.template
+  # is IMMUTABLE and Helm's server-side apply cannot update it in place --
+  # an edit to the script below fails the whole HelmRelease with
+  # "field is immutable" and Flux rolls back. (The older fixed-name Jobs in
+  # this chart appeared to work only because their content never changed, so
+  # the apply was a no-op; they were never actually recreated per revision.)
+  # A content change yields a new name, so Helm creates the new Job and
+  # prunes the old one.
+  name: versitygw-create-users-{{ $pod | sha256sum | trunc 8 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  backoffLimit: 3
+  # Keep a completed Job around long enough to read its logs, then let it go
+  # so renamed generations do not pile up.
+  ttlSecondsAfterFinished: 604800
+  template:
+{{ $pod | indent 4 }}
