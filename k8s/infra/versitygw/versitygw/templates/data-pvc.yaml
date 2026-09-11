@@ -7,7 +7,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   accessModes:
-    - {{ .Values.versitygw.persistence.accessMode | default "ReadWriteMany" }}
+    - {{ .Values.versitygw.persistence.accessMode }}
   resources:
     requests:
       storage: {{ .Values.versitygw.persistence.size }}

@@ -1,5 +1,19 @@
-{{- define "versitygw.iamBucketPod" -}}
-{{- $root := .root -}}
+{{- /*
+The IAM backend's own bucket. No policy: only the root credential touches it
+(see iam.type=s3 in the HelmRelease and BOOTSTRAP.md).
+*/}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Hashed because spec.template is immutable; see versitygw-create-users.
+  name: iam-bucket-setup-{{ printf "%s|%s"
+        ($.Files.Get "files/bucket-setup.sh" | sha256sum)
+        .Values.versitygw.gateway.region | sha256sum | trunc 8 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: {{ .Values.jobTTLSecondsAfterFinished }}
+  template:
     spec:
       restartPolicy: Never
       securityContext:
@@ -8,14 +22,31 @@
         runAsGroup: 101
         seccompProfile:
           type: RuntimeDefault
+      volumes:
+        - name: scripts
+          configMap:
+            name: versitygw-setup-scripts
       containers:
         - name: bucket-setup
           image: curlimages/curl:8.11.1
+          command: ["sh", "/scripts/bucket-setup.sh"]
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop: [ALL]
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
           env:
+            - name: ADMIN
+              value: http://versitygw.{{ .Release.Namespace }}.svc.cluster.local:7071
+            - name: S3
+              value: http://versitygw.{{ .Release.Namespace }}.svc.cluster.local:7070
+            - name: SIGV4
+              value: aws:amz:{{ .Values.versitygw.gateway.region }}:s3
+            - name: BUCKET
+              value: iam
             - name: ROOT_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -26,42 +57,3 @@
                 secretKeyRef:
                   name: versitygw-credentials
                   key: rootSecretAccessKey
-          command: ["sh", "-c"]
-          args:
-            - |
-              set -eu
-              ADMIN=http://versitygw.{{ $root.Release.Namespace }}.svc.cluster.local:7071
-
-              # Owner goes in a HEADER, not a query param (a query param
-              # here 500s, not 400 -- see BOOTSTRAP.md), and the bucket
-              # name is a PATH segment.
-              code=$(curl -sS -o /tmp/resp -w '%{http_code}' \
-                --aws-sigv4 "aws:amz:{{ $root.Values.versitygw.gateway.region }}:s3" \
-                --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
-                -H "x-vgw-owner: ${ROOT_ACCESS_KEY_ID}" \
-                -X PATCH "$ADMIN/iam/create")
-              echo "create-bucket iam -> HTTP $code"; cat /tmp/resp; echo
-              case "$code" in
-                201) : ;;
-                *)
-                  if ! grep -q "BucketAlreadyOwnedByYou\|BucketAlreadyExists" /tmp/resp; then
-                    echo "create-bucket failed"; exit 1
-                  fi
-                  ;;
-              esac
-{{- end }}
-
-{{- $pod := include "versitygw.iamBucketPod" (dict "root" .) }}
-apiVersion: batch/v1
-kind: Job
-metadata:
-  # Hash suffix for the same reason as the other setup Jobs: a Job's
-  # spec.template is immutable, so any edit here would otherwise be
-  # rejected on apply and roll the HelmRelease back.
-  name: iam-bucket-setup-{{ $pod | sha256sum | trunc 8 }}
-  namespace: {{ .Release.Namespace }}
-spec:
-  backoffLimit: 3
-  ttlSecondsAfterFinished: {{ .Values.jobTTLSecondsAfterFinished | default 604800 }}
-  template:
-{{ $pod | indent 4 }}

@@ -1,13 +1,49 @@
+{{- /*
+Every versitygw account this chart manages, from both client lists:
+
+  id      -- names the generated Secret (<id>-versitygw-generated) and the
+             env-var prefix the script reads
+  bucket  -- the bucket the credential is verified against
+
+cnpgClients share one prefix-partitioned bucket; dataClients each get their
+own (see data-client-credentials.yaml).
+*/}}
 {{- $clients := list }}
 {{- range .Values.cnpgClients }}
-{{- $clients = append $clients (dict "id" . "account" (printf "%s-backup" .) "bucket" "cnpg-backups") }}
+{{- $clients = append $clients (dict "id" . "bucket" "cnpg-backups") }}
 {{- end }}
 {{- range .Values.dataClients }}
-{{- $clients = append $clients (dict "id" .name "account" .name "bucket" .bucket) }}
+{{- $clients = append $clients (dict "id" .name "bucket" .bucket) }}
 {{- end }}
-{{- define "versitygw.createUsersPod" -}}
-{{- $ := .root -}}
-{{- $clients := .clients -}}
+{{- $rows := list }}
+{{- range $clients }}
+{{- $rows = append $rows (printf "%s %s" .id .bucket) }}
+{{- end }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # A Job's spec.template is IMMUTABLE and Flux applies server-side, so an
+  # edit cannot land in place: it fails with "field is immutable" and rolls
+  # the whole HelmRelease back. (upgrade.force does NOT save us here -- the
+  # HelmRelease CRD says it outright: "This field is ignored for server-side
+  # apply". The older fixed-name Jobs only appeared to work because their
+  # content never changed, so the apply was a no-op.)
+  #
+  # So the name carries a hash of everything that determines the pod: the
+  # script ConfigMap, and the client list passed to it. Change either and
+  # Helm creates a new Job and prunes the old one; change neither and the
+  # name is stable, so nothing re-runs.
+  name: versitygw-create-users-{{ printf "%s|%s"
+        ($.Files.Get "files/create-users.sh" | sha256sum)
+        (join "," $rows) | sha256sum | trunc 8 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  backoffLimit: 3
+  # Keep a completed Job long enough to read its logs, then let it go so
+  # renamed generations do not pile up. Note this also sets how often the Job
+  # re-runs: once garbage collected, the next upgrade recreates it.
+  ttlSecondsAfterFinished: {{ .Values.jobTTLSecondsAfterFinished }}
+  template:
     spec:
       restartPolicy: Never
       securityContext:
@@ -16,14 +52,32 @@
         runAsGroup: 101
         seccompProfile:
           type: RuntimeDefault
+      volumes:
+        - name: scripts
+          configMap:
+            name: versitygw-setup-scripts
       containers:
         - name: create-users
           image: curlimages/curl:8.11.1
+          command: ["sh", "/scripts/create-users.sh"]
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop: [ALL]
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
           env:
+            - name: ADMIN
+              value: http://versitygw.{{ .Release.Namespace }}.svc.cluster.local:7071
+            - name: S3
+              value: http://versitygw.{{ .Release.Namespace }}.svc.cluster.local:7070
+            - name: SIGV4
+              value: aws:amz:{{ .Values.versitygw.gateway.region }}:s3
+            - name: CLIENTS
+              value: |-
+{{ join "\n" $rows | indent 16 }}
             - name: ROOT_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -47,157 +101,3 @@
                   name: {{ .id }}-versitygw-generated
                   key: secretAccessKey
             {{- end }}
-          command: ["sh", "-c"]
-          args:
-            - |
-              set -eu
-              xml_escape() {
-                printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e "s/'/\&apos;/g" -e 's/"/\&quot;/g'
-              }
-
-              ADMIN=http://versitygw.{{ $.Release.Namespace }}.svc.cluster.local:7071
-              S3=http://versitygw.{{ $.Release.Namespace }}.svc.cluster.local:7070
-              SIGV4="aws:amz:{{ $.Values.versitygw.gateway.region }}:s3"
-
-              # Client ids contain hyphens (forgejo-data), which are not legal
-              # in env var names -- the Helm side maps them to underscores, so
-              # this must too.
-              varprefix() {
-                echo "$1" | tr '[:lower:]-' '[:upper:]_'
-              }
-
-              # Reconciles the account to whatever the local generated Secret
-              # currently holds -- it does not merely assert that an account
-              # by that name exists.
-              #
-              # The old version treated 409 as success, which made this Job a
-              # no-op in exactly the case where reconciliation is needed. That
-              # matters because Helm recreates this Job on every chart revision
-              # (upgrade.force: true + reconcileStrategy: Revision), so the
-              # loop was already running regularly -- it just never repaired
-              # anything. If versitygw's stored secret ever diverged from the
-              # generated Secret, the drift was permanent and invisible: the
-              # Job kept going Complete while the client got
-              # SignatureDoesNotMatch on every request.
-              reconcile_user() {
-                id=$1
-                vp=$(varprefix "$id")
-                access=$(eval "printf '%s' \"\$${vp}_ACCESS_KEY_ID\"")
-                secret=$(eval "printf '%s' \"\$${vp}_SECRET_ACCESS_KEY\"")
-                ESCAPED_ACCESS=$(xml_escape "$access")
-                ESCAPED_SECRET=$(xml_escape "$secret")
-
-                BODY="<Account><Access>${ESCAPED_ACCESS}</Access><Secret>${ESCAPED_SECRET}</Secret><Role>user</Role></Account>"
-                code=$(curl -sS -o /tmp/resp.xml -w '%{http_code}' \
-                  --aws-sigv4 "$SIGV4" \
-                  --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
-                  -X PATCH "$ADMIN/create-user" \
-                  -H 'Content-Type: application/xml' \
-                  --data-binary "$BODY")
-                echo "$id create-user -> HTTP $code"; cat /tmp/resp.xml; echo
-                case "$code" in
-                  201)
-                    echo "$id: account created"
-                    ;;
-                  409)
-                    # Account exists; create-user will not touch its secret, so
-                    # write the current one explicitly. Access keys are
-                    # alphanumeric + hyphen, so no query-string escaping is
-                    # needed here.
-                    BODY="<MutableProps><Secret>${ESCAPED_SECRET}</Secret></MutableProps>"
-                    code=$(curl -sS -o /tmp/resp.xml -w '%{http_code}' \
-                      --aws-sigv4 "$SIGV4" \
-                      --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
-                      -X PATCH "$ADMIN/update-user?access=${access}" \
-                      -H 'Content-Type: application/xml' \
-                      --data-binary "$BODY")
-                    echo "$id update-user -> HTTP $code"; cat /tmp/resp.xml; echo
-                    case "$code" in
-                      200|204) echo "$id: account secret reconciled" ;;
-                      *) echo "$id: update-user failed"; exit 1 ;;
-                    esac
-                    ;;
-                  *)
-                    echo "$id: create-user failed"; exit 1
-                    ;;
-                esac
-              }
-
-              # Proves the credential this chart just wrote actually
-              # authenticates, using the CLIENT's own key rather than root.
-              # Without this the Job can go Complete while the account is
-              # unusable -- the state seerr sat in for five days.
-              #
-              # Deliberately tolerant of authZ, strict about authN: bucket
-              # policies are applied by SEPARATE Jobs (cnpg-bucket-policy.yaml,
-              # data-bucket-policy.yaml) with no ordering guarantee relative to
-              # this one, so an AccessDenied here just means the policy has not
-              # landed yet and is not a failure. A signature or key-id
-              # rejection is different in kind -- it means versitygw's stored
-              # secret does not match what we hold, which is the whole bug
-              # class this guards.
-              verify_user() {
-                id=$1
-                bucket=$2
-                vp=$(varprefix "$id")
-                access=$(eval "printf '%s' \"\$${vp}_ACCESS_KEY_ID\"")
-                secret=$(eval "printf '%s' \"\$${vp}_SECRET_ACCESS_KEY\"")
-
-                code=$(curl -sS -o /tmp/verify.xml -w '%{http_code}' \
-                  --aws-sigv4 "$SIGV4" \
-                  --user "${access}:${secret}" \
-                  "$S3/${bucket}?list-type=2&max-keys=1")
-                echo "$id verify (ListBucket $bucket as $access) -> HTTP $code"
-                if [ "$code" = "200" ]; then
-                  echo "$id: credential verified"
-                  return 0
-                fi
-                if grep -q 'SignatureDoesNotMatch\|InvalidAccessKeyId' /tmp/verify.xml; then
-                  echo "$id: CREDENTIAL MISMATCH -- versitygw's stored secret"
-                  echo "  does not match ${id}-versitygw-generated."
-                  cat /tmp/verify.xml; echo
-                  return 1
-                fi
-                echo "$id: authenticated; not yet authorized (bucket policy"
-                echo "  or bucket still pending) -- OK"
-                return 0
-              }
-
-              failed=""
-              {{- range $clients }}
-              reconcile_user "{{ .id }}"
-              verify_user "{{ .id }}" "{{ .bucket }}" || failed="$failed {{ .id }}"
-              {{- end }}
-
-              # Verify every client before failing, so one broken account does
-              # not mask the state of the others in the Job log. (A create- or
-              # update-user error is different: that exits immediately, since
-              # it means the admin API itself is not behaving.)
-              if [ -n "$failed" ]; then
-                echo "FAILED verification for:$failed"
-                exit 1
-              fi
-              echo "all clients reconciled and verified"
-{{- end }}
-
-{{- $pod := include "versitygw.createUsersPod" (dict "root" . "clients" $clients) }}
-apiVersion: batch/v1
-kind: Job
-metadata:
-  # Name carries a hash of the pod template, because a Job's spec.template
-  # is IMMUTABLE and Helm's server-side apply cannot update it in place --
-  # an edit to the script below fails the whole HelmRelease with
-  # "field is immutable" and Flux rolls back. (The older fixed-name Jobs in
-  # this chart appeared to work only because their content never changed, so
-  # the apply was a no-op; they were never actually recreated per revision.)
-  # A content change yields a new name, so Helm creates the new Job and
-  # prunes the old one.
-  name: versitygw-create-users-{{ $pod | sha256sum | trunc 8 }}
-  namespace: {{ .Release.Namespace }}
-spec:
-  backoffLimit: 3
-  # Keep a completed Job around long enough to read its logs, then let it go
-  # so renamed generations do not pile up.
-  ttlSecondsAfterFinished: {{ .Values.jobTTLSecondsAfterFinished | default 604800 }}
-  template:
-{{ $pod | indent 4 }}
