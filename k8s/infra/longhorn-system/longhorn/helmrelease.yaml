@@ -27,9 +27,11 @@ spec:
   values:
     longhorn:
       defaultSettings:
-        # Data path on the host. Lives on EPHEMERAL (single NVMe per node);
-        # the kubelet rshared bind mount is configured in talos/patches/machine.yaml.
-        defaultDataPath: /var/lib/longhorn
+        # Data path on the host. Lives on EPHEMERAL (single NVMe per node),
+        # provided by the `longhorn` UserVolumeConfig in talos/patches/machine.yaml
+        # (Talos mounts user volumes at /var/mnt/<name> and propagates them
+        # into the kubelet container).
+        defaultDataPath: /var/mnt/longhorn
 
         # 2 replicas per volume: survives a single node loss without tripling
         # disk usage of tiny config volumes on a 3-node cluster.

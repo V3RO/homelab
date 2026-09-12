@@ -28,7 +28,8 @@ spec:
       enabled: false
 
     localpv:
-      basePath: /var/openebs/local
+      # Provided by the `openebs-local` UserVolumeConfig in talos/patches/machine.yaml.
+      basePath: /var/mnt/openebs-local
 
       tolerations:
         - key: node-role.kubernetes.io/control-plane

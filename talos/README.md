@@ -34,6 +34,54 @@ only works on the port's native/untagged VLAN, so the trunk's native VLAN
 would still need to be 40 for the initial `apply-config` to ever reach the
 node.
 
+## Multi-document config (Talos 1.14+)
+
+As of Talos 1.14 `talosctl gen config` emits the **multi-document** machine
+config: most settings that used to live under the monolithic v1alpha1
+`machine:`/`cluster:` keys now have their own documents, and setting the
+same thing in both places is a hard validation error. The patches in
+`patches/` are written against the new documents throughout. See the
+[configuration document map](https://docs.siderolabs.com/talos/v1.14/reference/configuration/document-map)
+for which document owns which old field. Notable ones here:
+
+| Old v1alpha1 field                      | Document                      |
+|-----------------------------------------|-------------------------------|
+| `machine.kubelet.extraArgs`             | `KubeletConfig`               |
+| `machine.kubelet.extraMounts`           | `UserVolumeConfig` (removed — see below) |
+| `machine.sysctls`                       | `SysctlConfig`                |
+| `machine.nodeLabels`                    | `KubeNodeConfig`              |
+| `machine.install`                       | `UnattendedInstallConfig`     |
+| `cluster.allowSchedulingOnControlPlanes`| `KubeNodeConfig` (drop the taint) |
+| `cluster.proxy.disabled`                | `KubeProxyConfig.enabled: false` |
+| `cluster.network.cni.name: none`        | delete the `KubeFlannelCNIConfig` document |
+| `cluster.extraManifests`                | `KubeExternalManifestConfig` (one per URL) |
+| `cluster.inlineManifests`               | `KubeInlineManifestConfig` (one per manifest) |
+
+`cluster.etcd` has no document equivalent yet and stays under v1alpha1.
+
+Two syntax gotchas the patches rely on:
+
+- **Deleting** something the generated config sets needs `$patch: delete`
+  (plain `null` or `{}` is silently a no-op) — that's how the
+  control-plane `NoSchedule` taint and the Flannel document are removed.
+- `HostnameConfig` is generated with `auto: stable`, which conflicts with a
+  static `hostname`, so each node patch sets `auto: "off"` — quoted, or
+  YAML parses it as the boolean `false`.
+
+`machine.kubelet.extraMounts` was **removed** in the multi-doc config with
+no drop-in replacement. The supported equivalent is a `UserVolumeConfig`
+with `volumeType: directory`: Talos bind-mounts it off EPHEMERAL at
+`/var/mnt/<name>` and propagates it into the kubelet container. That fixes
+the path, so the consuming charts point at it:
+`longhorn` → `/var/mnt/longhorn` (`defaultDataPath` in
+[../k8s/infra/longhorn-system/longhorn/helmrelease.yaml](../k8s/infra/longhorn-system/longhorn/helmrelease.yaml))
+and `openebs-local` → `/var/mnt/openebs-local` (`localpv.basePath` in
+[../k8s/infra/openebs/localpv-provisioner/helmrelease.yaml](../k8s/infra/openebs/localpv-provisioner/helmrelease.yaml)).
+
+Run `make validate` to merge the patch stack into the base config and
+validate the result offline — same stack `make apply` pushes, but without
+needing a node. Do this before every `apply`.
+
 Each node's static IP is set via a `LinkConfig` document keyed on the
 interface **name** (`eno2` on all three boxes) rather than the older
 `machine.network.interfaces[].deviceSelector.hardwareAddr` MAC-selector
@@ -42,8 +90,7 @@ https://docs.siderolabs.com/talos/v1.13/reference/configuration/network/linkconf
 Hostnames use a `HostnameConfig` document the same way. These are
 additional documents stacked into the same per-node patch file (separated
 by `---`), applied through the same `--config-patch` flag as everything
-else — no `Makefile`/tooling changes needed. `machine.install`/`nodeLabels`
-have no document equivalent and stay under the classic `machine:` key.
+else — no `Makefile`/tooling changes needed.
 
 ## Layout
 
@@ -53,14 +100,16 @@ have no document equivalent and stay under the classic `machine:` key.
 - `bootstrap/cilium/` — Cilium install Job + Helm values, injected as
   Talos `inlineManifests` so Cilium comes up before kube-proxy/CNI would
   otherwise be needed (kube-proxy and the default CNI are disabled).
-- `patches/machine.yaml` — shared config for every node (kubelet args,
-  sysctls, region label).
+- `patches/machine.yaml` — shared config for every node: `KubeletConfig`,
+  `SysctlConfig`, `KubeNodeConfig` (region label), and the `longhorn` /
+  `openebs-local` `UserVolumeConfig`s.
 - `patches/controlplane.yaml` — shared control-plane-only config
   (scheduling on control planes, CNI/kube-proxy disabled, extra
-  manifests).
-- `patches/nodes/ctrl-0X.yaml` — per-node `HostnameConfig` +
+  manifests, etcd metrics).
+- `patches/nodes/ctrl-0X.yaml` — per-node `UnattendedInstallConfig`
+  (install disk) + `HostnameConfig` + `KubeNodeConfig` (zone label) +
   `LinkConfig` (static IP/route on `eno2`) + `Layer2VIPConfig` (shared
-  control-plane VIP), install disk, zone label.
+  control-plane VIP).
 - `scripts/` + `Makefile` — everything two things above can't express
   statically: looking up the Image Factory schematic ID, and rendering
   the Cilium manifests into `inlineManifests` strings.
@@ -91,6 +140,14 @@ boot — a reservation means the node is already reachable at its final IP
 the moment it boots from USB, and `talosctl apply-config` can target that
 IP directly.
 
+**Without a reservation** the node still comes up — maintenance mode just
+DHCPs some other address, and the maintenance IP is throwaway either way
+(Talos switches to the `LinkConfig` static IP as soon as the config lands).
+Read the address off the node's console (or `nmap -Pn -p 50000 --open
+10.1.40.0/24`) and pass it through: `make apply NODE=ctrl-01 IP=<dhcp-ip>`.
+Note `apply-all` has no `IP=` escape hatch — it always uses the final static
+IPs — so in that case run the three `make apply` calls individually.
+
 ## 2. Build and flash the install media
 
 ```bash
@@ -107,6 +164,7 @@ Once all 3 nodes are up in maintenance mode and reachable at their static
 IPs:
 
 ```bash
+make validate    # offline check that the merged config is valid (no node needed)
 make apply-all   # pushes machine config + triggers install to /dev/nvme0n1 on all 3 nodes
 make bootstrap   # one-time etcd bootstrap on ctrl-01
 make kubeconfig  # writes generated/kubeconfig
@@ -185,8 +243,8 @@ Jellyfin must be set up fresh unless restored from a separate backup.
 ## Updating the cluster later
 
 - Change `patches/*.yaml` for config changes, `image/schematic.yaml` for
-  extensions, then re-run `make apply NODE=ctrl-01` (or `apply-all` for
-  all three) — `talosctl apply-config` is safe to re-run against a live
+  extensions, then `make validate` and re-run `make apply NODE=ctrl-01`
+  (or `apply-all` for all three) — `talosctl apply-config` is safe to re-run against a live
   node.
 - Bumping `TALOS_VERSION` and re-running `make render apply-all` upgrades
   the install image reference; Talos performs the actual OS upgrade on

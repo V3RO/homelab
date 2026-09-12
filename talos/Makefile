@@ -20,7 +20,7 @@ SECRETS    := $(GENERATED)/secrets.yaml
 .DEFAULT_GOAL := help
 
 .PHONY: help schematic-id iso-url render genconfig \
-        apply apply-all \
+        apply apply-all validate \
         bootstrap kubeconfig health flux bitwarden-secret cluster clean
 
 help: ## Show this help
@@ -76,19 +76,40 @@ apply: render genconfig ## Apply config to one node: make apply NODE=ctrl-01 [IP
 	  --config-patch @$(GENERATED)/cilium-inline-manifests.yaml \
 	  --config-patch @patches/nodes/$(NODE).yaml
 
+# Offline dry-run of the same patch stack `apply` pushes: merges the patches
+# into the base config and validates the result, without touching a node.
+validate: render genconfig ## Validate the merged config for all 3 nodes offline (no node needed)
+	@for node in ctrl-01 ctrl-02 ctrl-03; do \
+	  talosctl machineconfig patch $(GENERATED)/controlplane.yaml \
+	    --patch @patches/machine.yaml \
+	    --patch @$(GENERATED)/install-image.yaml \
+	    --patch @patches/controlplane.yaml \
+	    --patch @$(GENERATED)/cilium-inline-manifests.yaml \
+	    --patch @patches/nodes/$$node.yaml \
+	    -o $(GENERATED)/merged-$$node.yaml; \
+	  talosctl validate -m metal -c $(GENERATED)/merged-$$node.yaml; \
+	done
+
 apply-all: render genconfig ## Apply config to all 3 control-plane nodes
 	$(MAKE) apply NODE=ctrl-01 IP=$(CTRL01_IP)
 	$(MAKE) apply NODE=ctrl-02 IP=$(CTRL02_IP)
 	$(MAKE) apply NODE=ctrl-03 IP=$(CTRL03_IP)
 
+# `talosctl gen config` writes a talosconfig with an empty `endpoints: []`, so
+# every talosctl call has to name an endpoint explicitly or it fails with
+# "failed to determine endpoints". Endpoints are always the real per-node IPs,
+# never the VIP - see the note at the top of README.md.
 bootstrap: ## Bootstrap etcd on the first control-plane node (one-time)
-	talosctl --talosconfig $(TALOSCONFIG) bootstrap --nodes $(CTRL01_IP)
+	talosctl --talosconfig $(TALOSCONFIG) bootstrap \
+	  --endpoints $(CTRL01_IP) --nodes $(CTRL01_IP)
 
 kubeconfig: ## Fetch the kubeconfig into generated/kubeconfig
-	talosctl --talosconfig $(TALOSCONFIG) kubeconfig --nodes $(CTRL01_IP) --force $(GENERATED)
+	talosctl --talosconfig $(TALOSCONFIG) kubeconfig \
+	  --endpoints $(CTRL01_IP) --nodes $(CTRL01_IP) --force $(GENERATED)
 
 health: ## Wait for the cluster to report healthy (check `talosctl health --help` for your version's flags)
 	talosctl --talosconfig $(TALOSCONFIG) health \
+	  --endpoints $(CTRL01_IP),$(CTRL02_IP),$(CTRL03_IP) \
 	  --control-plane-nodes $(CTRL01_IP),$(CTRL02_IP),$(CTRL03_IP)
 
 flux: ## Install/upgrade the Flux Operator and apply the Flux bootstrap kustomization (safe to re-run)
