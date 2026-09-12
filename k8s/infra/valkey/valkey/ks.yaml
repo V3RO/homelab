@@ -15,8 +15,8 @@ spec:
   prune: true
   dependsOn:
     - name: namespaces
-    # PVCs use the local-path storage class
-    - name: local-path-provisioner
+    # PVCs use the openebs-hostpath storage class
+    - name: openebs-localpv-provisioner
     # valkey-auth ExternalSecret
     - name: external-secrets-config
   healthChecks:

@@ -15,8 +15,8 @@ spec:
   prune: true
   dependsOn:
     - name: namespaces
-    # PVCs use the local-path storage class
-    - name: local-path-provisioner
+    # PVCs use the longhorn storage class
+    - name: longhorn
   healthChecks:
     - apiVersion: helm.toolkit.fluxcd.io/v2
       kind: HelmRelease

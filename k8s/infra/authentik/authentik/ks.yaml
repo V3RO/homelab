@@ -17,9 +17,9 @@ spec:
     - name: namespaces
     # authentik-postgres Cluster CR
     - name: cnpg-operator
-    # ScheduledBackup/ObjectStore CRs and local-path PostgreSQL PVCs
+    # ScheduledBackup/ObjectStore CRs and openebs-hostpath PostgreSQL PVCs
     - name: barman-cloud
-    - name: local-path-provisioner
+    - name: openebs-localpv-provisioner
     # credential ExternalSecrets
     - name: external-secrets-config
     # HTTPRoute targets the internal Gateway

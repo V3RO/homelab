@@ -17,9 +17,9 @@ spec:
     - name: namespaces
     # grafana-postgres Cluster CR
     - name: cnpg-operator
-    # barmanObjectStore backups and local-path PostgreSQL PVCs
+    # barmanObjectStore backups and openebs-hostpath PostgreSQL PVCs
     - name: barman-cloud
-    - name: local-path-provisioner
+    - name: openebs-localpv-provisioner
     # OIDC/credential ExternalSecrets
     - name: external-secrets-config
     # HTTPRoute targets the internal Gateway
