@@ -119,6 +119,16 @@ flux: ## Install/upgrade the Flux Operator and apply the Flux bootstrap kustomiz
 	KUBECONFIG=$(GENERATED)/kubeconfig helm upgrade --install flux-operator \
 	  oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator \
 	  -n flux-system --create-namespace
+	# The FluxInstance must be applied and reconciled FIRST: the operator
+	# installs the Flux controllers and their CRDs, and infra.yaml is a
+	# kustomize.toolkit.fluxcd.io Kustomization that cannot be applied until
+	# that CRD exists. Applying the whole directory in one shot races.
+	KUBECONFIG=$(GENERATED)/kubeconfig kubectl apply --server-side \
+	  -f ../k8s/bootstrap/flux/flux-instance.yaml
+	KUBECONFIG=$(GENERATED)/kubeconfig kubectl -n flux-system wait fluxinstance/flux \
+	  --for=condition=Ready --timeout=5m
+	KUBECONFIG=$(GENERATED)/kubeconfig kubectl wait \
+	  --for=create crd/kustomizations.kustomize.toolkit.fluxcd.io --timeout=2m
 	KUBECONFIG=$(GENERATED)/kubeconfig kubectl apply --server-side -k ../k8s/bootstrap/flux
 
 bitwarden-secret: ## Create the Bitwarden access-token secret used by external-secrets (needs BITWARDEN_ACCESS_TOKEN)

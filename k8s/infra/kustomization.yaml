@@ -23,7 +23,6 @@ resources:
   - ./monitoring
   - ./node-feature-discovery
   - ./openebs
-  - ./rancher
   - ./reloader
   - ./valkey
   - ./versitygw
