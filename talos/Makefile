@@ -107,9 +107,12 @@ kubeconfig: ## Fetch the kubeconfig into generated/kubeconfig
 	talosctl --talosconfig $(TALOSCONFIG) kubeconfig \
 	  --endpoints $(CTRL01_IP) --nodes $(CTRL01_IP) --force $(GENERATED)
 
-health: ## Wait for the cluster to report healthy (check `talosctl health --help` for your version's flags)
+# `--nodes` is the single node the check runs FROM (talosctl rejects more than
+# one); `--control-plane-nodes` is the set being checked.
+health: ## Wait for the cluster to report healthy
 	talosctl --talosconfig $(TALOSCONFIG) health \
 	  --endpoints $(CTRL01_IP),$(CTRL02_IP),$(CTRL03_IP) \
+	  --nodes $(CTRL01_IP) \
 	  --control-plane-nodes $(CTRL01_IP),$(CTRL02_IP),$(CTRL03_IP)
 
 flux: ## Install/upgrade the Flux Operator and apply the Flux bootstrap kustomization (safe to re-run)
