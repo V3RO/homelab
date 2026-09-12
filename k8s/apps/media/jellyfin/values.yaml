@@ -19,6 +19,12 @@ jellyfin:
     - name: data
       mountPath: /data
       readOnly: true
+  resources:
+    requests:
+      ephemeral-storage: 1Gi
+    limits:
+      ephemeral-storage: 10Gi
+
   jellyfin:
     env:
       - name: JELLYFIN_PublishedServerUrl

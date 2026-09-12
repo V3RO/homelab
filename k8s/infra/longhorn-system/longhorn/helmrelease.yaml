@@ -48,6 +48,13 @@ spec:
 
         nodeDrainPolicy: always-allow
 
+        # Force-delete pods stranded on a down node so their RWO volume can
+        # detach and reattach elsewhere. Without this (default: do-nothing)
+        # the pod hangs in Terminating forever - the dead kubelet never
+        # confirms deletion - the VolumeAttachment is never released, and the
+        # replacement pod fails with Multi-Attach / FailedAttachVolume.
+        nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
+
         # Do NOT automatically delete orphaned replica data.
         # Without this, Longhorn would delete replica directories on disk that
         # have no corresponding Replica CR (e.g. after a cluster rebuild the
