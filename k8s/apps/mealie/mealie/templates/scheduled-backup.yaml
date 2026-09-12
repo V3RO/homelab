@@ -30,7 +30,7 @@ metadata:
   name: backup-{{ default "mealie-postgres" (get $postgres "clusterName") }}
   namespace: {{ .Release.Namespace }}
 spec:
-  schedule: "25 15 * * *"
+  schedule: "0 25 3 * * *"
   backupOwnerReference: self
   method: plugin
   pluginConfiguration:

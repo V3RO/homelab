@@ -19,25 +19,20 @@ service:
 
 persistence:
   config:
-    enabled: true
-    create: true
     claimName: sonarr-config
     size: 5Gi
     mountPath: /config
     storageClass: longhorn
   data:
-    enabled: true
-    create: false
     claimName: media-data
     mountPath: /data
-    storageClass: truenas-nfs-media
 
 postgres:
   clusterName: sonarr-postgres
-  instances: 1
+  instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: local-path
+    class: openebs-hostpath
     size: 2Gi
   database: sonarr_main
   logDatabase: sonarr_log

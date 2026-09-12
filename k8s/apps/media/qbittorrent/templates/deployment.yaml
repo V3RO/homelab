@@ -124,19 +124,13 @@ spec:
               jq --argjson cats '{{ $cats | toJson }}' '. * $cats' "${categories_file}" > "${tmp_file}"
               mv "${tmp_file}" "${categories_file}"
               {{- end }}
-              {{- if .Values.persistence.data.enabled }}
               mkdir -p {{ .Values.qbittorrent.downloads.savePath }} {{ .Values.qbittorrent.downloads.tempPath }}{{ range .Values.qbittorrent.downloads.categories }} {{ . }}{{ end }}{{ range .Values.qbittorrent.mediaDirs }} {{ . }}{{ end }}
               chown -R {{ .Values.qbittorrent.env.PUID }}:{{ .Values.qbittorrent.env.PGID }} {{ .Values.qbittorrent.downloads.savePath }}{{ range .Values.qbittorrent.mediaDirs }} {{ . }}{{ end }}
-              {{- end }}
           volumeMounts:
-            {{- if .Values.persistence.config.enabled }}
             - name: config
               mountPath: {{ .Values.persistence.config.mountPath }}
-            {{- end }}
-            {{- if .Values.persistence.data.enabled }}
             - name: data
               mountPath: {{ .Values.persistence.data.mountPath }}
-            {{- end }}
         {{- end }}
         - name: gluetun
           image: "{{ .Values.gluetun.image.repository }}:{{ .Values.gluetun.image.tag }}"
@@ -212,22 +206,14 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
           volumeMounts:
-            {{- if .Values.persistence.config.enabled }}
             - name: config
               mountPath: {{ .Values.persistence.config.mountPath }}
-            {{- end }}
-            {{- if .Values.persistence.data.enabled }}
             - name: data
               mountPath: {{ .Values.persistence.data.mountPath }}
-            {{- end }}
       volumes:
-        {{- if .Values.persistence.config.enabled }}
         - name: config
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.config.claimName }}
-        {{- end }}
-        {{- if .Values.persistence.data.enabled }}
         - name: data
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.data.claimName }}
-        {{- end }}

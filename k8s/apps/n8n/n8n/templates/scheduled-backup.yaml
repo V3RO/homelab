@@ -29,7 +29,7 @@ metadata:
   name: backup-{{ .Values.postgres.clusterName }}
   namespace: {{ .Release.Namespace }}
 spec:
-  schedule: "20 15 * * *"
+  schedule: "0 20 3 * * *"
   backupOwnerReference: self
   method: plugin
   pluginConfiguration:

@@ -35,10 +35,10 @@ seerr:
 
 postgres:
   clusterName: seerr-postgres
-  instances: 1
+  instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: local-path
+    class: openebs-hostpath
     size: 2Gi
   database: seerr
   owner: seerr

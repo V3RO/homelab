@@ -114,22 +114,14 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
           volumeMounts:
-            {{- if .Values.persistence.config.enabled }}
             - name: config
               mountPath: {{ .Values.persistence.config.mountPath }}
-            {{- end }}
-            {{- if .Values.persistence.data.enabled }}
             - name: data
               mountPath: {{ .Values.persistence.data.mountPath }}
-            {{- end }}
       volumes:
-        {{- if .Values.persistence.config.enabled }}
         - name: config
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.config.claimName }}
-        {{- end }}
-        {{- if .Values.persistence.data.enabled }}
         - name: data
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.data.claimName }}
-        {{- end }}

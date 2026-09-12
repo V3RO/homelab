@@ -28,7 +28,7 @@ metadata:
   name: backup-grafana-postgres
   namespace: {{ .Release.Namespace }}
 spec:
-  schedule: "10 15 * * *"
+  schedule: "0 10 3 * * *"
   backupOwnerReference: self
   method: plugin
   pluginConfiguration:

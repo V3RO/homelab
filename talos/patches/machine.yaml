@@ -5,10 +5,6 @@ machine:
     extraArgs:
       rotate-server-certificates: true
     extraMounts:
-      # Required by Longhorn: mounts the data path rshared into the kubelet
-      # mount namespace so volume attach/mount propagation works. The
-      # directory lives on EPHEMERAL (no dedicated data disk on these hosts).
-      # https://longhorn.io/docs/latest/deploy/install/#installing-on-talos-linux
       - destination: /var/lib/longhorn
         type: bind
         source: /var/lib/longhorn
@@ -16,12 +12,19 @@ machine:
           - bind
           - rshared
           - rw
+      - destination: /var/mnt/openebs-local
+        type: bind
+        source: /var/mnt/openebs-local
+        options:
+          - bind
+          - rshared
+          - rw
   nodeLabels:
-    topology.kubernetes.io/region: talos
+    topology.kubernetes.io/region: homelab
   sysctls:
     fs.inotify.max_user_watches: 1048576
     fs.inotify.max_user_instances: 8192
     net.core.default_qdisc: fq
     net.ipv4.tcp_congestion_control: bbr
     net.ipv4.tcp_fastopen: 3
-    net.ipv4.tcp_mtu_probing: 1 # optional
+    net.ipv4.tcp_mtu_probing: 1

@@ -19,25 +19,20 @@ service:
 
 persistence:
   config:
-    enabled: true
-    create: true
     claimName: radarr-config
     size: 5Gi
     mountPath: /config
     storageClass: longhorn
   data:
-    enabled: true
-    create: false
     claimName: media-data
     mountPath: /data
-    storageClass: truenas-nfs-media
 
 postgres:
   clusterName: radarr-postgres
-  instances: 1
+  instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: local-path
+    class: openebs-hostpath
     size: 2Gi
   database: radarr_main
   logDatabase: radarr_log

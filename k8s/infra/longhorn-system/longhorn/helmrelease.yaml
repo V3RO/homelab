@@ -26,12 +26,6 @@ spec:
       remediateLastFailure: true
   values:
     longhorn:
-      # -------------------------------------------------------------------
-      # Default settings applied to all Longhorn volumes unless overridden
-      # per-PVC. Note: on first install these seed the longhorn-default-setting
-      # ConfigMap; the runtime source of truth afterwards are the Setting CRs
-      # rendered in templates/settings.yaml (keep both in sync).
-      # -------------------------------------------------------------------
       defaultSettings:
         # Data path on the host. Lives on EPHEMERAL (single NVMe per node);
         # the kubelet rshared bind mount is configured in talos/patches/machine.yaml.
@@ -50,8 +44,6 @@ spec:
         # volume does not stay stuck in "attaching" state.
         autoDeletePodWhenVolumeDetachedUnexpectedly: true
 
-        # Always allow node drain (required for Talos upgrades / reboots).
-        # Longhorn will gracefully detach volumes before the node drains.
         nodeDrainPolicy: always-allow
 
         # Do NOT automatically delete orphaned replica data.
@@ -65,7 +57,6 @@ spec:
         # (required to rebuild a second replica while a node is down).
         replicaSoftAntiAffinity: true
 
-        # Upgrade engines one at a time to avoid simultaneous IO disruption.
         concurrentAutomaticEngineUpgradePerNodeLimit: 1
 
         logLevel: Info
@@ -75,8 +66,6 @@ spec:
         v1DataEngine: true
         v2DataEngine: false
 
-        # Tolerate the control-plane taint so instance-manager and replica
-        # pods always schedule (all 3 nodes are control-plane).
         taintToleration: "node-role.kubernetes.io/control-plane:NoSchedule"
 
       # S3 backup target (versitygw), wired as the chart-managed "default"
@@ -99,19 +88,9 @@ spec:
         defaultFsType: ext4
         defaultClassReplicaCount: 2
         reclaimPolicy: Retain
-        # Delay binding until pod scheduling so replicas land on the node
-        # the pod actually runs on (and its peers) - matches local-path's
-        # WaitForFirstConsumer behavior.
         volumeBindingMode: WaitForFirstConsumer
-        # Migratable volumes can be attached to two nodes during failover,
-        # speeding up RWO re-attach when a pod is rescheduled.
         migratable: true
 
-      # -------------------------------------------------------------------
-      # Component placement. All nodes are control-plane (untaintened via
-      # allowSchedulingOnControlPlanes, but keep tolerations for safety);
-      # no nodeSelectors so components spread across all 3 nodes.
-      # -------------------------------------------------------------------
       longhornManager:
         tolerations:
           - key: node-role.kubernetes.io/control-plane
@@ -149,8 +128,6 @@ spec:
             memory: 128Mi
 
       csi:
-        # Soft anti-affinity so the 3 CSI sidecar replicas spread but can
-        # co-locate while a node is down.
         podAntiAffinityPreset: soft
 
       # Prometheus is the community chart (no prometheus-operator CRDs), so
@@ -159,8 +136,6 @@ spec:
         serviceMonitor:
           enabled: false
 
-      # Built-in ingress stays off - the UI is exposed via HTTPRoute
-      # (templates/route.yaml) on the existing Istio internal gateway.
       ingress:
         enabled: false
 

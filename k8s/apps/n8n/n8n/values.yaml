@@ -50,11 +50,11 @@ n8n:
 postgres:
   enabled: true
   clusterName: n8n-postgres
-  instances: 1
+  instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: local-path
-    size: 10Gi
+    class: openebs-hostpath
+    size: 5Gi
   database: n8n
   owner: n8n
   restore: false

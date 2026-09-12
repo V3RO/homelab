@@ -78,7 +78,7 @@ spec:
         replicas: 1
         persistence:
           enabled: true
-          storageClass: local-path
+          storageClass: longhorn
           size: 10Gi
 
       # Disable all caches to save memory

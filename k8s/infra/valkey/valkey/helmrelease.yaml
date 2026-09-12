@@ -39,7 +39,7 @@ spec:
         replicationUser: default
         persistence:
           size: 2Gi
-          storageClass: local-path
+          storageClass: openebs-hostpath
 
       valkeyConfig: |-
         # Enable AOF persistence for better durability

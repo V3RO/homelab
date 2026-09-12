@@ -19,8 +19,6 @@ service:
 
 persistence:
   config:
-    enabled: true
-    create: true
     claimName: prowlarr-config
     size: 2Gi
     mountPath: /config
@@ -28,10 +26,10 @@ persistence:
 
 postgres:
   clusterName: prowlarr-postgres
-  instances: 1
+  instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: local-path
+    class: openebs-hostpath
     size: 2Gi
   database: prowlarr_main
   logDatabase: prowlarr_log

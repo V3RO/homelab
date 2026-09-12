@@ -58,19 +58,13 @@ proxy:
 
 persistence:
   config:
-    enabled: true
-    create: true
     claimName: qbittorrent-config
     size: 2Gi
     mountPath: /config
     storageClass: longhorn
   data:
-    enabled: true
-    create: false
     claimName: media-data
-    accessMode: ReadWriteMany
     mountPath: /data
-    storageClass: truenas-nfs-media
 
 app:
   host: qbit.schober.dev

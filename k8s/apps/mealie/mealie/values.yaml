@@ -59,11 +59,11 @@ persistence:
 postgres:
   enabled: true
   clusterName: mealie-postgres
-  instances: 1
+  instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1
   storage:
-    class: local-path
-    size: 10Gi
+    class: openebs-hostpath
+    size: 2Gi
   database: mealie
   owner: mealie
   restore: false

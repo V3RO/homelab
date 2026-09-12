@@ -4,7 +4,6 @@ Repository containing my complete homelab setup
 ## Structure
 - [k8s](./k8s) containing all homelab cluster deployments
 - [talos](./talos) containing the bare-metal Talos Kubernetes cluster config (plain `talosctl` config/patches + Makefile, no Tofu)
-- [tofu](./tofu/home-assistant) containing the open tofu project for my Home Assistant VM
 
 ### Kubernetes Cluster
 

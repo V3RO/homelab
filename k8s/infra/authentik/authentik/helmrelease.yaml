@@ -456,7 +456,7 @@ spec:
     postgres:
       imageName: ghcr.io/cloudnative-pg/postgresql:18.1
       storage:
-        class: local-path
+        class: openebs-hostpath
         size: 5Gi
       restore: false
 

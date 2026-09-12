@@ -27,8 +27,6 @@ jellyfin:
 # Config PVC (managed by custom template)
 persistence:
   config:
-    enabled: true
-    create: true
     claimName: jellyfin-config
     size: 10Gi
     storageClass: longhorn
