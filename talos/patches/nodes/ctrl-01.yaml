@@ -1,13 +1,19 @@
 # Physical host: atheon
-machine:
-  install:
-    disk: /dev/nvme0n1
-  nodeLabels:
-    topology.kubernetes.io/zone: atheon
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+provisioning:
+  diskSelector:
+    match: disk.dev_path == "/dev/nvme0n1"
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig
+auto: "off"
 hostname: ctrl-01
+---
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  topology.kubernetes.io/zone: atheon
 ---
 apiVersion: v1alpha1
 kind: LinkConfig
