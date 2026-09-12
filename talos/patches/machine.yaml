@@ -23,6 +23,11 @@ params:
   net.ipv4.tcp_mtu_probing: "1"
 ---
 apiVersion: v1alpha1
+kind: ResolverConfig
+nameservers:
+  - address: 10.1.40.1
+---
+apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: longhorn
 volumeType: directory
