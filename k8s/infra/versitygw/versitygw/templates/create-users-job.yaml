@@ -38,7 +38,10 @@ metadata:
         (join "," $rows) | sha256sum | trunc 8 }}
   namespace: {{ .Release.Namespace }}
 spec:
-  backoffLimit: 3
+  # Generous because these Jobs are scheduled alongside versitygw on a
+  # fresh cluster. The scripts wait for the gateway themselves; this is
+  # the outer guard for the pod dying some other way.
+  backoffLimit: 6
   # Keep a completed Job long enough to read its logs, then let it go so
   # renamed generations do not pile up. Note this also sets how often the Job
   # re-runs: once garbage collected, the next upgrade recreates it.

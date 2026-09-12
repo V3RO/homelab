@@ -17,6 +17,36 @@
 #                               '-' mapped to '_' (see varprefix below)
 set -eu
 
+# On a FRESH cluster these Jobs are scheduled alongside versitygw itself and
+# lose the race -- measured: job pods started at 12:06:26, the gateway at
+# 12:06:31. With `set -e`, `code=$(curl ...)` makes any transport error fatal
+# on the spot ("curl: (52) Empty reply from server"), so the Job burned its
+# backoffLimit before the gateway was listening. Two of these guards:
+#
+#   1. retry flags cover transport errors (52, connection refused, resets).
+#      Safe to use --retry-all-errors ONLY because we never pass -f/--fail:
+#      an HTTP 409 is exit 0 to curl, so real HTTP statuses are still handled
+#      by the case statements below rather than silently retried.
+#   2. wait_for_gateway blocks until the S3 endpoint answers at all.
+CURL_RETRY="--retry 5 --retry-delay 2 --retry-connrefused --retry-all-errors"
+
+wait_for_gateway() {
+  i=1
+  while [ "$i" -le 60 ]; do
+    # Any HTTP response means it is listening; we do not care which, since
+    # this is unauthenticated and will be a 403 or similar.
+    if curl -sS -o /dev/null --max-time 5 "$S3/" 2>/dev/null; then
+      echo "versitygw is responding"
+      return 0
+    fi
+    echo "waiting for versitygw ($i/60)"
+    i=$((i + 1))
+    sleep 5
+  done
+  echo "versitygw did not become ready in 5 minutes"
+  exit 1
+}
+
 xml_escape() {
   printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e "s/'/\&apos;/g" -e 's/"/\&quot;/g'
 }
@@ -46,7 +76,7 @@ reconcile_user() {
   escaped_secret=$(xml_escape "$secret")
 
   body="<Account><Access>${escaped_access}</Access><Secret>${escaped_secret}</Secret><Role>user</Role></Account>"
-  code=$(curl -sS -o /tmp/resp.xml -w '%{http_code}' \
+  code=$(curl -sS $CURL_RETRY -o /tmp/resp.xml -w '%{http_code}' \
     --aws-sigv4 "$SIGV4" \
     --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
     -X PATCH "$ADMIN/create-user" \
@@ -63,7 +93,7 @@ reconcile_user() {
       # current one explicitly. Access keys are alphanumeric + hyphen, so no
       # query-string escaping is needed here.
       body="<MutableProps><Secret>${escaped_secret}</Secret></MutableProps>"
-      code=$(curl -sS -o /tmp/resp.xml -w '%{http_code}' \
+      code=$(curl -sS $CURL_RETRY -o /tmp/resp.xml -w '%{http_code}' \
         --aws-sigv4 "$SIGV4" \
         --user "${ROOT_ACCESS_KEY_ID}:${ROOT_SECRET_ACCESS_KEY}" \
         -X PATCH "$ADMIN/update-user?access=${access}" \
@@ -97,7 +127,7 @@ verify_user() {
   access=$(client_access "$id")
   secret=$(client_secret "$id")
 
-  code=$(curl -sS -o /tmp/verify.xml -w '%{http_code}' \
+  code=$(curl -sS $CURL_RETRY -o /tmp/verify.xml -w '%{http_code}' \
     --aws-sigv4 "$SIGV4" \
     --user "${access}:${secret}" \
     "$S3/${bucket}?list-type=2&max-keys=1")
@@ -121,6 +151,8 @@ verify_user() {
 # Fed by here-doc rather than a pipe so the loop runs in THIS shell: a
 # pipeline would put it in a subshell and "failed" would be lost, turning
 # every verification failure into a silent pass.
+wait_for_gateway
+
 failed=""
 while IFS=' ' read -r id bucket; do
   [ -n "$id" ] || continue
