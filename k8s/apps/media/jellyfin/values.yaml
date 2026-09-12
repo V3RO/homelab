@@ -1,5 +1,7 @@
 # --- Upstream jellyfin chart values (nested under `jellyfin:` dependency key) ---
 jellyfin:
+  image:
+    tag: 12.0
   deploymentStrategy:
     type: Recreate
   service:
